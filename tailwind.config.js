@@ -49,6 +49,7 @@ module.exports = {
         display: ['var(--font-playfair)', 'Playfair Display', 'Georgia', 'serif'],
         sans: ['var(--font-montserrat)', 'Montserrat', 'system-ui', '-apple-system', 'sans-serif'],
         montserrat: ['var(--font-montserrat)', 'Montserrat', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-montserrat)', 'Montserrat', 'monospace'],
         anton: ['var(--font-anton)', 'Impact', 'Arial Narrow', 'sans-serif'],
       },
     },

@@ -43,7 +43,7 @@ export default function Header() {
           : 'bg-[#050505]/85 backdrop-blur-sm border-b border-white/[0.06]'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
+      <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20">
         <div className="flex items-center justify-between h-[74px] sm:h-[80px]">
 
           {/* Left: Brand Identity (Clean, Pure, No Clutter) */}

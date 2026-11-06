@@ -31,8 +31,8 @@ export default function HeroSection() {
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#050505] via-[#050505]/50 to-transparent pointer-events-none" />
       </div>
 
-      {/* Main Spatial Grid Container */}
-      <div className="relative z-10 w-full h-full max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 flex flex-col justify-between pt-24 sm:pt-28 lg:pt-32 pb-8 sm:pb-12 md:pb-14">
+      {/* Main Spatial Grid Container (Expanded for Big Screens with Zero Awkward Gaps) */}
+      <div className="relative z-10 w-full h-full max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 flex flex-col justify-between pt-24 sm:pt-28 lg:pt-32 pb-8 sm:pb-12 md:pb-14">
         
         {/* 2. Top Alignment: Editorial Main Heading in Luxury Playfair Display Serif */}
         <div className="max-w-3xl">

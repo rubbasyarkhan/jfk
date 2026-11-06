@@ -11,19 +11,21 @@
 ## 2. Typography Rules
 - **Brand Editorial Headings**: Use `Playfair Display` (`font-serif` / `font-display`) for luxury editorial headlines with italic accents (e.g. `Rare Provenance. Uncompromising Distinction.`).
 - **Punchy Signage & Feature Headings**: Use `Anton` (`font-anton`) for high-impact bold condensed headlines (e.g. `STAYING IN? WE'VE GOT OPTIONS.`).
-- **Body & Content (Strict)**: Use `Montserrat` (`font-sans` / `font-montserrat`) for all interface copy, body text, buttons, and navigation.
+- **Body & All Content (Strict)**: Use `Montserrat` (`font-sans` / `font-montserrat`) for ALL body text, paragraphs, tags, buttons, valuations, product details, and navigation. No generic monospaces in customer-facing cards.
 - **Micro-Metadata**: Montserrat uppercase with refined tracking (`tracking-[0.22em] text-[11px] font-bold`).
 
 ## 3. Hero Section Rules
 - **Background**: Complete black background (`#050505` / `#111111`).
-- **Main Visual (heromain.jpg)**: Must be clearly visible! Never drown the image in opaque black gradients. Use a directed horizontal gradient (`linear-gradient(90deg, rgba(5,5,5,0.94) 0%, rgba(5,5,5,0.80) 35%, rgba(5,5,5,0.35) 68%, rgba(5,5,5,0.12) 100%)`) so the left text is 100% legible while the bottles on the right and center shine with full clarity.
-- **Heading Scale**: Refined, restrained luxury sizing (`text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem]`). Never blow it up to gigantic `text-8xl` that pushes elements out of view.
-- **Content Elements**:
-  - Refined micro-tag: `Private Client Cellar • Houston, Texas` with gold dot.
-  - Large, confident, minimal luxury heading in `Cinzel` (`Rare Provenance. Uncompromising Distinction.`).
-  - Small, strong, punchy paragraph (`max-w-lg`).
-  - Exactly TWO CTAs (`Explore Vault ↗` and `Private Concierge`).
-  - NO phone number in hero section.
+- **Main Visual (heromain.jpg)**: Must be clearly visible! Directed horizontal gradient (`linear-gradient(90deg, rgba(5,5,5,0.95) 0%, rgba(5,5,5,0.82) 35%, rgba(5,5,5,0.35) 68%, rgba(5,5,5,0.12) 100%)`) keeps text readable while bottle photography shines.
+- **Heading Line Spacing**: Multi-line block elements with distinct vertical margin (`mt-1.5 sm:mt-2.5`) and comfortable line height (`leading-[1.2] sm:leading-[1.22]`).
+- **No Divider / Info Strip Under Hero**: Do NOT place horizontal ticker strips (`InfoBand`) directly under the hero. Viewport flows directly into the curated department gallery.
+
+## 4. Product Cards & Grid Layout Rules
+- **3 Cards in a Row**: Product and Vault exhibition cards MUST always be laid out in 3 columns on desktop (`grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8`), providing generous width and high-impact bottle photography.
+- **Card Typography**: Tags, descriptions, pricing, and CTA buttons strictly use `Montserrat` (`font-sans`). Only bottle titles use `Playfair Display` (`font-serif`).
+
+## 5. Responsive Spatial Width (Big Screens)
+- **Container Sizing**: NEVER constrain containers to narrow `max-w-7xl` (1280px), which leaves massive empty black borders on 1440p/4K monitors. Use `max-w-[1680px]` with progressive padding `px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20` to fill large screens with balanced luxury breathing room.
 
 ## 4. Navigation Bar Rules (Luxury & Professional, Never "Beginner")
 - Sleek sticky navbar with deep black backdrop blur (`#050505`/95).

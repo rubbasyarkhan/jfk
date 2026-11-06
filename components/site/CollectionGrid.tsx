@@ -39,7 +39,7 @@ const CATEGORIES = [
 export default function CollectionGrid() {
   return (
     <section id="collection" className="py-24 sm:py-32 relative bg-[#0D0D0D]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20">
         
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">

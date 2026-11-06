@@ -1,5 +1,4 @@
 import HeroSection from '@/components/site/HeroSection';
-import InfoBand from '@/components/site/InfoBand';
 import CollectionGrid from '@/components/site/CollectionGrid';
 import PromotionalBanner from '@/components/site/PromotionalBanner';
 import StorySection from '@/components/site/StorySection';
@@ -16,23 +15,20 @@ export const metadata = {
 };
 
 export default async function HomePage() {
-  const featuredProducts = await getFeaturedProducts(8);
+  const featuredProducts = await getFeaturedProducts(6);
 
   return (
     <div className="bg-[#050505] text-[#FFFFFF]">
-      {/* 1. Primary Viewport Hero: High-Impact Editorial Canvas with Top Header & Split Bottom Alignment */}
+      {/* 1. Primary Viewport Hero: High-Impact Editorial Canvas */}
       <HeroSection />
 
-      {/* 2. Precision 3-Column Info Ticker */}
-      <InfoBand />
-
-      {/* 3. Curated Department Gallery (01 // THE ARCHIVE) */}
+      {/* 2. Curated Department Gallery (01 // THE ARCHIVE) */}
       <CollectionGrid />
 
-      {/* 4. The Allocated Vault / Featured Bottles (id="vault") */}
+      {/* 3. The Allocated Vault / Featured Bottles — 3 Cards in a Row */}
       {featuredProducts.length > 0 && (
         <section id="vault" className="py-24 sm:py-32 relative bg-[#0B0C0E] border-b border-white/[0.08]">
-          <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+          <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20">
             
             {/* Vault Section Header */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-16 gap-6">
@@ -53,15 +49,15 @@ export default async function HomePage() {
 
               <Link
                 href="/products/spirits"
-                className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-[0.2em] text-[#F5D900] hover:underline transition-all"
+                className="inline-flex items-center gap-1.5 text-xs font-sans font-bold uppercase tracking-[0.2em] text-[#F5D900] hover:underline transition-all"
               >
                 <span>Browse Entire Collection</span>
                 <span>↗</span>
               </Link>
             </div>
 
-            {/* Grid of Gallery Product Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* 3 Cards In A Row Grid (Responsive 1 on mobile, 2 on tablet, 3 on desktop) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {featuredProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
@@ -71,16 +67,16 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* 5. Deep Burgundy Allocation Drop Banner */}
+      {/* 4. Deep Burgundy Allocation Drop Banner */}
       <PromotionalBanner />
 
-      {/* 6. Editorial Store Heritage & Bottle Photo Spread */}
+      {/* 5. Editorial Store Heritage & Bottle Photo Spread */}
       <StorySection />
 
-      {/* 7. Delivery Concierge (Uber Eats & DoorDash) */}
+      {/* 6. Delivery Concierge (Uber Eats & DoorDash) */}
       <DeliverySection />
 
-      {/* 8. Storefront Presence & Dark Map */}
+      {/* 7. Storefront Presence & Dark Map */}
       <LocationSection />
     </div>
   );

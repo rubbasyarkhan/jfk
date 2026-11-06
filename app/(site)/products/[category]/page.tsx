@@ -66,15 +66,18 @@ export default async function CategoryPage({ params }: Props) {
       {/* Category Switcher Tabs */}
       <CategorySwitcher active={params.category} />
 
-      {/* Product Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+      {/* Product Grid — 3 Cards In A Row */}
+      <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 py-16 sm:py-20">
         <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/[0.08]">
-          <p className="text-xs font-mono uppercase tracking-wider text-[#888888]">
+          <p className="text-xs font-sans uppercase tracking-wider text-neutral-400">
             Showing <span className="text-[#F5D900] font-bold">{products.length}</span> Curated Bottles
           </p>
-          <p className="text-xs font-mono text-[#F5D900] font-semibold">
+          <a
+            href="tel:+12815903300"
+            className="text-xs font-sans text-[#F5D900] font-semibold hover:underline"
+          >
             Direct Store Reserve: (281) 590-3300
-          </p>
+          </a>
         </div>
 
         {products.length === 0 ? (
@@ -82,15 +85,15 @@ export default async function CategoryPage({ params }: Props) {
             <h3 className="font-serif text-2xl text-[#FFFFFF] mb-2">
               Catalog Updating
             </h3>
-            <p className="text-[#A0A0A0] text-sm max-w-md mx-auto mb-6">
+            <p className="text-neutral-300 font-sans text-sm max-w-md mx-auto mb-6">
               Our inventory changes daily with fresh distributor allocations. Please call the store directly or visit us in person.
             </p>
-            <a href="tel:+12815903300" className="btn-gold">
+            <a href="tel:+12815903300" className="btn-primary">
               Call Store: +1 281-590-3300 ↗
             </a>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
