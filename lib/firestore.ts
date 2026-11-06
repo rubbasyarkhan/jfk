@@ -31,6 +31,39 @@ export const HAS_REAL_FIREBASE = Boolean(
 
 let firestoreDisabled = !HAS_REAL_FIREBASE;
 
+function sanitizeProductDoc(docSnap: any): Product {
+  const data = docSnap.data();
+  let createdAt = data.createdAt;
+  let updatedAt = data.updatedAt;
+
+  if (createdAt && typeof createdAt.toDate === 'function') {
+    createdAt = createdAt.toDate().toISOString();
+  } else if (!createdAt) {
+    createdAt = new Date().toISOString();
+  }
+
+  if (updatedAt && typeof updatedAt.toDate === 'function') {
+    updatedAt = updatedAt.toDate().toISOString();
+  } else if (!updatedAt) {
+    updatedAt = new Date().toISOString();
+  }
+
+  return {
+    ...data,
+    id: docSnap.id,
+    createdAt: String(createdAt),
+    updatedAt: String(updatedAt),
+  } as Product;
+}
+
+function sanitizeCategoryDoc(docSnap: any): Category {
+  const data = docSnap.data();
+  return {
+    ...data,
+    id: docSnap.id,
+  } as Category;
+}
+
 // ─── Products ──────────────────────────────────────────────────────────────
 
 export async function getProducts(categorySlug?: string): Promise<Product[]> {
@@ -48,7 +81,7 @@ export async function getProducts(categorySlug?: string): Promise<Product[]> {
       }
       const snap = await getDocs(q);
       if (!snap.empty) {
-        return snap.docs.map(d => ({ id: d.id, ...d.data() } as Product));
+        return snap.docs.map(sanitizeProductDoc);
       }
     } catch (err) {
       firestoreDisabled = true;
@@ -74,7 +107,7 @@ export async function getFeaturedProducts(count = 8): Promise<Product[]> {
       );
       const snap = await getDocs(q);
       if (!snap.empty) {
-        return snap.docs.map(d => ({ id: d.id, ...d.data() } as Product));
+        return snap.docs.map(sanitizeProductDoc);
       }
     } catch (err) {
       firestoreDisabled = true;
@@ -90,8 +123,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
       const q = query(collection(db, 'products'), where('slug', '==', slug), limit(1));
       const snap = await getDocs(q);
       if (!snap.empty) {
-        const d = snap.docs[0];
-        return { id: d.id, ...d.data() } as Product;
+        return sanitizeProductDoc(snap.docs[0]);
       }
     } catch (err) {
       firestoreDisabled = true;
@@ -107,7 +139,7 @@ export async function getProductById(id: string): Promise<Product | null> {
     try {
       const snap = await getDoc(doc(db, 'products', id));
       if (snap.exists()) {
-        return { id: snap.id, ...snap.data() } as Product;
+        return sanitizeProductDoc(snap);
       }
     } catch (err) {
       firestoreDisabled = true;
@@ -123,7 +155,7 @@ export async function getAllProducts(): Promise<Product[]> {
     try {
       const snap = await getDocs(collection(db, 'products'));
       if (!snap.empty) {
-        return snap.docs.map(d => ({ id: d.id, ...d.data() } as Product));
+        return snap.docs.map(sanitizeProductDoc);
       }
     } catch (err) {
       firestoreDisabled = true;
@@ -215,7 +247,7 @@ export async function getCategories(): Promise<Category[]> {
       const q = query(collection(db, 'categories'), orderBy('sortOrder', 'asc'));
       const snap = await getDocs(q);
       if (!snap.empty) {
-        return snap.docs.map(d => ({ id: d.id, ...d.data() } as Category));
+        return snap.docs.map(sanitizeCategoryDoc);
       }
     } catch (err) {
       firestoreDisabled = true;
@@ -230,8 +262,7 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
       const q = query(collection(db, 'categories'), where('slug', '==', slug), limit(1));
       const snap = await getDocs(q);
       if (!snap.empty) {
-        const d = snap.docs[0];
-        return { id: d.id, ...d.data() } as Category;
+        return sanitizeCategoryDoc(snap.docs[0]);
       }
     } catch (err) {
       firestoreDisabled = true;
