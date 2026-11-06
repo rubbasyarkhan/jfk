@@ -1,0 +1,51 @@
+# JFK Liquors — Design & Engineering Rules (rules.jfk)
+# NEVER VIOLATE THESE RULES UNDER ANY CIRCUMSTANCES
+
+## 1. Color System (Strict Palette)
+- **Primary Background**: Midnight Black (`#111111` or `#0A0A0A`). Complete deep black on Hero.
+- **Brand Accent / Highlights / CTAs**: Liquor Store Gold (`#F5D900`). Used intentionally for primary buttons, highlighted text, and key accents.
+- **Elevated Surfaces / Cards / Nav / Footer**: Charcoal (`#242424`). Borders are subtle `#383838` or `#2E2E2E`.
+- **Secondary Accent / Premium Sections**: Deep Burgundy (`#5B1018`). Used for promotional drop banners and announcement strip.
+- **Text & Contrast**: Clean White (`#FFFFFF`) for primary headings & body, muted silver (`#A0A0A0` / `#C7C7C7`) for secondary copy.
+
+## 2. Typography Rules
+- **Brand Display Headings**: Use `Anton` (`font-anton` or `font-display`) for high-impact bold condensed headlines (e.g. `STAYING IN? WE'VE GOT OPTIONS.`, collection headings).
+- **Luxury Editorial Headings**: `Cormorant Garamond` (`font-serif`) for luxury italic accents and editorial expressions.
+- **Body & Interface**: `Figtree` (`font-sans`) for crisp, legible UI copy, numbers, and navigation.
+
+## 3. Hero Section Rules
+- **Background**: Complete black background (`#111111` / `#0A0A0A`).
+- **Main Visual**: `heromain.jpg` covers the background / right side with an ultra-smooth cinematic gradient fading to deep black on the left (`linear-gradient(90deg, #111111 0%, rgba(17,17,17,0.7) 45%, transparent 100%)`).
+- **Content Alignment**: Left-aligned, generous breathing room, perfectly balanced.
+- **Content Elements**:
+  - NO "Your Neighborhood Bottle Shop • Houston, TX" eyebrow tag in hero.
+  - Large, confident, minimal luxury heading (e.g. `Good taste. Great company. JFK Liquors.`).
+  - Small, strong, punchy paragraph.
+  - Exactly TWO CTAs:
+    1. Primary Gold Button (`Explore Our Selection ↗`)
+    2. Minimal Ghost Button (`Get Directions`)
+  - NO phone number in hero section.
+  - Subtle location note at bottom of hero only (`Near IAH Airport • 15655 John F Kennedy Blvd`).
+
+## 4. Navigation Bar Rules (Luxury & Professional, Never "Beginner")
+- Sleek sticky navbar with deep black backdrop blur (`#111111`/95).
+- Clean JFK logo sizing (h-10 to h-11, sharp object-contain).
+- Sophisticated menu links with refined tracking (`tracking-[0.14em] text-xs font-semibold uppercase`).
+- Polished dropdown menu with charcoal background (`#242424`), subtle borders (`#383838`), rounded corners, and smooth transitions.
+- Right side: Clean call link and crisp gold directions button. No amateur margins or misaligned elements.
+
+## 5. Anti-Slop & Minimalism Rules
+- **NO Emojis anywhere** in the UI. Use sleek minimal vector SVG icons only where necessary.
+- **NO Childish AI-slop widgets**, multiple slider pagination dots, or clutter in the hero section.
+- **Bottles are the star**: Real, high-resolution bottle photography with deep dark vignettes and crisp pricing.
+- **Subtle animations only**: Clean hover transitions (opacity, scale-102, smooth color shift). No jarring or excessive motion.
+
+## 6. Specific Section Signatures
+- **Info Band**: Must follow the 3-column format from `media_1793930307892_3e245bf0.png`:
+  - `MON–SAT 11:00 AM — 9:00 PM • SUN CLOSED` (with `SUN CLOSED` in gold)
+  - `FIND US ON UBER EATS + DOORDASH` (Uber Eats in `#67cb89`, DoorDash in `#ff6451`)
+  - `CALL THE STORE (281) 590-3300 ↗` (with `(281) 590-3300 ↗` in gold)
+- **Delivery Section**: Must follow `media_1793930349960_4d1ceb70.png`:
+  - Eyebrow: `YOUR FAVORITES, DELIVERED`
+  - Headline: `STAYING IN?` in white, `WE'VE GOT OPTIONS.` in `#F5D900` gold in Anton display font.
+  - Charcoal cards for Uber Eats & DoorDash with `Open Uber Eats ↗` and `Open DoorDash ↗`.

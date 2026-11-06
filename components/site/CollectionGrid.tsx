@@ -40,10 +40,12 @@ export default function CollectionGrid() {
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
           <div>
-            <p className="eyebrow mb-2">THE COLLECTION</p>
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#F5D900] mb-3 font-sans">
+              THE COLLECTION
+            </p>
             <h2
               className="font-serif tracking-tight text-[#FFFFFF]"
-              style={{ fontSize: 'clamp(2.4rem, 5vw, 4rem)', lineHeight: 1.05 }}
+              style={{ fontSize: 'clamp(2.6rem, 5vw, 4.2rem)', lineHeight: 1.05 }}
             >
               Find your
               <br />
@@ -57,14 +59,14 @@ export default function CollectionGrid() {
           </p>
         </div>
 
-        {/* 4 Charcoal Cards Grid */}
+        {/* 4 Clean Minimal Charcoal Tiles */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {CATEGORIES.map((cat) => (
             <Link
               key={cat.slug}
               href={`/products/${cat.slug}`}
-              className="group block relative rounded-xl overflow-hidden bg-[#242424] border border-[#383838] transition-all duration-500 hover:border-[#F5D900] hover:shadow-2xl"
-              style={{ minHeight: '420px' }}
+              className="group block relative rounded-lg overflow-hidden bg-[#1A1A1A] border border-[#333333] transition-all duration-300 hover:border-[#F5D900]"
+              style={{ minHeight: '410px' }}
             >
               {/* Bottle Photo Background */}
               <div className="absolute inset-0 z-0">
@@ -72,7 +74,7 @@ export default function CollectionGrid() {
                   src={cat.image}
                   alt={cat.label}
                   fill
-                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-105 opacity-45 group-hover:opacity-55"
+                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-105 opacity-40 group-hover:opacity-50"
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                 />
                 
@@ -81,7 +83,7 @@ export default function CollectionGrid() {
                   className="absolute inset-0"
                   style={{
                     background:
-                      'linear-gradient(to top, #111111 0%, rgba(36,36,36,0.85) 50%, rgba(36,36,36,0.3) 100%)',
+                      'linear-gradient(to top, #111111 0%, rgba(26,26,26,0.85) 45%, rgba(26,26,26,0.2) 100%)',
                   }}
                 />
               </div>
@@ -89,23 +91,21 @@ export default function CollectionGrid() {
               {/* Foreground Content */}
               <div className="relative z-10 h-full p-6 flex flex-col justify-between">
                 
-                {/* Department Number in Gold */}
-                <div className="flex items-center justify-between">
-                  <span className="font-serif text-lg font-bold text-[#F5D900]">
-                    {cat.num}
-                  </span>
+                {/* Number Badge */}
+                <div className="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center text-xs font-mono text-[#FFFFFF]">
+                  {cat.num}
                 </div>
 
-                {/* Info & Explore Link */}
+                {/* Title & Link */}
                 <div>
-                  <h3 className="font-serif text-2xl text-[#FFFFFF] mb-1.5 group-hover:text-[#F5D900] transition-colors">
+                  <h3 className="font-serif text-3xl text-[#FFFFFF] mb-2 group-hover:text-[#F5D900] transition-colors">
                     {cat.label}
                   </h3>
-                  <p className="text-xs text-[#C7C7C7] leading-relaxed mb-6 font-light">
+                  <p className="text-xs text-[#C7C7C7] leading-relaxed mb-6 font-light min-h-[36px]">
                     {cat.desc}
                   </p>
 
-                  <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#F5D900]">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-[#F5D900]">
                     <span>Explore selection</span>
                     <span className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-0.5">↗</span>
                   </div>

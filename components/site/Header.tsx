@@ -3,12 +3,13 @@
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
-const NAV_PRODUCTS = [
-  { label: 'Spirits & Bourbon', href: '/products/spirits' },
-  { label: 'Wines & Champagne', href: '/products/wines' },
-  { label: 'Craft & Domestic Beer', href: '/products/beer' },
-  { label: 'Agave, Mezcal & Mixers', href: '/products/agave-and-more' },
+const DEPARTMENTS = [
+  { label: 'Spirits & Bourbon', href: '/products/spirits', desc: 'Allocated bourbon, single malts & cognac' },
+  { label: 'Wines & Champagne', href: '/products/wines', desc: 'Cellar vintages, Napa reds & sparkling' },
+  { label: 'Craft & Domestic Beer', href: '/products/beer', desc: 'Cold Texas craft, imports & IPAs' },
+  { label: 'Agave & More', href: '/products/agave-and-more', desc: '100% Blue agave tequila & artisanal mezcal' },
 ];
 
 export default function Header() {
@@ -16,9 +17,10 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 15);
+    const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -38,29 +40,31 @@ export default function Header() {
       className={`sticky top-0 z-50 w-full transition-all duration-300 ${
         scrolled
           ? 'bg-[#111111]/98 backdrop-blur-md shadow-2xl border-b border-[#242424]'
-          : 'bg-[#111111]/95 backdrop-blur-sm border-b border-[#242424]/80'
+          : 'bg-[#111111] border-b border-[#242424]/80'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-[76px]">
+        <div className="flex items-center justify-between h-[72px] sm:h-[80px]">
 
-          {/* JFK Liquors Brand Logo */}
-          <Link href="/" className="flex-shrink-0 flex items-center gap-3">
+          {/* Brand Logo */}
+          <Link href="/" className="flex-shrink-0 flex items-center transition-opacity hover:opacity-90">
             <Image
               src="/assets/logo.png"
               alt="JFK Liquors Houston"
-              width={140}
-              height={52}
-              className="h-11 sm:h-12 w-auto object-contain"
+              width={150}
+              height={50}
+              className="h-10 sm:h-11 w-auto object-contain"
               priority
             />
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-9">
             <Link
               href="/"
-              className="text-xs font-bold uppercase tracking-[0.14em] text-[#FFFFFF] hover:text-[#F5D900] transition-colors"
+              className={`text-xs font-semibold uppercase tracking-[0.15em] transition-colors ${
+                pathname === '/' ? 'text-[#F5D900]' : 'text-[#FFFFFF] hover:text-[#F5D900]'
+              }`}
             >
               Home
             </Link>
@@ -68,12 +72,16 @@ export default function Header() {
             {/* Products Dropdown */}
             <div ref={dropdownRef} className="relative">
               <button
-                onClick={() => setDropdownOpen((v) => !v)}
-                className={`flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.14em] transition-colors ${
-                  dropdownOpen ? 'text-[#F5D900]' : 'text-[#FFFFFF] hover:text-[#F5D900]'
+                type="button"
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                onMouseEnter={() => setDropdownOpen(true)}
+                className={`flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.15em] transition-colors py-2 ${
+                  dropdownOpen || pathname.startsWith('/products')
+                    ? 'text-[#F5D900]'
+                    : 'text-[#FFFFFF] hover:text-[#F5D900]'
                 }`}
               >
-                Products
+                <span>Products</span>
                 <svg
                   className={`w-3.5 h-3.5 transition-transform duration-200 ${
                     dropdownOpen ? 'rotate-180 text-[#F5D900]' : 'text-[#A0A0A0]'
@@ -81,7 +89,7 @@ export default function Header() {
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
-                  strokeWidth={2.5}
+                  strokeWidth={2}
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                 </svg>
@@ -89,17 +97,23 @@ export default function Header() {
 
               {dropdownOpen && (
                 <div
-                  className="absolute top-full left-0 mt-3 w-64 rounded-xl overflow-hidden bg-[#242424] border border-[#383838] shadow-2xl shadow-black/80"
+                  onMouseLeave={() => setDropdownOpen(false)}
+                  className="absolute top-full left-0 mt-1 w-72 rounded-lg bg-[#1A1A1A] border border-[#333333] shadow-2xl shadow-black/90 p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150"
                 >
-                  <div className="p-2 space-y-1">
-                    {NAV_PRODUCTS.map((item) => (
+                  <div className="space-y-0.5">
+                    {DEPARTMENTS.map((dept) => (
                       <Link
-                        key={item.href}
-                        href={item.href}
+                        key={dept.href}
+                        href={dept.href}
                         onClick={() => setDropdownOpen(false)}
-                        className="block px-4 py-2.5 rounded-lg text-xs font-medium text-[#FFFFFF] hover:bg-[#2E2E2E] hover:text-[#F5D900] transition-colors"
+                        className="group block px-3.5 py-2.5 rounded-md hover:bg-[#242424] transition-colors"
                       >
-                        {item.label}
+                        <p className="text-xs font-semibold text-[#FFFFFF] group-hover:text-[#F5D900] transition-colors">
+                          {dept.label}
+                        </p>
+                        <p className="text-[11px] text-[#A0A0A0] font-light mt-0.5 line-clamp-1">
+                          {dept.desc}
+                        </p>
                       </Link>
                     ))}
                   </div>
@@ -109,43 +123,44 @@ export default function Header() {
 
             <Link
               href="/#collection"
-              className="text-xs font-bold uppercase tracking-[0.14em] text-[#FFFFFF] hover:text-[#F5D900] transition-colors"
+              className="text-xs font-semibold uppercase tracking-[0.15em] text-[#FFFFFF] hover:text-[#F5D900] transition-colors"
             >
               The Collection
             </Link>
 
             <Link
               href="/about"
-              className="text-xs font-bold uppercase tracking-[0.14em] text-[#FFFFFF] hover:text-[#F5D900] transition-colors"
+              className={`text-xs font-semibold uppercase tracking-[0.15em] transition-colors ${
+                pathname === '/about' ? 'text-[#F5D900]' : 'text-[#FFFFFF] hover:text-[#F5D900]'
+              }`}
             >
               Our Store
             </Link>
 
             <Link
               href="/#delivery"
-              className="text-xs font-bold uppercase tracking-[0.14em] text-[#FFFFFF] hover:text-[#F5D900] transition-colors"
+              className="text-xs font-semibold uppercase tracking-[0.15em] text-[#FFFFFF] hover:text-[#F5D900] transition-colors"
             >
               Delivery
             </Link>
 
             <Link
               href="/contact"
-              className="text-xs font-bold uppercase tracking-[0.14em] text-[#FFFFFF] hover:text-[#F5D900] transition-colors"
+              className={`text-xs font-semibold uppercase tracking-[0.15em] transition-colors ${
+                pathname === '/contact' ? 'text-[#F5D900]' : 'text-[#FFFFFF] hover:text-[#F5D900]'
+              }`}
             >
               Visit Us
             </Link>
           </nav>
 
-          {/* Right Action: Call & Directions */}
-          <div className="hidden sm:flex items-center gap-3">
+          {/* Right Header Actions */}
+          <div className="hidden sm:flex items-center gap-4">
             <a
               href="tel:+12815903300"
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded border border-[#383838] text-xs font-bold text-[#FFFFFF] hover:border-[#F5D900] hover:text-[#F5D900] transition-colors bg-[#242424]"
+              className="text-xs font-mono font-medium text-[#C7C7C7] hover:text-[#F5D900] transition-colors tracking-wider"
             >
-              <svg className="w-3.5 h-3.5 text-[#F5D900]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-              </svg>
-              <span>+1 281-590-3300</span>
+              +1 281-590-3300
             </a>
 
             <a
@@ -154,15 +169,17 @@ export default function Header() {
               rel="noopener noreferrer"
               className="btn-gold py-2 px-4 text-xs font-bold uppercase tracking-wider"
             >
-              Directions ↗
+              <span>Get Directions</span>
+              <span className="text-[10px]">↗</span>
             </a>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Toggle Button */}
           <button
+            type="button"
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden p-2 rounded text-[#FFFFFF] hover:text-[#F5D900] hover:bg-[#242424]"
-            aria-label="Toggle navigation"
+            className="lg:hidden p-2 text-[#FFFFFF] hover:text-[#F5D900] transition-colors"
+            aria-label="Toggle Menu"
           >
             {mobileOpen ? (
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -180,38 +197,52 @@ export default function Header() {
 
       {/* Mobile Drawer */}
       {mobileOpen && (
-        <div className="md:hidden bg-[#111111] border-b border-[#242424] px-4 pt-3 pb-6 space-y-3">
+        <div className="lg:hidden bg-[#111111] border-b border-[#242424] px-4 pt-3 pb-6 space-y-3">
           <Link
             href="/"
             onClick={() => setMobileOpen(false)}
-            className="block px-3 py-2 rounded text-sm font-bold uppercase tracking-wider text-[#FFFFFF] hover:text-[#F5D900]"
+            className="block px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#FFFFFF] hover:text-[#F5D900]"
           >
             Home
           </Link>
           <div className="pl-3 space-y-2 border-l border-[#242424] ml-2">
-            <p className="text-[10px] uppercase font-bold tracking-widest text-[#A0A0A0]">Departments</p>
-            {NAV_PRODUCTS.map((item) => (
+            <p className="text-[10px] uppercase font-bold tracking-widest text-[#737373]">Departments</p>
+            {DEPARTMENTS.map((dept) => (
               <Link
-                key={item.href}
-                href={item.href}
+                key={dept.href}
+                href={dept.href}
                 onClick={() => setMobileOpen(false)}
-                className="block text-xs font-medium text-[#C7C7C7] hover:text-[#F5D900]"
+                className="block text-xs font-medium text-[#A0A0A0] hover:text-[#F5D900]"
               >
-                {item.label}
+                {dept.label}
               </Link>
             ))}
           </div>
           <Link
+            href="/#collection"
+            onClick={() => setMobileOpen(false)}
+            className="block px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#FFFFFF] hover:text-[#F5D900]"
+          >
+            The Collection
+          </Link>
+          <Link
             href="/about"
             onClick={() => setMobileOpen(false)}
-            className="block px-3 py-2 rounded text-sm font-bold uppercase tracking-wider text-[#FFFFFF] hover:text-[#F5D900]"
+            className="block px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#FFFFFF] hover:text-[#F5D900]"
           >
             Our Store
           </Link>
           <Link
+            href="/#delivery"
+            onClick={() => setMobileOpen(false)}
+            className="block px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#FFFFFF] hover:text-[#F5D900]"
+          >
+            Delivery
+          </Link>
+          <Link
             href="/contact"
             onClick={() => setMobileOpen(false)}
-            className="block px-3 py-2 rounded text-sm font-bold uppercase tracking-wider text-[#FFFFFF] hover:text-[#F5D900]"
+            className="block px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#FFFFFF] hover:text-[#F5D900]"
           >
             Visit Us
           </Link>
@@ -219,7 +250,7 @@ export default function Header() {
           <div className="pt-3 border-t border-[#242424] flex flex-col gap-2">
             <a
               href="tel:+12815903300"
-              className="text-center py-2.5 px-4 rounded bg-[#242424] text-[#F5D900] font-bold text-xs uppercase tracking-wider border border-[#383838]"
+              className="text-center py-2.5 px-4 rounded bg-[#1A1A1A] text-[#F5D900] font-bold text-xs uppercase tracking-wider border border-[#333333]"
             >
               Call: (281) 590-3300
             </a>

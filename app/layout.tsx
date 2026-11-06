@@ -14,6 +14,7 @@ const figtree = Figtree({
   subsets: ["latin"],
   variable: "--font-figtree",
   display: "swap",
+  weight: ["400", "500", "600", "700"],
 });
 
 const anton = Anton({
@@ -24,19 +25,19 @@ const anton = Anton({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#0E0D0D",
+  themeColor: "#111111",
 };
 
 export const metadata: Metadata = {
-  title: "JFK Liquors — Houston, TX | Rare Spirits, Fine Wine & Cold Beer Near IAH",
+  title: "JFK Liquors — Houston, TX | Luxury Spirits, Fine Wine & Cold Beer Near IAH",
   description:
-    "We bring you close to the cask. Houston’s premier spirits destination on JFK Boulevard minutes from George Bush Intercontinental Airport (IAH). Allocated bourbons, rare single malts, and curated wines.",
+    "Discover allocated bourbon, rare single malts, cellar wines, and cold craft beer on JFK Boulevard, Houston. 3 minutes from George Bush Intercontinental Airport (IAH).",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${cormorant.variable} ${figtree.variable} ${anton.variable}`}>
-      <body className="bg-[#0E0D0D] text-[#FFFFFF] antialiased selection:bg-[#D4AF37]/30 selection:text-[#FFFFFF]">
+      <body className="bg-[#111111] text-[#FFFFFF] antialiased selection:bg-[#F5D900] selection:text-[#111111]">
         {children}
       </body>
     </html>
