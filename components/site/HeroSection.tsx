@@ -43,13 +43,14 @@ export default function HeroSection() {
             </p>
           </div>
 
-          <h1 className="font-cinzel text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] tracking-[0.03em] uppercase font-semibold text-white leading-[1.12]">
-            Rare Provenance.
-            <br />
-            <span className="text-[#F5D900] font-normal">
+          <h1 className="font-cinzel text-3xl sm:text-4xl md:text-5xl lg:text-[3.1rem] tracking-[0.04em] uppercase font-semibold text-white leading-[1.28] sm:leading-[1.32]">
+            <span>Rare Provenance.</span>
+            <span className="block mt-1.5 sm:mt-2.5 text-[#F5D900] font-normal">
               Uncompromising
-            </span>{' '}
-            Distinction.
+            </span>
+            <span className="block mt-1.5 sm:mt-2.5 text-white">
+              Distinction.
+            </span>
           </h1>
         </div>
 
