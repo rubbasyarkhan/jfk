@@ -19,32 +19,39 @@ export default function ProductCard({ product }: Props) {
   const imageSrc =
     product.thumbnailUrl ||
     product.images?.[0] ||
-    'https://images.unsplash.com/photo-1604681310895-d3ddfd650861?auto=format&fit=crop&w=800&q=80';
+    'https://res.cloudinary.com/ovmougmy/image/upload/v1793981778/jfk-liquors/bourbon-jim-beam.jpg';
 
   return (
     <article className="group flex flex-col justify-between rounded-sm overflow-hidden bg-[#121316] border border-white/[0.08] transition-all duration-300 hover:border-[#F5D900]/70 hover:shadow-2xl">
       <div>
-        {/* Bottle Image Exhibition Area */}
+        {/* Bottle Image Exhibition Area — Generous Space & Fully Visible */}
         <Link
           href={`/products/${product.category}/${product.slug}`}
           prefetch={true}
-          className="block relative aspect-[4/3] w-full overflow-hidden bg-[#0A0A0A]"
+          className="block relative aspect-square sm:aspect-[4/3] w-full overflow-hidden bg-gradient-to-b from-[#16171C] via-[#0E0F12] to-[#07080A] p-6 sm:p-7 flex items-center justify-center border-b border-white/[0.04]"
         >
-          <Image
-            src={imageSrc}
-            alt={product.name}
-            fill
-            className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          {/* Subtle Ambient Backlight */}
+          <div
+            className="absolute inset-4 rounded-full opacity-15 filter blur-xl pointer-events-none"
+            style={{
+              background: 'radial-gradient(circle, rgba(245, 217, 0, 0.35) 0%, transparent 70%)',
+            }}
           />
 
-          {/* Vignette Shadow */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#121316] via-transparent to-transparent opacity-80" />
+          <div className="relative w-full h-full z-10">
+            <Image
+              src={imageSrc}
+              alt={product.name}
+              fill
+              className="object-contain object-center p-2 transition-transform duration-500 ease-out group-hover:scale-105 drop-shadow-[0_15px_30px_rgba(0,0,0,0.9)]"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            />
+          </div>
 
           {/* Allocation Badge in Montserrat */}
           {badgeStyle && product.badge && (
             <span
-              className="absolute top-3 left-3 px-2.5 py-1 rounded-sm text-[10px] font-bold uppercase tracking-wider shadow-lg font-sans"
+              className="absolute top-3 left-3 z-20 px-2.5 py-1 rounded-sm text-[10px] font-bold uppercase tracking-wider shadow-lg font-sans"
               style={{
                 backgroundColor: badgeStyle.bg,
                 color: badgeStyle.text,
@@ -58,7 +65,7 @@ export default function ProductCard({ product }: Props) {
 
           {/* Volume overlay in Montserrat */}
           {product.volume && (
-            <span className="absolute bottom-3 right-3 px-2.5 py-1 rounded-sm text-[11px] font-sans font-medium bg-[#0A0A0A]/90 text-neutral-300 border border-white/10 tracking-wider">
+            <span className="absolute bottom-3 right-3 z-20 px-2.5 py-1 rounded-sm text-[11px] font-sans font-medium bg-[#0A0A0A]/90 text-neutral-300 border border-white/10 tracking-wider backdrop-blur-sm">
               {product.volume}
             </span>
           )}

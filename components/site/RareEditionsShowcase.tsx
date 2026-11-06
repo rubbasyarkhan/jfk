@@ -27,7 +27,7 @@ const RARE_EDITIONS: RareBottle[] = [
     price: 3333.0,
     abv: '43.0% ABV',
     caskType: 'Hand-picked Oloroso Sherry Seasoned Casks from Jerez',
-    image: 'https://images.unsplash.com/photo-1653596662119-95f12558a15a?auto=format&fit=crop&w=1200&q=80',
+    image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981780/jfk-liquors/scotch-single-malt.jpg',
     notes: 'Rich mahogany amber. Dried fruits, ginger, wood smoke, and dark chocolate with a sublime finish.',
   },
   {
@@ -39,7 +39,7 @@ const RARE_EDITIONS: RareBottle[] = [
     price: 2850.0,
     abv: '45.2% ABV (90.4 Proof)',
     caskType: 'Charred New American White Oak',
-    image: 'https://images.unsplash.com/photo-1604681310895-d3ddfd650861?auto=format&fit=crop&w=1200&q=80',
+    image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981778/jfk-liquors/bourbon-jim-beam.jpg',
     notes: 'Intense and velvety. Aromas of sweet vanilla, leather, cigar box, and caramelized butterscotch.',
   },
   {
@@ -51,7 +51,7 @@ const RARE_EDITIONS: RareBottle[] = [
     price: 699.0,
     abv: '53.2% ABV',
     caskType: 'Craft Mead Cask & Aromatic Resin Finish',
-    image: 'https://images.unsplash.com/photo-1656618380465-5e9342d4874e?auto=format&fit=crop&w=1200&q=80',
+    image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981781/jfk-liquors/vodka-spirits-studio.jpg',
     notes: 'High-rye spices, dark forest honey, toasted peppercorn, and candied orange peel.',
   },
   {
@@ -63,7 +63,7 @@ const RARE_EDITIONS: RareBottle[] = [
     price: 585.0,
     abv: '51.5% ABV (103 Proof)',
     caskType: 'Warehouse H Virgin American Oak',
-    image: '/assets/inspiration/cognac-hero.jpg',
+    image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981772/jfk-liquors/cognac-hero.jpg',
     notes: 'Powerful spice, dried fruit, rich vanilla bean, and honeyed oak with horse stopper collector series.',
   },
   {
@@ -75,7 +75,7 @@ const RARE_EDITIONS: RareBottle[] = [
     price: 1899.0,
     abv: '40.0% ABV',
     caskType: 'Sherry Cask Finished in Spain',
-    image: 'https://images.unsplash.com/photo-1698288547419-407ca6bafe2a?auto=format&fit=crop&w=1200&q=80',
+    image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981788/jfk-liquors/tequila-don-julio.jpg',
     notes: 'Deep amber with copper highlights. Dried plums, cinnamon, toasted cedar, and velvety hazelnut cream.',
   },
 ];
@@ -195,14 +195,16 @@ export default function RareEditionsShowcase() {
                     RARE
                   </div>
 
-                  {/* Bottle Display Area */}
-                  <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden mb-4 bg-[#080808]">
-                    <Image
-                      src={activeBottle.image}
-                      alt={activeBottle.name}
-                      fill
-                      className="object-cover object-center transition-all duration-700 ease-out"
-                    />
+                  {/* Bottle Display Area — Generous Space & Full Bottle Visibility */}
+                  <div className="relative w-full aspect-square sm:aspect-[4/3] rounded-xl overflow-hidden mb-4 bg-gradient-to-b from-[#16171C] via-[#0E0F12] to-[#080808] p-6 flex items-center justify-center">
+                    <div className="relative w-full h-full">
+                      <Image
+                        src={activeBottle.image}
+                        alt={activeBottle.name}
+                        fill
+                        className="object-contain object-center transition-all duration-700 ease-out p-2 drop-shadow-[0_15px_30px_rgba(0,0,0,0.9)]"
+                      />
+                    </div>
 
                     {/* Bottom plinth light reflection */}
                     <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-[#D4AF37]/35 via-[#D4AF37]/10 to-transparent pointer-events-none" />

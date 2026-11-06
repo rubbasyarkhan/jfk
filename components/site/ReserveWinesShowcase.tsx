@@ -8,7 +8,7 @@ const WINE_LINEUP = [
     region: 'Fort Ross-Seaview, Sonoma Coast',
     notes: 'Meyer lemon curd, toasted brioche, flinty mineral salinity',
     price: 89.99,
-    image: 'https://images.unsplash.com/photo-1558001373-7b93ee48ffa0?auto=format&fit=crop&w=600&q=80',
+    image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981784/jfk-liquors/wine-white-bottle.jpg',
   },
   {
     name: 'Shafer TD-9 Napa Valley Red Blend',
@@ -16,7 +16,7 @@ const WINE_LINEUP = [
     region: 'Stags Leap District, Napa Valley',
     notes: 'Black plum, crushed blackberries, licorice, and sweet tobacco',
     price: 74.99,
-    image: 'https://images.unsplash.com/photo-1645784125191-d93e079b5861?auto=format&fit=crop&w=600&q=80',
+    image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981782/jfk-liquors/wine-silver-oak.jpg',
   },
   {
     name: 'Sea Sun California Chardonnay',
@@ -24,7 +24,7 @@ const WINE_LINEUP = [
     region: 'Coastal Vineyards, California',
     notes: 'Crisp green apple, warm toasted oak, and smooth vanilla finish',
     price: 24.99,
-    image: 'https://images.unsplash.com/photo-1568213816046-0ee1c42bd559?auto=format&fit=crop&w=600&q=80',
+    image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981785/jfk-liquors/wine-champagne.jpg',
   },
   {
     name: 'Quilt Reserve Cabernet Sauvignon',
@@ -32,7 +32,7 @@ const WINE_LINEUP = [
     region: 'Rutherford & Oakville, Napa Valley',
     notes: 'Dark currant, cocoa, cassis, and velvety full-bodied tannins',
     price: 119.99,
-    image: 'https://images.unsplash.com/photo-1555554317-78e53094da14?auto=format&fit=crop&w=600&q=80',
+    image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981784/jfk-liquors/wine-dark-bottle.jpg',
   },
   {
     name: 'Diora La Petite Grace Pinot Noir',
@@ -40,7 +40,7 @@ const WINE_LINEUP = [
     region: 'San Bernabe Vineyard, Monterey',
     notes: 'Wild black cherry, roasted mocha, dark chocolate, and spice',
     price: 29.99,
-    image: 'https://images.unsplash.com/photo-1645784125191-d93e079b5861?auto=format&fit=crop&w=600&q=80',
+    image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981782/jfk-liquors/wine-silver-oak.jpg',
   },
 ];
 
@@ -84,7 +84,7 @@ export default function ReserveWinesShowcase() {
                         src={wine.image}
                         alt={wine.name}
                         fill
-                        className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                        className="object-contain object-center p-1 group-hover:scale-105 transition-transform duration-500"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                       <div className="absolute bottom-1.5 inset-x-1 text-center">

@@ -1,0 +1,128 @@
+{
+  "logo": {
+    "original": "public/assets/logo.png",
+    "cloudinaryUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981764/jfk-liquors/logo.png",
+    "publicId": "jfk-liquors/logo",
+    "width": 1000,
+    "height": 333
+  },
+  "hero-main": {
+    "original": "public/assets/heromain.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981766/jfk-liquors/hero-main.jpg",
+    "publicId": "jfk-liquors/hero-main",
+    "width": 900,
+    "height": 700
+  },
+  "collection-story": {
+    "original": "public/assets/collection-story.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981770/jfk-liquors/collection-story.jpg",
+    "publicId": "jfk-liquors/collection-story",
+    "width": 1600,
+    "height": 1067
+  },
+  "cognac-hero": {
+    "original": "public/assets/inspiration/cognac-hero.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981772/jfk-liquors/cognac-hero.jpg",
+    "publicId": "jfk-liquors/cognac-hero",
+    "width": 1024,
+    "height": 497
+  },
+  "reservebar-wines": {
+    "original": "public/assets/inspiration/reservebar-wines.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981774/jfk-liquors/reservebar-wines.jpg",
+    "publicId": "jfk-liquors/reservebar-wines",
+    "width": 800,
+    "height": 600
+  },
+  "spirits-vault": {
+    "original": "public/assets/inspiration/spirits-vault.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981775/jfk-liquors/spirits-vault.jpg",
+    "publicId": "jfk-liquors/spirits-vault",
+    "width": 1024,
+    "height": 682
+  },
+  "whisky-foundation": {
+    "original": "public/assets/inspiration/whisky-foundation.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981777/jfk-liquors/whisky-foundation.jpg",
+    "publicId": "jfk-liquors/whisky-foundation",
+    "width": 752,
+    "height": 564
+  },
+  "bourbon-jim-beam": {
+    "original": "https://images.unsplash.com/photo-1604681310895-d3ddfd650861?auto=format&fit=crop&w=1200&q=85",
+    "cloudinaryUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981778/jfk-liquors/bourbon-jim-beam.jpg",
+    "publicId": "jfk-liquors/bourbon-jim-beam",
+    "width": 1200,
+    "height": 800
+  },
+  "scotch-single-malt": {
+    "original": "https://images.unsplash.com/photo-1653596662119-95f12558a15a?auto=format&fit=crop&w=1200&q=85",
+    "cloudinaryUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981780/jfk-liquors/scotch-single-malt.jpg",
+    "publicId": "jfk-liquors/scotch-single-malt",
+    "width": 1200,
+    "height": 1800
+  },
+  "vodka-spirits-studio": {
+    "original": "https://images.unsplash.com/photo-1656618380465-5e9342d4874e?auto=format&fit=crop&w=1200&q=85",
+    "cloudinaryUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981781/jfk-liquors/vodka-spirits-studio.jpg",
+    "publicId": "jfk-liquors/vodka-spirits-studio",
+    "width": 1200,
+    "height": 1500
+  },
+  "wine-silver-oak": {
+    "original": "https://images.unsplash.com/photo-1645784125191-d93e079b5861?auto=format&fit=crop&w=1200&q=85",
+    "cloudinaryUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981782/jfk-liquors/wine-silver-oak.jpg",
+    "publicId": "jfk-liquors/wine-silver-oak",
+    "width": 1200,
+    "height": 1838
+  },
+  "wine-dark-bottle": {
+    "original": "https://images.unsplash.com/photo-1555554317-78e53094da14?auto=format&fit=crop&w=1200&q=85",
+    "cloudinaryUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981784/jfk-liquors/wine-dark-bottle.jpg",
+    "publicId": "jfk-liquors/wine-dark-bottle",
+    "width": 1200,
+    "height": 1500
+  },
+  "wine-white-bottle": {
+    "original": "https://images.unsplash.com/photo-1558001373-7b93ee48ffa0?auto=format&fit=crop&w=1200&q=85",
+    "cloudinaryUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981784/jfk-liquors/wine-white-bottle.jpg",
+    "publicId": "jfk-liquors/wine-white-bottle",
+    "width": 1200,
+    "height": 800
+  },
+  "wine-champagne": {
+    "original": "https://images.unsplash.com/photo-1568213816046-0ee1c42bd559?auto=format&fit=crop&w=1200&q=85",
+    "cloudinaryUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981785/jfk-liquors/wine-champagne.jpg",
+    "publicId": "jfk-liquors/wine-champagne",
+    "width": 1200,
+    "height": 798
+  },
+  "beer-dark-bottle": {
+    "original": "https://images.unsplash.com/photo-1703564803585-48b51539e119?auto=format&fit=crop&w=1200&q=85",
+    "cloudinaryUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981786/jfk-liquors/beer-dark-bottle.jpg",
+    "publicId": "jfk-liquors/beer-dark-bottle",
+    "width": 1200,
+    "height": 1799
+  },
+  "beer-craft-bottles": {
+    "original": "https://images.unsplash.com/photo-1571613316887-6f8d5cbf7ef7?auto=format&fit=crop&w=1200&q=85",
+    "cloudinaryUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981787/jfk-liquors/beer-craft-bottles.jpg",
+    "publicId": "jfk-liquors/beer-craft-bottles",
+    "width": 1200,
+    "height": 800
+  },
+  "tequila-don-julio": {
+    "original": "https://images.unsplash.com/photo-1698288547419-407ca6bafe2a?auto=format&fit=crop&w=1200&q=85",
+    "cloudinaryUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981788/jfk-liquors/tequila-don-julio.jpg",
+    "publicId": "jfk-liquors/tequila-don-julio",
+    "width": 1200,
+    "height": 1800
+  },
+  "tequila-jose-cuervo": {
+    "original": "https://images.unsplash.com/photo-1516535794938-6063878f08cc?auto=format&fit=crop&w=1200&q=85",
+    "cloudinaryUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981789/jfk-liquors/tequila-jose-cuervo.jpg",
+    "publicId": "jfk-liquors/tequila-jose-cuervo",
+    "width": 1200,
+    "height": 1797
+  }
+}

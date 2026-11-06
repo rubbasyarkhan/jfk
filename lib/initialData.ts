@@ -7,7 +7,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     slug: 'spirits',
     description: 'Bourbon, Scotch, Vodka, Gin, Cognac & more from around the world.',
     bannerText: 'From allocated bourbon to peated single malts, the spirits wall is the heart of the store.',
-    imageUrl: 'https://images.unsplash.com/photo-1604681310895-d3ddfd650861?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981778/jfk-liquors/bourbon-jim-beam.jpg',
     sortOrder: 1,
   },
   {
@@ -16,7 +16,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     slug: 'wines',
     description: 'Reds, whites, rosé, and sparkling — from everyday pours to celebration bottles.',
     bannerText: 'Weeknight value bottles, gift-worthy labels and celebration sparkling.',
-    imageUrl: 'https://images.unsplash.com/photo-1645784125191-d93e079b5861?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981782/jfk-liquors/wine-silver-oak.jpg',
     sortOrder: 2,
   },
   {
@@ -25,7 +25,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     slug: 'beer',
     description: 'Texas craft, domestic favorites, imports, hard seltzers & RTDs.',
     bannerText: 'Cold and ready to go: Texas craft, national favorites and imports.',
-    imageUrl: 'https://images.unsplash.com/photo-1703564803585-48b51539e119?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981786/jfk-liquors/beer-dark-bottle.jpg',
     sortOrder: 3,
   },
   {
@@ -34,7 +34,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     slug: 'agave-and-more',
     description: 'Tequila from blanco to añejo, mezcal, liqueurs, mixers, ice and glassware.',
     bannerText: 'Tequila from blanco to añejo, mezcal, liqueurs, mixers, ice and glassware.',
-    imageUrl: 'https://images.unsplash.com/photo-1698288547419-407ca6bafe2a?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981788/jfk-liquors/tequila-don-julio.jpg',
     sortOrder: 4,
   },
 ];
@@ -56,10 +56,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: true,
     images: [
-      'https://images.unsplash.com/photo-1604681310895-d3ddfd650861?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1656618380465-5e9342d4874e?auto=format&fit=crop&w=800&q=80'
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981778/jfk-liquors/bourbon-jim-beam.jpg',
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981781/jfk-liquors/vodka-spirits-studio.jpg'
     ],
-    thumbnailUrl: 'https://images.unsplash.com/photo-1604681310895-d3ddfd650861?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981778/jfk-liquors/bourbon-jim-beam.jpg',
     sortOrder: 1,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -79,10 +79,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: true,
     images: [
-      'https://images.unsplash.com/photo-1653596662119-95f12558a15a?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1604681310895-d3ddfd650861?auto=format&fit=crop&w=800&q=80'
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981780/jfk-liquors/scotch-single-malt.jpg',
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981778/jfk-liquors/bourbon-jim-beam.jpg'
     ],
-    thumbnailUrl: 'https://images.unsplash.com/photo-1653596662119-95f12558a15a?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981780/jfk-liquors/scotch-single-malt.jpg',
     sortOrder: 2,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -101,10 +101,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: false,
     images: [
-      'https://images.unsplash.com/photo-1656618380465-5e9342d4874e?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1653596662119-95f12558a15a?auto=format&fit=crop&w=800&q=80'
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981781/jfk-liquors/vodka-spirits-studio.jpg',
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981780/jfk-liquors/scotch-single-malt.jpg'
     ],
-    thumbnailUrl: 'https://images.unsplash.com/photo-1656618380465-5e9342d4874e?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981781/jfk-liquors/vodka-spirits-studio.jpg',
     sortOrder: 3,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -124,10 +124,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: true,
     images: [
-      '/assets/inspiration/cognac-hero.jpg',
-      'https://images.unsplash.com/photo-1604681310895-d3ddfd650861?auto=format&fit=crop&w=800&q=80'
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981772/jfk-liquors/cognac-hero.jpg',
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981778/jfk-liquors/bourbon-jim-beam.jpg'
     ],
-    thumbnailUrl: '/assets/inspiration/cognac-hero.jpg',
+    thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981772/jfk-liquors/cognac-hero.jpg',
     sortOrder: 4,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -148,10 +148,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: true,
     images: [
-      'https://images.unsplash.com/photo-1645784125191-d93e079b5861?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1555554317-78e53094da14?auto=format&fit=crop&w=800&q=80'
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981782/jfk-liquors/wine-silver-oak.jpg',
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981784/jfk-liquors/wine-dark-bottle.jpg'
     ],
-    thumbnailUrl: 'https://images.unsplash.com/photo-1645784125191-d93e079b5861?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981782/jfk-liquors/wine-silver-oak.jpg',
     sortOrder: 1,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -170,10 +170,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: false,
     images: [
-      'https://images.unsplash.com/photo-1558001373-7b93ee48ffa0?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1645784125191-d93e079b5861?auto=format&fit=crop&w=800&q=80'
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981784/jfk-liquors/wine-white-bottle.jpg',
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981782/jfk-liquors/wine-silver-oak.jpg'
     ],
-    thumbnailUrl: 'https://images.unsplash.com/photo-1558001373-7b93ee48ffa0?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981784/jfk-liquors/wine-white-bottle.jpg',
     sortOrder: 2,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -193,10 +193,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: true,
     images: [
-      'https://images.unsplash.com/photo-1568213816046-0ee1c42bd559?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1645784125191-d93e079b5861?auto=format&fit=crop&w=800&q=80'
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981785/jfk-liquors/wine-champagne.jpg',
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981782/jfk-liquors/wine-silver-oak.jpg'
     ],
-    thumbnailUrl: 'https://images.unsplash.com/photo-1568213816046-0ee1c42bd559?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981785/jfk-liquors/wine-champagne.jpg',
     sortOrder: 3,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -218,10 +218,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: true,
     images: [
-      'https://images.unsplash.com/photo-1703564803585-48b51539e119?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1571613316887-6f8d5cbf7ef7?auto=format&fit=crop&w=800&q=80'
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981786/jfk-liquors/beer-dark-bottle.jpg',
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981787/jfk-liquors/beer-craft-bottles.jpg'
     ],
-    thumbnailUrl: 'https://images.unsplash.com/photo-1703564803585-48b51539e119?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981786/jfk-liquors/beer-dark-bottle.jpg',
     sortOrder: 1,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -240,10 +240,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: false,
     images: [
-      'https://images.unsplash.com/photo-1571613316887-6f8d5cbf7ef7?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1703564803585-48b51539e119?auto=format&fit=crop&w=800&q=80'
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981787/jfk-liquors/beer-craft-bottles.jpg',
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981786/jfk-liquors/beer-dark-bottle.jpg'
     ],
-    thumbnailUrl: 'https://images.unsplash.com/photo-1571613316887-6f8d5cbf7ef7?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981787/jfk-liquors/beer-craft-bottles.jpg',
     sortOrder: 2,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -262,10 +262,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: false,
     images: [
-      'https://images.unsplash.com/photo-1703564803585-48b51539e119?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1571613316887-6f8d5cbf7ef7?auto=format&fit=crop&w=800&q=80'
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981786/jfk-liquors/beer-dark-bottle.jpg',
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981787/jfk-liquors/beer-craft-bottles.jpg'
     ],
-    thumbnailUrl: 'https://images.unsplash.com/photo-1703564803585-48b51539e119?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981786/jfk-liquors/beer-dark-bottle.jpg',
     sortOrder: 3,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -287,10 +287,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: true,
     images: [
-      'https://images.unsplash.com/photo-1698288547419-407ca6bafe2a?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1516535794938-6063878f08cc?auto=format&fit=crop&w=800&q=80'
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981788/jfk-liquors/tequila-don-julio.jpg',
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981789/jfk-liquors/tequila-jose-cuervo.jpg'
     ],
-    thumbnailUrl: 'https://images.unsplash.com/photo-1698288547419-407ca6bafe2a?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981788/jfk-liquors/tequila-don-julio.jpg',
     sortOrder: 1,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -310,10 +310,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: true,
     images: [
-      'https://images.unsplash.com/photo-1516535794938-6063878f08cc?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1698288547419-407ca6bafe2a?auto=format&fit=crop&w=800&q=80'
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981789/jfk-liquors/tequila-jose-cuervo.jpg',
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981788/jfk-liquors/tequila-don-julio.jpg'
     ],
-    thumbnailUrl: 'https://images.unsplash.com/photo-1516535794938-6063878f08cc?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981789/jfk-liquors/tequila-jose-cuervo.jpg',
     sortOrder: 2,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -331,10 +331,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: false,
     images: [
-      'https://images.unsplash.com/photo-1604681310895-d3ddfd650861?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1698288547419-407ca6bafe2a?auto=format&fit=crop&w=800&q=80'
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981778/jfk-liquors/bourbon-jim-beam.jpg',
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981788/jfk-liquors/tequila-don-julio.jpg'
     ],
-    thumbnailUrl: 'https://images.unsplash.com/photo-1604681310895-d3ddfd650861?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981778/jfk-liquors/bourbon-jim-beam.jpg',
     sortOrder: 3,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
