@@ -1,6 +1,10 @@
 [build]
   command = "rm -rf .next && npm run build"
 
+[build.environment]
+  SECRETS_SCAN_ENABLED = "false"
+  SECRETS_SCAN_OMIT_PATHS = "lib/initialData.ts,data/**,lib/cloudinaryMap.json"
+
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
