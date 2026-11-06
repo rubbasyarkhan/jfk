@@ -3,103 +3,76 @@ import Link from 'next/link';
 
 export default function HeroSection() {
   return (
-    <section className="relative min-h-[90vh] sm:min-h-screen flex items-center bg-[#0A0A0A] overflow-hidden">
+    <section className="relative h-[100dvh] min-h-[700px] w-full flex flex-col justify-between overflow-hidden bg-[#050505]">
       
-      {/* Background / Right-side Cinematic Hero Image (heromain.jpg) */}
+      {/* 1. Visual Canvas (Full-Bleed Background Layer with AAA Contrast Overlay) */}
       <div className="absolute inset-0 z-0">
-        <div className="relative w-full h-full">
-          <Image
-            src="/assets/heromain.jpg"
-            alt="JFK Liquors curated spirits & bottle collection"
-            fill
-            priority
-            className="object-cover object-right lg:object-center"
-            sizes="100vw"
-          />
-          
-          {/* Awwwards Multi-Layer Dark Gradient: Pure deep Obsidian black on left, fading smoothly across */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                'linear-gradient(90deg, #0A0A0A 0%, #0A0A0A 28%, rgba(10,10,10,0.85) 55%, rgba(10,10,10,0.35) 80%, rgba(10,10,10,0.2) 100%)',
-            }}
-          />
-
-          {/* Bottom vignette to blend into next section */}
-          <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-[#0A0A0A] to-transparent" />
-        </div>
+        <Image
+          src="/assets/heromain.jpg"
+          alt="JFK Liquors Private Collection & Rare Cellar Reserve"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+        {/* Subtle Multi-Axis Darkening to guarantee AAA contrast ratios */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/30" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
       </div>
 
-      {/* Main Content Container */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-20 lg:py-32">
-        <div className="max-w-xl lg:max-w-2xl">
-          
-          {/* Micro-Index Label (Awwwards Style) */}
-          <div className="inline-flex items-center gap-2 mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#F5D900]" />
-            <p className="index-tag">
-              [ VOL. 2026 // HOUSTON CASK VAULT ]
+      {/* Main Spatial Grid Container */}
+      <div className="relative z-10 w-full h-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 flex flex-col justify-between pt-28 sm:pt-32 lg:pt-36 pb-12 md:pb-16">
+        
+        {/* 2. Top Alignment: Editorial Main Heading */}
+        <div className="max-w-5xl">
+          <div className="flex items-center gap-3 mb-5 sm:mb-6">
+            <span className="w-1.5 h-1.5 bg-[#F5D900]" />
+            <p className="meta-tag">
+              Private Client Cellar &bull; Houston, Texas
             </p>
           </div>
 
-          {/* Monumental Editorial Heading */}
           <h1
-            className="font-serif text-[#FFFFFF] tracking-tight mb-7"
-            style={{
-              fontSize: 'clamp(3.2rem, 6.8vw, 5.75rem)',
-              lineHeight: 1.02,
-            }}
+            className="font-serif text-5xl sm:text-7xl lg:text-8xl tracking-tight text-white leading-none sm:leading-[0.98]"
           >
-            Good taste.
+            Rare Provenance.
             <br />
-            Great company.
-            <br />
-            <span className="italic text-[#F5D900] font-serif">
-              JFK Liquors.
-            </span>
+            <span className="italic font-serif text-[#F5D900]">
+              Uncompromising
+            </span>{' '}
+            Distinction.
           </h1>
+        </div>
 
-          {/* Small Strong Paragraph */}
-          <p className="text-base sm:text-lg text-[#D0CEC2] mb-10 leading-relaxed font-light max-w-lg">
-            From your everyday favorite to a bottle worth celebrating. Discover allocated bourbons, rare single malts, cellar wines, and cold Texas craft beers on JFK Boulevard.
-          </p>
-
-          {/* Exactly Two CTAs */}
-          <div className="flex flex-wrap items-center gap-4 mb-16">
-            <Link href="#collection" className="btn-gold group">
-              <span>Explore The Selection</span>
-              <span className="text-xs transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5">↗</span>
-            </Link>
-
-            <a
-              href="https://www.google.com/maps/dir/?api=1&destination=15655+John+F+Kennedy+Blvd+Suite+D+Houston+TX+77032"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-ghost"
-            >
-              Get Directions
-            </a>
+        {/* 3. Bottom Layer: Split Asymmetric Footer Alignment */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-end pt-8 sm:pt-10 border-t border-white/10">
+          
+          {/* Bottom-Left Block (Narrative Paragraph) */}
+          <div className="lg:col-span-7 max-w-md lg:max-w-lg">
+            <p className="text-neutral-300 text-base md:text-lg leading-relaxed font-light">
+              Curating allocated single casks, vintage cellar acquisitions, and rare barrel reserves for collectors and connoisseurs worldwide. Headquartered along Houston’s IAH airport corridor, providing discreet acquisition and bespoke advisory.
+            </p>
           </div>
 
-          {/* Awwwards Geographic Index Footer */}
-          <div className="pt-6 border-t border-white/[0.08] flex flex-wrap items-center gap-6 text-[11px] font-mono tracking-widest text-[#888888]">
-            <span className="text-[#F5D900] font-bold">29.9844° N, 95.3414° W</span>
-            <span className="text-white/20">&bull;</span>
-            <span>IAH AIRPORT CORRIDOR</span>
-            <span className="text-white/20">&bull;</span>
-            <span>SUITE D</span>
+          {/* Bottom-Right Block (Dual Call-To-Action) */}
+          <div className="lg:col-span-5 flex flex-row flex-wrap sm:flex-nowrap gap-4 md:gap-5 justify-start lg:justify-end items-center">
+            <Link
+              href="#vault"
+              className="btn-primary w-full sm:w-auto text-center px-8 py-4 text-xs font-bold uppercase tracking-[0.16em] rounded-none"
+            >
+              Explore Private Vault
+            </Link>
+
+            <Link
+              href="/contact"
+              className="btn-secondary w-full sm:w-auto text-center px-8 py-4 text-xs font-semibold uppercase tracking-[0.14em] rounded-none"
+            >
+              Private Concierge
+            </Link>
           </div>
 
         </div>
-      </div>
 
-      {/* Subtle Scroll Down Prompt at Bottom Right */}
-      <div className="absolute bottom-8 right-8 z-20 hidden md:flex items-center gap-3 text-[10px] font-mono tracking-[0.25em] text-[#888888] uppercase">
-        <span>Scroll to Explore</span>
-        <svg className="w-3.5 h-3.5 text-[#F5D900] animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-        </svg>
       </div>
 
     </section>

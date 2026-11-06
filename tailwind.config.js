@@ -9,47 +9,46 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Midnight Black - Primary Background (#111111)
+        // High-end Dark Luxury Palette
+        obsidian: {
+          DEFAULT: '#050505',
+          deep: '#030303',
+          surface: '#0B0C0E',
+          card: '#121316',
+        },
         midnight: {
           DEFAULT: '#111111',
-          pure: '#0A0A0A',
-          card: '#1A1A1A',
+          pure: '#080808',
+          card: '#161616',
         },
-        // Liquor Store Gold - Brand Accent, Buttons, Highlights (#F5D900)
+        // Liquor Store Gold Accent
         gold: {
           DEFAULT: '#F5D900',
           hover: '#FFE524',
           light: '#FFF066',
           dark: '#CCA800',
-          glow: 'rgba(245, 217, 0, 0.25)',
         },
-        // Deep Burgundy - Premium Sections, Secondary Accent (#5B1018)
+        // Deep Burgundy - Secondary Accent
         burgundy: {
           DEFAULT: '#5B1018',
           light: '#781520',
-          dark: '#3F0B10',
-          deep: '#29060B',
-          glow: 'rgba(91, 16, 24, 0.4)',
+          dark: '#3A070D',
+          deep: '#240407',
         },
-        // Charcoal - Cards, Navigation, Footer (#242424)
+        // Refined Charcoal
         charcoal: {
-          DEFAULT: '#242424',
-          card: '#1F1F1F',
-          light: '#2E2E2E',
-          hover: '#333333',
-          border: '#383838',
+          DEFAULT: '#1A1A1A',
+          card: '#141414',
+          light: '#242424',
+          border: '#2E2E2E',
         },
-        // Clean White - Text, Cards, Contrast (#FFFFFF)
         white: '#FFFFFF',
       },
       fontFamily: {
-        display: ['var(--font-cormorant)', 'Playfair Display', 'Georgia', 'serif'],
         serif: ['var(--font-cormorant)', 'Playfair Display', 'Georgia', 'serif'],
+        display: ['var(--font-cormorant)', 'Playfair Display', 'Georgia', 'serif'],
         sans: ['var(--font-figtree)', 'system-ui', '-apple-system', 'sans-serif'],
-      },
-      boxShadow: {
-        'gold-glow': '0 0 25px rgba(245, 217, 0, 0.25)',
-        'burgundy-glow': '0 0 30px rgba(91, 16, 24, 0.4)',
+        anton: ['var(--font-anton)', 'Impact', 'Arial Narrow', 'sans-serif'],
       },
     },
   },
