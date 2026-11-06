@@ -5,41 +5,41 @@ const WINE_LINEUP = [
   {
     name: 'Wayfarer Golden Slope Chardonnay',
     vintage: '2021',
+    varietal: 'Chardonnay',
     region: 'Fort Ross-Seaview, Sonoma Coast',
     notes: 'Meyer lemon curd, toasted brioche, flinty mineral salinity',
-    price: 89.99,
     image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981784/jfk-liquors/wine-white-bottle.jpg',
   },
   {
     name: 'Shafer TD-9 Napa Valley Red Blend',
     vintage: '2019',
+    varietal: 'Red Blend',
     region: 'Stags Leap District, Napa Valley',
     notes: 'Black plum, crushed blackberries, licorice, and sweet tobacco',
-    price: 74.99,
     image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981782/jfk-liquors/wine-silver-oak.jpg',
   },
   {
     name: 'Sea Sun California Chardonnay',
     vintage: '2022',
+    varietal: 'Chardonnay',
     region: 'Coastal Vineyards, California',
     notes: 'Crisp green apple, warm toasted oak, and smooth vanilla finish',
-    price: 24.99,
     image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981785/jfk-liquors/wine-champagne.jpg',
   },
   {
     name: 'Quilt Reserve Cabernet Sauvignon',
     vintage: '2018',
+    varietal: 'Cabernet Sauvignon',
     region: 'Rutherford & Oakville, Napa Valley',
     notes: 'Dark currant, cocoa, cassis, and velvety full-bodied tannins',
-    price: 119.99,
     image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981784/jfk-liquors/wine-dark-bottle.jpg',
   },
   {
     name: 'Diora La Petite Grace Pinot Noir',
     vintage: '2020',
+    varietal: 'Pinot Noir',
     region: 'San Bernabe Vineyard, Monterey',
     notes: 'Wild black cherry, roasted mocha, dark chocolate, and spice',
-    price: 29.99,
     image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981782/jfk-liquors/wine-silver-oak.jpg',
   },
 ];
@@ -94,9 +94,9 @@ export default function ReserveWinesShowcase() {
                       </div>
                     </div>
 
-                    {/* Price Tag */}
-                    <span className="font-serif text-[11px] sm:text-xs text-[#FFFFFF] group-hover:text-[#D4AF37] mt-2 font-medium">
-                      ${wine.price.toFixed(0)}
+                    {/* Varietal Tag (No Price) */}
+                    <span className="font-sans text-[10px] text-neutral-400 group-hover:text-white mt-1.5 uppercase tracking-wider">
+                      {wine.varietal}
                     </span>
                   </div>
                 ))}

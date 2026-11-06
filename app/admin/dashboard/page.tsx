@@ -107,7 +107,6 @@ export default async function AdminDashboardPage() {
                 <tr className="border-b border-[#3A3A3A] text-xs font-bold uppercase text-[#A0A0A0] tracking-wider">
                   <th className="pb-3">Product</th>
                   <th className="pb-3">Department</th>
-                  <th className="pb-3">Price</th>
                   <th className="pb-3">Status</th>
                   <th className="pb-3 text-right">Action</th>
                 </tr>
@@ -129,9 +128,6 @@ export default async function AdminDashboardPage() {
                       </div>
                     </td>
                     <td className="py-4 text-[#C7C7C7] capitalize">{item.category.replace(/-/g, ' ')}</td>
-                    <td className="py-4 font-display text-[#D4AF37]">
-                      {item.price ? `$${item.price.toFixed(2)}` : 'Inquire'}
-                    </td>
                     <td className="py-4">
                       <span className="inline-flex items-center gap-1.5 text-xs text-green-400 font-semibold">
                         <span className="w-1.5 h-1.5 rounded-full bg-green-400" />

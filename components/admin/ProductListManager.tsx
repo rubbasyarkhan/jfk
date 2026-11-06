@@ -194,7 +194,6 @@ export default function ProductListManager({ initialProducts, categories }: Prop
               <tr className="border-b border-white/10 text-xs font-bold uppercase text-neutral-400 tracking-wider">
                 <th className="pb-4">Bottle / Item</th>
                 <th className="pb-4">Category</th>
-                <th className="pb-4">Price</th>
                 <th className="pb-4">Badge</th>
                 <th className="pb-4">Stock Status</th>
                 <th className="pb-4 text-right">Actions</th>
@@ -203,7 +202,7 @@ export default function ProductListManager({ initialProducts, categories }: Prop
             <tbody className="divide-y divide-white/5">
               {filteredProducts.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-neutral-400">
+                  <td colSpan={5} className="py-12 text-center text-neutral-400">
                     No products found matching your search and filter criteria.
                   </td>
                 </tr>
@@ -242,11 +241,6 @@ export default function ProductListManager({ initialProducts, categories }: Prop
                         <span className="px-2 py-1 rounded bg-white/5 border border-white/10">
                           {item.category.replace(/-/g, ' ')}
                         </span>
-                      </td>
-
-                      {/* Price */}
-                      <td className="py-4 font-anton text-lg text-[#F5D900] tracking-wide">
-                        {item.price ? `$${item.price.toFixed(2)}` : 'Inquire'}
                       </td>
 
                       {/* Badge */}

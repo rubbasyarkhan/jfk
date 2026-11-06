@@ -10,7 +10,6 @@ interface RareBottle {
   distillery: string;
   ageStatement: string;
   edition: string;
-  price: number;
   abv: string;
   caskType: string;
   image: string;
@@ -24,7 +23,6 @@ const RARE_EDITIONS: RareBottle[] = [
     distillery: 'The Macallan Distillery • Easter Elchies, Speyside',
     ageStatement: '25 Years',
     edition: 'Collector Archive Release',
-    price: 3333.0,
     abv: '43.0% ABV',
     caskType: 'Hand-picked Oloroso Sherry Seasoned Casks from Jerez',
     image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981780/jfk-liquors/scotch-single-malt.jpg',
@@ -36,7 +34,6 @@ const RARE_EDITIONS: RareBottle[] = [
     distillery: 'Old Rip Van Winkle • Frankfort, Kentucky',
     ageStatement: '20 Years',
     edition: 'Extremely Limited Allocation',
-    price: 2850.0,
     abv: '45.2% ABV (90.4 Proof)',
     caskType: 'Charred New American White Oak',
     image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981778/jfk-liquors/bourbon-jim-beam.jpg',
@@ -48,7 +45,6 @@ const RARE_EDITIONS: RareBottle[] = [
     distillery: 'WhistlePig Farm • Shoreham, Vermont',
     ageStatement: 'Straight Rye',
     edition: 'Single Barrel Cask Strength',
-    price: 699.0,
     abv: '53.2% ABV',
     caskType: 'Craft Mead Cask & Aromatic Resin Finish',
     image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981781/jfk-liquors/vodka-spirits-studio.jpg',
@@ -60,7 +56,6 @@ const RARE_EDITIONS: RareBottle[] = [
     distillery: 'Buffalo Trace • Frankfort, Kentucky',
     ageStatement: 'Single Barrel',
     edition: 'Allocated Export Proof',
-    price: 585.0,
     abv: '51.5% ABV (103 Proof)',
     caskType: 'Warehouse H Virgin American Oak',
     image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793982975/jfk-liquors/cognac-hennessy-vsop.jpg',
@@ -72,7 +67,6 @@ const RARE_EDITIONS: RareBottle[] = [
     distillery: 'Clase Azul • Jesús María, Jalisco',
     ageStatement: '5 Years',
     edition: 'Decanter Painted with Pure Platinum',
-    price: 1899.0,
     abv: '40.0% ABV',
     caskType: 'Sherry Cask Finished in Spain',
     image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981788/jfk-liquors/tequila-don-julio.jpg',
@@ -155,12 +149,13 @@ export default function RareEditionsShowcase() {
                 </div>
               </div>
 
-              {/* Price & Action Row */}
+              {/* Action Row (No Price) */}
               <div className="flex flex-wrap items-center gap-5 pt-4 border-t border-[#262626]">
                 <div>
-                  <span className="text-[10px] text-[#F5D900] uppercase tracking-wider block">Vault Valuation</span>
-                  <span className="font-serif text-3xl sm:text-4xl text-[#D4AF37] font-semibold">
-                    ${activeBottle.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                  <span className="text-[10px] text-[#F5D900] uppercase tracking-wider block">Vault Allocation</span>
+                  <span className="text-sm font-semibold text-emerald-400 flex items-center gap-1.5 mt-1 font-sans">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                    Available In Store
                   </span>
                 </div>
 
@@ -266,8 +261,8 @@ export default function RareEditionsShowcase() {
                   {bottle.name}
                 </p>
 
-                <p className="font-mono text-xs text-[#D4AF37] font-semibold mt-1">
-                  ${bottle.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                <p className="font-sans text-[11px] text-neutral-400 mt-1 uppercase tracking-wider">
+                  {bottle.ageStatement} &bull; {bottle.abv}
                 </p>
               </button>
             ))}

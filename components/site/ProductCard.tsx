@@ -84,21 +84,15 @@ export default function ProductCard({ product }: Props) {
         </div>
       </div>
 
-      {/* Footer: Price & Clean Action Button in Montserrat */}
+      {/* Footer: Bottle Info & Action Button */}
       <div className="p-6 pt-0 border-t border-white/[0.06] flex flex-col gap-3.5">
-        <div className="flex items-center justify-between pt-3.5">
-          <div>
-            <span className="text-[10px] font-sans font-medium uppercase tracking-[0.18em] text-neutral-400 block">Valuation</span>
-            {product.price ? (
-              <span className="font-anton text-2xl sm:text-3xl text-[#F5D900] tracking-wide">
-                ${product.price.toFixed(2)}
-              </span>
-            ) : (
-              <span className="text-xs text-neutral-400 font-sans font-medium">Inquire in Store</span>
-            )}
-          </div>
-          <span className="text-[11px] font-sans uppercase tracking-wider text-neutral-400">
-            {product.volume || 'In Store'}
+        <div className="flex items-center justify-between pt-3.5 text-xs font-sans text-neutral-400">
+          <span className="uppercase tracking-wider">
+            {product.volume || 'Standard'}
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            {product.inStock !== false ? 'In Stock' : 'Call Store'}
           </span>
         </div>
 
@@ -107,7 +101,7 @@ export default function ProductCard({ product }: Props) {
           prefetch={true}
           className="w-full py-3 px-4 rounded-sm border border-white/20 text-center text-xs font-sans font-bold uppercase tracking-widest text-white hover:border-[#F5D900] hover:text-[#F5D900] hover:bg-white/[0.02] transition-all flex items-center justify-center gap-2 group/btn"
         >
-          <span>View Details & Hold</span>
+          <span>View Details &amp; Availability</span>
           <span className="transition-transform group-hover/btn:translate-x-1 group-hover/btn:-translate-y-0.5">↗</span>
         </Link>
       </div>

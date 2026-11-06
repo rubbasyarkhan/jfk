@@ -96,34 +96,33 @@ export default async function ProductDetailPage({ params }: Props) {
               {product.name}
             </h1>
 
-            {/* Price & Specs Header */}
-            <div className="flex flex-wrap items-baseline gap-4 mb-6 pb-6 border-b border-white/10">
-              {product.price ? (
-                <span className="font-anton text-3xl sm:text-4xl text-[#F5D900] tracking-wide">
-                  ${product.price.toFixed(2)}
-                </span>
-              ) : (
-                <span className="text-2xl text-[#F5D900] font-anton tracking-wide">Inquire in Store</span>
-              )}
+            {/* Bottle Specs Header (No Price) */}
+            <div className="flex flex-wrap items-center gap-3 mb-6 pb-6 border-b border-white/10">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-sm text-xs font-sans font-semibold uppercase tracking-wider bg-emerald-950/70 text-emerald-300 border border-emerald-500/40">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                {product.inStock !== false ? 'In Store Today' : 'Call For Allocation'}
+              </span>
 
-              {/* Specs Pills */}
-              <div className="flex items-center gap-2 flex-wrap">
-                {product.volume && (
-                  <span className="px-2.5 py-1 rounded-sm text-xs font-sans font-medium text-neutral-300 bg-[#161616] border border-white/10">
-                    {product.volume}
-                  </span>
-                )}
-                {product.abv && (
-                  <span className="px-2.5 py-1 rounded-sm text-xs font-sans font-medium text-neutral-300 bg-[#161616] border border-white/10">
-                    {product.abv}% ABV
-                  </span>
-                )}
-                {product.category && (
-                  <span className="px-2.5 py-1 rounded-sm text-xs font-sans font-medium text-neutral-300 bg-[#161616] border border-white/10 capitalize">
-                    {product.category.replace(/-/g, ' ')}
-                  </span>
-                )}
-              </div>
+              {product.volume && (
+                <span className="px-3 py-1 rounded-sm text-xs font-sans font-medium text-neutral-300 bg-[#161616] border border-white/10">
+                  {product.volume}
+                </span>
+              )}
+              {product.abv && (
+                <span className="px-3 py-1 rounded-sm text-xs font-sans font-medium text-neutral-300 bg-[#161616] border border-white/10">
+                  {product.abv}% ABV
+                </span>
+              )}
+              {product.origin && (
+                <span className="px-3 py-1 rounded-sm text-xs font-sans font-medium text-neutral-300 bg-[#161616] border border-white/10">
+                  {product.origin}
+                </span>
+              )}
+              {product.category && (
+                <span className="px-3 py-1 rounded-sm text-xs font-sans font-medium text-neutral-300 bg-[#161616] border border-white/10 capitalize">
+                  {product.category.replace(/-/g, ' ')}
+                </span>
+              )}
             </div>
 
             {/* Description in Clean Montserrat */}

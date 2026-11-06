@@ -52,7 +52,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Bourbon and American whiskey represent the pinnacle of American distilling tradition. Our collection features hand-selected single barrels, rare allocated releases, and beloved staples from Kentucky, Tennessee, and homegrown Texas distilleries. Expect distinct flavour profiles ranging from butterscotch and toasted oak to intense cinnamon warmth.',
     volume: '750ml',
     abv: 45,
-    price: 64.99,
     inStock: true,
     featured: true,
     images: [
@@ -75,7 +74,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Explore the storied regions of Scotland through our prestigious collection. We carry everything from gentle, floral Lowland expressions and sherried Highland single malts to the bold, medicinal peat smoke of Islay. Whether seeking an everyday sipping dram or a collector’s age-statement bottle, JFK Liquors offers expert guidance.',
     volume: '750ml',
     abv: 43,
-    price: 89.99,
     inStock: true,
     featured: true,
     images: [
@@ -97,7 +95,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Stock your bar cart with the world’s finest cocktail essentials. Ultra-distilled European vodkas, aromatic London Dry and modern citrus gins, and golden aged rums crafted in Barbados, Jamaica, and Puerto Rico. Ideal for crafting martinis, daiquiris, or savoring over crystal ice.',
     volume: '750ml - 1L',
     abv: 40,
-    price: 34.99,
     inStock: true,
     featured: false,
     images: [
@@ -120,7 +117,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Indulge in time-honored French craftsmanship. From velvety VSOPs laden with candied stone fruits to prestigious XO and Hors d’Âge blends aged for decades in Limousin oak casks. The ultimate luxury spirit for celebration and discerning palates.',
     volume: '750ml',
     abv: 40,
-    price: 129.99,
     inStock: true,
     featured: true,
     images: [
@@ -144,7 +140,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'A cellar-grade selection spanning California Napa Valley Cabernets, Tuscan Sangiovese, Bordeaux estates, and Willamette Valley Pinot Noirs. Selected for structure, depth, and pairing versatility.',
     volume: '750ml',
     abv: 14.5,
-    price: 49.99,
     inStock: true,
     featured: true,
     images: [
@@ -166,7 +161,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Crisp, mineral-driven whites and pale dry Provence rosés. From refreshing Marlborough Sauvignon Blancs to rich, oak-fermented Chardonnays from Sonoma and Burgundy.',
     volume: '750ml',
     abv: 13,
-    price: 28.99,
     inStock: true,
     featured: false,
     images: [
@@ -189,7 +183,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Fine bubbles for every occasion. Stocking top Grande Marque Champagne houses including Dom Pérignon, Veuve Clicquot, and Moët & Chandon, alongside artisan Grower Champagnes and crisp Italian Proseccos.',
     volume: '750ml',
     abv: 12.5,
-    price: 79.99,
     inStock: true,
     featured: true,
     images: [
@@ -214,7 +207,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Fresh from local brewhouses across Houston, Austin, and Dallas. Rotating cold inventory featuring double dry-hopped IPAs, imperial stouts, tart fruited sours, and crisp Bavarian-style lagers.',
     volume: '6-Pack Bottles',
     abv: 6.8,
-    price: 13.99,
     inStock: true,
     featured: true,
     images: [
@@ -236,7 +228,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Keep your party stocked with familiar favorites and crisp international lagers. Always kept chilled in our walk-in coolers near IAH airport.',
     volume: '12-Pack Bottles',
     abv: 5.0,
-    price: 18.99,
     inStock: true,
     featured: false,
     images: [
@@ -258,7 +249,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Zero sugar, natural fruit essences, and refreshing effervescence. Also featuring premium spirits-based ready-to-drink cocktails (margaritas, ranch waters, and mules).',
     volume: '8-Pack Bottles',
     abv: 5.0,
-    price: 16.99,
     inStock: true,
     featured: false,
     images: [
@@ -283,7 +273,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'We pride ourselves on an exceptional tequila library focusing on traditional tahona-crushed, additive-free distilleries alongside celebrity and luxury bottles like Clase Azul, Don Julio 1942, Fortaleza, and Cascahuín.',
     volume: '750ml',
     abv: 40,
-    price: 74.99,
     inStock: true,
     featured: true,
     images: [
@@ -306,7 +295,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: 'Experience genuine artisanal and ancestral mezcals from Oaxaca, Durango, and Michoacán. Hand-crafted by master mezcaleros using wild agaves like Tobalá, Tepeztate, and Arroqueño.',
     volume: '750ml',
     abv: 46,
-    price: 85.00,
     inStock: true,
     featured: true,
     images: [
@@ -327,7 +315,6 @@ export const INITIAL_PRODUCTS: Product[] = [
     shortDescription: 'Orange curaçao, coffee liqueurs, craft bitters, premium tonics, cocktail syrups, crystal ice and bar accessories.',
     description: 'Everything necessary for professional host entertainment. High-grade tonic waters, artisanal margarita elixirs, aromatic bitters, cocktail shakers, and bag ice.',
     volume: 'Various',
-    price: 19.99,
     inStock: true,
     featured: false,
     images: [

@@ -34,7 +34,6 @@ export default function ProductForm({ initialData, productId, availableCategorie
   const [name, setName] = useState(initialData?.name || '');
   const [slug, setSlug] = useState(initialData?.slug || '');
   const [category, setCategory] = useState(initialData?.category || 'spirits');
-  const [price, setPrice] = useState(initialData?.price?.toString() || '');
   const [volume, setVolume] = useState(initialData?.volume || '');
   const [abv, setAbv] = useState(initialData?.abv?.toString() || '');
   const [badge, setBadge] = useState(initialData?.badge || '');
@@ -86,7 +85,6 @@ export default function ProductForm({ initialData, productId, availableCategorie
         name,
         slug: slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
         category,
-        price: price ? parseFloat(price) : undefined,
         volume: volume || undefined,
         abv: abv ? parseFloat(abv) : undefined,
         badge: (badge || undefined) as Product['badge'],
@@ -234,25 +232,13 @@ export default function ProductForm({ initialData, productId, availableCategorie
         </div>
       </div>
 
-      {/* Specifications & Pricing */}
+      {/* Specifications */}
       <div className="p-6 sm:p-8 rounded-2xl bg-[#242424] border border-[#3A3A3A] space-y-6">
         <h3 className="text-xs font-bold text-[#F5D900] uppercase tracking-wider">
-          Pricing &amp; Technical Specs
+          Bottle Specifications
         </h3>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div>
-            <label className="admin-label">Bottle Price ($ USD)</label>
-            <input
-              type="number"
-              step="0.01"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              placeholder="64.99"
-              className="admin-input"
-            />
-          </div>
-
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           <div>
             <label className="admin-label">Volume</label>
             <input
