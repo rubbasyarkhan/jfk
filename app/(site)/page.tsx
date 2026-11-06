@@ -37,18 +37,19 @@ export default async function HomePage() {
                   02 // PRIVATE CELLAR ALLOCATIONS
                 </p>
                 <h2
-                  className="font-serif tracking-tight text-white"
+                  className="font-anton tracking-wide uppercase text-white"
                   style={{ fontSize: 'clamp(2.4rem, 4.8vw, 3.8rem)', lineHeight: 1.05 }}
                 >
                   Featured &amp;{' '}
-                  <span className="italic text-[#F5D900] font-serif">
+                  <span className="text-[#F5D900]">
                     Allocated Vault.
                   </span>
                 </h2>
               </div>
 
               <Link
-                href="/products/spirits"
+                href="/products"
+                prefetch={true}
                 className="inline-flex items-center gap-1.5 text-xs font-sans font-bold uppercase tracking-[0.2em] text-[#F5D900] hover:underline transition-all"
               >
                 <span>Browse Entire Collection</span>

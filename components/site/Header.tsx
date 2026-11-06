@@ -96,6 +96,7 @@ export default function Header() {
                   <div className="space-y-0.5">
                     <Link
                       href="/products"
+                      prefetch={true}
                       onClick={() => setDropdownOpen(false)}
                       className="group block px-3.5 py-2.5 bg-[#141519] border-b border-white/[0.06] mb-1 hover:bg-[#1a1b20] transition-colors"
                     >
@@ -111,6 +112,7 @@ export default function Header() {
                       <Link
                         key={dept.href}
                         href={dept.href}
+                        prefetch={true}
                         onClick={() => setDropdownOpen(false)}
                         className="group block px-3.5 py-2.5 hover:bg-[#141519] transition-colors"
                       >
@@ -143,6 +145,7 @@ export default function Header() {
 
             <Link
               href="/about"
+              prefetch={true}
               className={`text-[11px] font-medium uppercase tracking-[0.2em] transition-colors whitespace-nowrap ${
                 pathname === '/about' ? 'text-[#F5D900]' : 'text-neutral-300 hover:text-white'
               }`}
@@ -152,6 +155,7 @@ export default function Header() {
 
             <Link
               href="/contact"
+              prefetch={true}
               className={`text-[11px] font-medium uppercase tracking-[0.2em] transition-colors whitespace-nowrap ${
                 pathname === '/contact' ? 'text-[#F5D900]' : 'text-neutral-300 hover:text-white'
               }`}

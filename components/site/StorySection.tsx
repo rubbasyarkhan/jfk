@@ -32,12 +32,12 @@ export default function StorySection() {
             </p>
             
             <h2
-              className="font-serif tracking-tight text-[#FFFFFF] mb-6"
+              className="font-anton tracking-wide uppercase text-[#FFFFFF] mb-6"
               style={{ fontSize: 'clamp(2.4rem, 4.5vw, 3.8rem)', lineHeight: 1.05 }}
             >
               Your stop for
               <br />
-              <span className="italic text-[#F5D900] font-serif">
+              <span className="text-[#F5D900]">
                 something good.
               </span>
             </h2>

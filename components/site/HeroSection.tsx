@@ -42,12 +42,12 @@ export default function HeroSection() {
             </p>
           </div>
 
-          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tight text-white leading-[1.2] sm:leading-[1.22]">
+          <h1 className="font-anton text-4xl sm:text-5xl md:text-6xl lg:text-[4.2rem] tracking-wide uppercase text-white leading-[1.04]">
             <span>Rare Provenance.</span>
-            <span className="block mt-1.5 sm:mt-2 text-[#F5D900] italic font-serif">
+            <span className="block mt-1 sm:mt-2 text-[#F5D900]">
               Uncompromising
             </span>
-            <span className="block mt-1.5 sm:mt-2 text-white">
+            <span className="block mt-1 sm:mt-2 text-white">
               Distinction.
             </span>
           </h1>

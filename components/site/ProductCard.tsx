@@ -27,6 +27,7 @@ export default function ProductCard({ product }: Props) {
         {/* Bottle Image Exhibition Area */}
         <Link
           href={`/products/${product.category}/${product.slug}`}
+          prefetch={true}
           className="block relative aspect-[4/3] w-full overflow-hidden bg-[#0A0A0A]"
         >
           <Image
@@ -72,9 +73,9 @@ export default function ProductCard({ product }: Props) {
             </p>
           )}
 
-          {/* Title in Elegant Playfair Display Serif */}
-          <h3 className="font-serif text-2xl sm:text-[1.65rem] text-[#FFFFFF] mb-3 transition-colors group-hover:text-[#F5D900] line-clamp-1 leading-snug">
-            <Link href={`/products/${product.category}/${product.slug}`}>
+          {/* Title in Bold Anton Font */}
+          <h3 className="font-anton text-2xl sm:text-[1.65rem] text-[#FFFFFF] mb-3 transition-colors group-hover:text-[#F5D900] line-clamp-1 leading-snug tracking-wide uppercase">
+            <Link href={`/products/${product.category}/${product.slug}`} prefetch={true}>
               {product.name}
             </Link>
           </h3>
@@ -109,6 +110,7 @@ export default function ProductCard({ product }: Props) {
         {/* Action Button: White with dark text, hover gold, Montserrat */}
         <Link
           href={`/products/${product.category}/${product.slug}`}
+          prefetch={true}
           className="block w-full text-center py-2.5 px-4 rounded-sm bg-[#FFFFFF] text-[#050505] font-sans font-bold text-xs uppercase tracking-[0.16em] hover:bg-[#F5D900] transition-colors"
         >
           View Bottle ↗

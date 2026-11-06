@@ -16,29 +16,34 @@ import { db } from './firebase';
 import type { Product, Category, SiteSettings } from '@/types';
 import { INITIAL_PRODUCTS, INITIAL_CATEGORIES } from './initialData';
 
+// Track if Firestore is active or in offline fallback mode for instant page loads
+let firestoreDisabled = false;
+
 // ─── Products ──────────────────────────────────────────────────────────────
 
 export async function getProducts(categorySlug?: string): Promise<Product[]> {
-  try {
-    let q;
-    if (categorySlug) {
-      q = query(
-        collection(db, 'products'),
-        where('category', '==', categorySlug),
-        orderBy('sortOrder', 'asc')
-      );
-    } else {
-      q = query(collection(db, 'products'), orderBy('sortOrder', 'asc'));
+  if (!firestoreDisabled) {
+    try {
+      let q;
+      if (categorySlug) {
+        q = query(
+          collection(db, 'products'),
+          where('category', '==', categorySlug),
+          orderBy('sortOrder', 'asc')
+        );
+      } else {
+        q = query(collection(db, 'products'), orderBy('sortOrder', 'asc'));
+      }
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        return snap.docs.map(d => ({ id: d.id, ...d.data() } as Product));
+      }
+    } catch (err) {
+      firestoreDisabled = true;
     }
-    const snap = await getDocs(q);
-    if (!snap.empty) {
-      return snap.docs.map(d => ({ id: d.id, ...d.data() } as Product));
-    }
-  } catch (err) {
-    console.warn('Firestore fallback to initial mock products');
   }
 
-  // Graceful fallback to initial products
+  // Instant fallback to mock data
   if (categorySlug) {
     return INITIAL_PRODUCTS.filter(p => p.category === categorySlug);
   }
@@ -46,34 +51,38 @@ export async function getProducts(categorySlug?: string): Promise<Product[]> {
 }
 
 export async function getFeaturedProducts(count = 8): Promise<Product[]> {
-  try {
-    const q = query(
-      collection(db, 'products'),
-      where('featured', '==', true),
-      orderBy('sortOrder', 'asc'),
-      limit(count)
-    );
-    const snap = await getDocs(q);
-    if (!snap.empty) {
-      return snap.docs.map(d => ({ id: d.id, ...d.data() } as Product));
+  if (!firestoreDisabled) {
+    try {
+      const q = query(
+        collection(db, 'products'),
+        where('featured', '==', true),
+        orderBy('sortOrder', 'asc'),
+        limit(count)
+      );
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        return snap.docs.map(d => ({ id: d.id, ...d.data() } as Product));
+      }
+    } catch (err) {
+      firestoreDisabled = true;
     }
-  } catch (err) {
-    console.warn('Firestore fallback to initial mock featured products');
   }
 
   return INITIAL_PRODUCTS.filter(p => p.featured).slice(0, count);
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
-  try {
-    const q = query(collection(db, 'products'), where('slug', '==', slug), limit(1));
-    const snap = await getDocs(q);
-    if (!snap.empty) {
-      const d = snap.docs[0];
-      return { id: d.id, ...d.data() } as Product;
+  if (!firestoreDisabled) {
+    try {
+      const q = query(collection(db, 'products'), where('slug', '==', slug), limit(1));
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        const d = snap.docs[0];
+        return { id: d.id, ...d.data() } as Product;
+      }
+    } catch (err) {
+      firestoreDisabled = true;
     }
-  } catch (err) {
-    console.warn('Firestore fallback getProductBySlug');
   }
 
   const found = INITIAL_PRODUCTS.find(p => p.slug === slug);
@@ -81,13 +90,15 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
-  try {
-    const snap = await getDoc(doc(db, 'products', id));
-    if (snap.exists()) {
-      return { id: snap.id, ...snap.data() } as Product;
+  if (!firestoreDisabled) {
+    try {
+      const snap = await getDoc(doc(db, 'products', id));
+      if (snap.exists()) {
+        return { id: snap.id, ...snap.data() } as Product;
+      }
+    } catch (err) {
+      firestoreDisabled = true;
     }
-  } catch (err) {
-    console.warn('Firestore fallback getProductById');
   }
 
   const found = INITIAL_PRODUCTS.find(p => p.id === id);
@@ -95,13 +106,15 @@ export async function getProductById(id: string): Promise<Product | null> {
 }
 
 export async function getAllProducts(): Promise<Product[]> {
-  try {
-    const snap = await getDocs(collection(db, 'products'));
-    if (!snap.empty) {
-      return snap.docs.map(d => ({ id: d.id, ...d.data() } as Product));
+  if (!firestoreDisabled) {
+    try {
+      const snap = await getDocs(collection(db, 'products'));
+      if (!snap.empty) {
+        return snap.docs.map(d => ({ id: d.id, ...d.data() } as Product));
+      }
+    } catch (err) {
+      firestoreDisabled = true;
     }
-  } catch (err) {
-    console.warn('Firestore fallback getAllProducts');
   }
   return INITIAL_PRODUCTS;
 }

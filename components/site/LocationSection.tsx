@@ -11,12 +11,12 @@ export default function LocationSection() {
             </p>
             
             <h2
-              className="font-serif tracking-tight text-[#FFFFFF] mb-5"
+              className="font-anton tracking-wide uppercase text-[#FFFFFF] mb-5"
               style={{ fontSize: 'clamp(2.4rem, 4.5vw, 3.8rem)', lineHeight: 1.05 }}
             >
               Right on JFK.
               <br />
-              <span className="italic text-[#F5D900] font-serif">
+              <span className="text-[#F5D900]">
                 Close to IAH.
               </span>
             </h2>

@@ -42,22 +42,19 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ─── Editorial Headings ─── */
-.font-serif {
-  font-family: var(--font-playfair), 'Playfair Display', Georgia, serif;
+/* ─── Editorial Headings in Bold Anton Display ─── */
+h1, h2, h3, h4, .font-heading, .font-display, .font-anton, .font-serif {
+  font-family: var(--font-anton), Impact, 'Arial Narrow', sans-serif;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
-.font-display {
+.font-playfair {
   font-family: var(--font-playfair), 'Playfair Display', Georgia, serif;
 }
 
 .font-sans {
   font-family: var(--font-montserrat), 'Montserrat', system-ui, -apple-system, sans-serif;
-}
-
-.font-anton {
-  font-family: var(--font-anton), Impact, 'Arial Narrow', sans-serif;
-  letter-spacing: 0.02em;
 }
 
 /* ─── Micro-Metadata Label ─── */

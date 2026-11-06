@@ -25,7 +25,7 @@ export default function PromotionalBanner() {
             </div>
 
             <h2
-              className="font-serif tracking-tight text-[#FFFFFF] mb-3"
+              className="font-anton tracking-wide uppercase text-[#FFFFFF] mb-3"
               style={{ fontSize: 'clamp(2.1rem, 4.2vw, 3.4rem)', lineHeight: 1.06 }}
             >
               Seeking Blanton&apos;s, Weller, or Eagle Rare?

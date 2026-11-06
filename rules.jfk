@@ -9,10 +9,24 @@
 - **Text & Contrast**: Clean White (`#FFFFFF`) for primary headings & body, muted silver (`#A0A0A0` / `#C7C7C7`) for secondary copy.
 
 ## 2. Typography Rules
-- **Brand Editorial Headings**: Use `Playfair Display` (`font-serif` / `font-display`) for luxury editorial headlines with italic accents (e.g. `Rare Provenance. Uncompromising Distinction.`).
-- **Punchy Signage & Feature Headings**: Use `Anton` (`font-anton`) for high-impact bold condensed headlines (e.g. `STAYING IN? WE'VE GOT OPTIONS.`).
-- **Body & All Content (Strict)**: Use `Montserrat` (`font-sans` / `font-montserrat`) for ALL body text, paragraphs, tags, buttons, valuations, product details, and navigation. No generic monospaces in customer-facing cards.
-- **Micro-Metadata**: Montserrat uppercase with refined tracking (`tracking-[0.22em] text-[11px] font-bold`).
+- **Brand Editorial Headings (Strict)**: Use `Anton` (`font-anton` / `font-heading`) for ALL headings across the entire website (Hero, Cards, Section titles, Product detail titles) in bold, uppercase impact.
+- **Body & All Content (Strict)**: Use `Montserrat` (`font-sans` / `font-montserrat`) for ALL body text, paragraphs, tags, buttons, valuations, product details, and navigation.
+
+## 3. Homepage Department Cards Rules
+- **Standalone Image**: Images must stand alone, crisp and strong (`relative aspect-[4/3]`). NEVER place text or dark gradient blankets on top of the images.
+- **Detail Below Image**: Department title in Anton, subtitle in Montserrat gold uppercase, description in Montserrat, and explore link are strictly positioned below the photo container.
+- **Navigation**: Each card links directly to `/products/[category]` with prefetching for instant page load.
+
+## 4. Product Detail Page Rules
+- **Interactive Multi-Image Gallery**: If a product has multiple preview images, users MUST be able to click any thumbnail to instantly swap the main displayed bottle photo, complete with active gold ring state.
+- **Minimalist Presentation**: The bottle photo is the hero (`aspect-[3/4] sm:aspect-[4/5]`). No AI-slop boilerplate tables or unnecessary ribbons.
+- **Mandatory Compliance Notice**: Every product detail and collection page must display:
+  `Stock changes daily. Call +1 281-590-3300 to check availability. Must be 21+ with valid ID.`
+- **3-Cards-Per-Row**: Related products and catalog grids always use 3 columns on desktop (`grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8`).
+
+## 5. Performance & Fast Page Changes
+- **Instant Pre-Fetching**: Always specify `prefetch={true}` on all primary navigation and product `<Link>` elements.
+- **Instant Fallback**: Data fetching functions must return in-memory mock data with 0ms delay if external databases are unreachable.
 
 ## 3. Hero Section Rules
 - **Background**: Complete black background (`#050505` / `#111111`).

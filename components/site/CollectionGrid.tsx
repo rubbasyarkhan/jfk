@@ -48,11 +48,11 @@ export default function CollectionGrid() {
               01 // THE ARCHIVE
             </p>
             <h2
-              className="font-serif tracking-tight text-[#FFFFFF]"
+              className="font-anton tracking-wide uppercase text-white"
               style={{ fontSize: 'clamp(2.4rem, 4.8vw, 3.8rem)', lineHeight: 1.05 }}
             >
               Find your{' '}
-              <span className="italic text-[#F5D900] font-serif">
+              <span className="text-[#F5D900]">
                 next favorite.
               </span>
             </h2>
@@ -61,6 +61,7 @@ export default function CollectionGrid() {
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
             <Link
               href="/products"
+              prefetch={true}
               className="inline-flex items-center gap-2 text-xs font-sans font-bold uppercase tracking-[0.18em] text-[#F5D900] hover:underline"
             >
               <span>Browse All Products</span>
@@ -69,64 +70,57 @@ export default function CollectionGrid() {
           </div>
         </div>
 
-        {/* 4 Architectural Gallery Cards with Clearly Visible Bottle Photography */}
+        {/* 4 Standalone Minimal Department Cards (NO Image Overlay - Content Strictly Below) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {CATEGORIES.map((cat) => (
             <Link
               key={cat.slug}
               href={`/products/${cat.slug}`}
-              className="group block relative rounded-sm overflow-hidden bg-[#121316] border border-white/[0.08] transition-all duration-500 hover:border-[#F5D900]/70 hover:shadow-2xl cursor-pointer"
-              style={{ minHeight: '440px' }}
+              prefetch={true}
+              className="group flex flex-col justify-between rounded-sm overflow-hidden bg-[#121316] border border-white/[0.08] transition-all duration-300 hover:border-[#F5D900]/70 hover:shadow-2xl cursor-pointer"
             >
-              {/* Bottle Photo Background — Bright & Clearly Visible */}
-              <div className="absolute inset-0 z-0">
+              {/* Standalone Image Frame — 100% Crisp, Strong, No Dimming Overlay */}
+              <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#0A0A0A]">
                 <Image
                   src={cat.image}
                   alt={cat.label}
                   fill
-                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-105 brightness-[0.92] opacity-85 group-hover:opacity-100"
+                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                 />
-                
-                {/* Directed Vignette: Light on top to see bottles clearly, dark at bottom for crisp text */}
-                <div
-                  className="absolute inset-0 pointer-events-none"
-                  style={{
-                    background:
-                      'linear-gradient(to top, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.65) 42%, rgba(10,10,10,0.15) 75%, transparent 100%)',
-                  }}
-                />
+
+                {/* Minimal Corner Department Index */}
+                <span className="absolute top-3 left-3 px-2.5 py-1 rounded-sm text-[10px] font-sans font-bold uppercase tracking-[0.18em] bg-[#0A0A0A]/90 text-[#F5D900] border border-white/10 backdrop-blur-sm shadow-md">
+                  [ {cat.num} ]
+                </span>
               </div>
 
-              {/* Foreground Content */}
-              <div className="relative z-10 h-full p-7 flex flex-col justify-between">
-                
-                {/* Number Badge & Subtitle in Montserrat */}
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-sans tracking-widest text-[#F5D900] font-bold">
-                    [ {cat.num} ]
-                  </span>
-                  <span className="text-[11px] font-sans tracking-wider text-neutral-300 uppercase font-medium">
-                    {cat.subtitle}
-                  </span>
-                </div>
-
-                {/* Title & Explore Link */}
+              {/* Detail Content Strictly Below the Image */}
+              <div className="p-6 flex flex-col justify-between flex-1">
                 <div>
-                  <h3 className="font-serif text-3xl sm:text-[2rem] text-[#FFFFFF] mb-2 group-hover:text-[#F5D900] transition-colors leading-tight">
-                    {cat.label}
-                  </h3>
-                  <p className="text-xs sm:text-[13px] text-neutral-300 leading-relaxed mb-6 font-sans font-normal min-h-[38px]">
-                    {cat.desc}
+                  {/* Department Subtitle in Montserrat */}
+                  <p className="text-[11px] font-sans font-bold text-[#F5D900] mb-2 tracking-[0.2em] uppercase">
+                    {cat.subtitle}
                   </p>
 
-                  <div className="flex items-center gap-1.5 text-xs font-sans font-bold uppercase tracking-wider text-[#F5D900]">
-                    <span>Explore selection</span>
-                    <span className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-0.5">↗</span>
-                  </div>
+                  {/* Department Title in Anton */}
+                  <h3 className="font-anton text-2xl sm:text-3xl text-white tracking-wide uppercase mb-2.5 group-hover:text-[#F5D900] transition-colors leading-tight">
+                    {cat.label}
+                  </h3>
+
+                  {/* Description in Montserrat */}
+                  <p className="text-xs sm:text-[13px] text-neutral-300 leading-relaxed font-sans font-normal mb-6 line-clamp-2">
+                    {cat.desc}
+                  </p>
                 </div>
 
+                {/* Bottom CTA Link in Montserrat */}
+                <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs font-sans font-bold uppercase tracking-wider text-[#F5D900] group-hover:text-white transition-colors">
+                  <span>Explore Department</span>
+                  <span className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-0.5">↗</span>
+                </div>
               </div>
+
             </Link>
           ))}
         </div>

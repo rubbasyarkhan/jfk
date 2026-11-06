@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { getProductBySlug, getProducts } from '@/lib/firestore';
 import { INITIAL_PRODUCTS } from '@/lib/initialData';
 import ProductCard from '@/components/site/ProductCard';
+import ProductImageGallery from '@/components/site/ProductImageGallery';
 import type { Metadata } from 'next';
 
 interface Props {
@@ -61,39 +62,13 @@ export default async function ProductDetailPage({ params }: Props) {
         {/* Minimal Product Showcase Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
           
-          {/* Left Column: Visual Showcase (The Bottle is the Hero) */}
-          <div className="lg:col-span-6 space-y-4">
-            <div className="relative aspect-[3/4] sm:aspect-[4/5] rounded-sm overflow-hidden border border-white/[0.08] bg-[#0B0C0E] shadow-2xl">
-              <Image
-                src={images[0] || 'https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&w=1200&q=85'}
-                alt={product.name}
-                fill
-                className="object-cover object-center transition-transform duration-700 ease-out hover:scale-103"
-                priority
-                sizes="(max-width: 1024px) 100vw, 50vw"
-              />
-              
-              {/* Subtle Bottom Vignette */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0B0C0E] via-transparent to-transparent opacity-60 pointer-events-none" />
-
-              {/* Minimal Allocation Badge */}
-              {product.badge && (
-                <span className="absolute top-5 left-5 px-3 py-1.5 rounded-sm text-[11px] font-sans font-bold uppercase tracking-[0.16em] bg-[#5B1018] text-[#F5D900] border border-[#F5D900]/40 shadow-lg">
-                  {product.badge}
-                </span>
-              )}
-            </div>
-
-            {/* Thumbnail Row if Multiple Images */}
-            {images.length > 1 && (
-              <div className="grid grid-cols-4 gap-3">
-                {images.map((img, i) => (
-                  <div key={i} className="relative aspect-square rounded-sm overflow-hidden border border-white/10 bg-[#121316]">
-                    <Image src={img} alt={`${product.name} view ${i + 1}`} fill className="object-cover" />
-                  </div>
-                ))}
-              </div>
-            )}
+          {/* Left Column: Visual Showcase with Interactive Image Switcher */}
+          <div className="lg:col-span-6">
+            <ProductImageGallery
+              images={images}
+              name={product.name}
+              badge={product.badge}
+            />
           </div>
 
           {/* Right Column: Editorial Details & Clear Action */}
@@ -106,10 +81,10 @@ export default async function ProductDetailPage({ params }: Props) {
               </p>
             )}
 
-            {/* Bottle Title in Authoritative Playfair Display Serif */}
+            {/* Bottle Title in Bold Anton Display */}
             <h1
-              className="font-serif tracking-tight text-white mb-5 leading-[1.12]"
-              style={{ fontSize: 'clamp(2.4rem, 4.5vw, 3.6rem)' }}
+              className="font-anton tracking-wide uppercase text-white mb-5 leading-[1.05]"
+              style={{ fontSize: 'clamp(2.4rem, 4.5vw, 3.8rem)' }}
             >
               {product.name}
             </h1>
@@ -117,11 +92,11 @@ export default async function ProductDetailPage({ params }: Props) {
             {/* Price & Specs Header */}
             <div className="flex flex-wrap items-baseline gap-4 mb-6 pb-6 border-b border-white/10">
               {product.price ? (
-                <span className="font-serif text-3xl sm:text-4xl text-[#F5D900] font-semibold">
+                <span className="font-anton text-3xl sm:text-4xl text-[#F5D900] tracking-wide">
                   ${product.price.toFixed(2)}
                 </span>
               ) : (
-                <span className="text-2xl text-[#F5D900] font-serif font-semibold">Inquire in Store</span>
+                <span className="text-2xl text-[#F5D900] font-anton tracking-wide">Inquire in Store</span>
               )}
 
               {/* Specs Pills */}
