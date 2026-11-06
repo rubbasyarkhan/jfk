@@ -14,18 +14,19 @@ const firebaseConfig = {
 };
 
 let app: FirebaseApp | undefined;
-let db: Firestore | any = {};
-let storage: FirebaseStorage | any = {};
-let auth: Auth | any = {};
+let db: Firestore | any = null;
+let storage: FirebaseStorage | any = null;
+let auth: Auth | any = null;
 
-try {
-  app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-  db = getFirestore(app);
-  storage = getStorage(app);
-  auth = getAuth(app);
-} catch (err) {
-  // Gracefully handle unconfigured / build-time Firebase
-  console.warn('Firebase initialized in fallback mode');
+if (firebaseConfig.apiKey && firebaseConfig.projectId) {
+  try {
+    app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+    db = getFirestore(app);
+    storage = getStorage(app);
+    auth = getAuth(app);
+  } catch (err) {
+    console.warn('Firebase initialized in fallback mode');
+  }
 }
 
 export { app, db, storage, auth };

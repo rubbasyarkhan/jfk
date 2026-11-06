@@ -38,6 +38,7 @@ export default function CategorySwitcher({ active, categories }: Props) {
               <Link
                 key={cat.slug || 'all'}
                 href={href}
+                prefetch={true}
                 className={`px-5 py-2 rounded-sm text-xs font-sans font-bold uppercase tracking-wider transition-all whitespace-nowrap ${
                   isActive
                     ? 'bg-[#F5D900] text-[#050505] shadow-lg shadow-[#F5D900]/20'

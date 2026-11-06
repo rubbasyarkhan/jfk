@@ -12,27 +12,30 @@ const DEPARTMENTS = [
   { label: 'Artisanal Agave & Mixers', href: '/products/agave-and-more', desc: '100% Blue agave extra añejos & Oaxaca mezcals' },
 ];
 
+let cachedClientDepts: any[] | null = null;
+
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [departments, setDepartments] = useState(DEPARTMENTS);
+  const [departments, setDepartments] = useState(cachedClientDepts || DEPARTMENTS);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
   useEffect(() => {
+    if (cachedClientDepts) return;
     async function loadDepts() {
       try {
         const res = await fetch('/api/admin/categories');
         const data = await res.json();
         if (res.ok && Array.isArray(data.categories) && data.categories.length > 0) {
-          setDepartments(
-            data.categories.map((c: any) => ({
-              label: c.name,
-              href: `/products/${c.slug}`,
-              desc: c.description || c.bannerText || 'Curated selection',
-            }))
-          );
+          const formatted = data.categories.map((c: any) => ({
+            label: c.name,
+            href: `/products/${c.slug}`,
+            desc: c.description || c.bannerText || 'Curated selection',
+          }));
+          cachedClientDepts = formatted;
+          setDepartments(formatted);
         }
       } catch (e) {
         // Fallback to default

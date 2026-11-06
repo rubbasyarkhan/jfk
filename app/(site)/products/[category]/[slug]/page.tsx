@@ -1,15 +1,22 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+import { cache } from 'react';
 import { getProductBySlug, getProducts } from '@/lib/firestore';
 import { INITIAL_PRODUCTS } from '@/lib/initialData';
 import ProductCard from '@/components/site/ProductCard';
 import ProductImageGallery from '@/components/site/ProductImageGallery';
 import type { Metadata } from 'next';
 
+export const revalidate = 120;
+
 interface Props {
   params: { category: string; slug: string };
 }
+
+const getCachedProduct = cache(async (slug: string) => {
+  return getProductBySlug(slug);
+});
 
 export function generateStaticParams() {
   return INITIAL_PRODUCTS.map((p) => ({
@@ -19,7 +26,7 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const product = await getProductBySlug(params.slug);
+  const product = await getCachedProduct(params.slug);
   if (!product) {
     return { title: 'Bottle Not Found | JFK Liquors Houston' };
   }
@@ -30,7 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ProductDetailPage({ params }: Props) {
-  const product = await getProductBySlug(params.slug);
+  const product = await getCachedProduct(params.slug);
   if (!product) {
     notFound();
   }
