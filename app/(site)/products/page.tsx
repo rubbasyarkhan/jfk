@@ -1,0 +1,82 @@
+import { getProducts } from '@/lib/firestore';
+import ProductCard from '@/components/site/ProductCard';
+import CategorySwitcher from '@/components/site/CategorySwitcher';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'All Products & Curated Collection | JFK Liquors Houston',
+  description:
+    'Explore our complete collection of allocated bourbons, single malt scotch, cellar wines, cold craft beer, and premium tequila near IAH airport in Houston.',
+};
+
+export default async function AllProductsPage() {
+  const products = await getProducts();
+
+  return (
+    <div className="bg-[#050505] text-[#FFFFFF] min-h-screen">
+      {/* Category Header Banner */}
+      <section className="pt-28 pb-16 px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 text-center relative border-b border-white/[0.08] bg-[#0A0A0A]">
+        <div className="max-w-4xl mx-auto">
+          <p className="meta-tag mb-3">01 // THE ARCHIVE &bull; COMPLETE CELLAR</p>
+          <h1
+            className="font-serif tracking-tight text-white mb-4"
+            style={{ fontSize: 'clamp(2.6rem, 5.5vw, 4.2rem)', lineHeight: 1.08 }}
+          >
+            The Complete Collection.
+          </h1>
+          <p className="text-neutral-300 font-sans text-sm sm:text-base leading-relaxed font-normal max-w-2xl mx-auto mb-6">
+            Allocated bourbons, rare single malts, cellar wines, chilled Texas craft beers, and artisanal agaves curated along Houston’s IAH airport corridor.
+          </p>
+
+          {/* Compliance & Availability Line Required by User */}
+          <div className="inline-block px-4 py-2 rounded-sm bg-[#141414] border border-[#F5D900]/30 text-xs sm:text-[13px] font-sans text-neutral-300">
+            <span className="text-[#F5D900] font-semibold">Stock changes daily.</span>{' '}
+            Call{' '}
+            <a href="tel:+12815903300" className="text-[#F5D900] font-bold underline hover:text-white transition-colors">
+              +1 281-590-3300
+            </a>{' '}
+            to check availability. Must be 21+ with valid ID.
+          </div>
+        </div>
+      </section>
+
+      {/* Category Switcher Tabs */}
+      <CategorySwitcher active="" />
+
+      {/* Product Grid — 3 Cards In A Row */}
+      <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 py-16 sm:py-20">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 pb-4 border-b border-white/[0.08] gap-3">
+          <p className="text-xs font-sans uppercase tracking-wider text-neutral-400">
+            Showing <span className="text-[#F5D900] font-bold">{products.length}</span> Curated Bottles
+          </p>
+          <a
+            href="tel:+12815903300"
+            className="text-xs font-sans text-[#F5D900] font-semibold hover:underline"
+          >
+            Direct Cellar Reserve: (281) 590-3300
+          </a>
+        </div>
+
+        {products.length === 0 ? (
+          <div className="text-center py-24 rounded bg-[#121316] border border-white/10">
+            <h3 className="font-serif text-2xl text-white mb-2">
+              Catalog Updating
+            </h3>
+            <p className="text-neutral-300 font-sans text-sm max-w-md mx-auto mb-6">
+              Our inventory changes daily with fresh distributor allocations. Please call the store directly or visit us in person.
+            </p>
+            <a href="tel:+12815903300" className="btn-primary">
+              Call Store: +1 281-590-3300 ↗
+            </a>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

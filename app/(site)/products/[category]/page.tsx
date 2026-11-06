@@ -46,20 +46,30 @@ export default async function CategoryPage({ params }: Props) {
   return (
     <div className="bg-[#0A0A0A] text-[#FFFFFF] min-h-screen">
       {/* Category Header Banner */}
-      <section className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 text-center relative border-b border-white/[0.08] bg-[#0D0D0D]">
-        <div className="max-w-3xl mx-auto">
-          <p className="index-tag mb-3">01 // THE ARCHIVE &bull; CATALOG</p>
+      <section className="pt-28 pb-16 px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 text-center relative border-b border-white/[0.08] bg-[#0A0A0A]">
+        <div className="max-w-4xl mx-auto">
+          <p className="meta-tag mb-3">01 // THE ARCHIVE &bull; CATALOG</p>
           <h1
-            className="font-serif tracking-tight text-[#FFFFFF]"
-            style={{ fontSize: 'clamp(2.8rem, 6vw, 4.5rem)', lineHeight: 1.05 }}
+            className="font-serif tracking-tight text-white mb-4"
+            style={{ fontSize: 'clamp(2.6rem, 5.5vw, 4.2rem)', lineHeight: 1.08 }}
           >
             {catName}
           </h1>
           {bannerText && (
-            <p className="text-[#A0A0A0] text-base sm:text-lg leading-relaxed font-light max-w-xl mx-auto mt-4">
+            <p className="text-neutral-300 font-sans text-sm sm:text-base leading-relaxed font-normal max-w-2xl mx-auto mb-6">
               {bannerText}
             </p>
           )}
+
+          {/* Compliance & Availability Line Required by User */}
+          <div className="inline-block px-4 py-2 rounded-sm bg-[#141414] border border-[#F5D900]/30 text-xs sm:text-[13px] font-sans text-neutral-300">
+            <span className="text-[#F5D900] font-semibold">Stock changes daily.</span>{' '}
+            Call{' '}
+            <a href="tel:+12815903300" className="text-[#F5D900] font-bold underline hover:text-white transition-colors">
+              +1 281-590-3300
+            </a>{' '}
+            to check availability. Must be 21+ with valid ID.
+          </div>
         </div>
       </section>
 

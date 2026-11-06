@@ -38,56 +38,62 @@ const CATEGORIES = [
 
 export default function CollectionGrid() {
   return (
-    <section id="collection" className="py-24 sm:py-32 relative bg-[#0D0D0D]">
+    <section id="collection" className="py-24 sm:py-32 relative bg-[#0A0A0A]">
       <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20">
         
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
           <div>
-            <p className="index-tag mb-3">
+            <p className="meta-tag mb-3">
               01 // THE ARCHIVE
             </p>
             <h2
               className="font-serif tracking-tight text-[#FFFFFF]"
-              style={{ fontSize: 'clamp(2.6rem, 5.2vw, 4.2rem)', lineHeight: 1.04 }}
+              style={{ fontSize: 'clamp(2.4rem, 4.8vw, 3.8rem)', lineHeight: 1.05 }}
             >
-              Find your
-              <br />
+              Find your{' '}
               <span className="italic text-[#F5D900] font-serif">
                 next favorite.
               </span>
             </h2>
           </div>
-          <p className="text-[#A0A0A0] max-w-md text-sm sm:text-base font-light leading-relaxed">
-            Four ways to explore the shelves. Whether you know your go-to or want to discover an allocated release, start here.
-          </p>
+          
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+            <Link
+              href="/products"
+              className="inline-flex items-center gap-2 text-xs font-sans font-bold uppercase tracking-[0.18em] text-[#F5D900] hover:underline"
+            >
+              <span>Browse All Products</span>
+              <span>↗</span>
+            </Link>
+          </div>
         </div>
 
-        {/* 4 Architectural Gallery Cards */}
+        {/* 4 Architectural Gallery Cards with Clearly Visible Bottle Photography */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {CATEGORIES.map((cat) => (
             <Link
               key={cat.slug}
               href={`/products/${cat.slug}`}
-              className="group block relative rounded overflow-hidden bg-[#161616] border border-white/[0.08] transition-all duration-500 hover:border-[#F5D900]/70 hover:shadow-2xl"
-              style={{ minHeight: '430px' }}
+              className="group block relative rounded-sm overflow-hidden bg-[#121316] border border-white/[0.08] transition-all duration-500 hover:border-[#F5D900]/70 hover:shadow-2xl cursor-pointer"
+              style={{ minHeight: '440px' }}
             >
-              {/* Bottle Photo Background with cinematic zoom */}
+              {/* Bottle Photo Background — Bright & Clearly Visible */}
               <div className="absolute inset-0 z-0">
                 <Image
                   src={cat.image}
                   alt={cat.label}
                   fill
-                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-108 opacity-40 group-hover:opacity-50"
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-105 brightness-[0.92] opacity-85 group-hover:opacity-100"
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                 />
                 
-                {/* Vignette Overlay */}
+                {/* Directed Vignette: Light on top to see bottles clearly, dark at bottom for crisp text */}
                 <div
-                  className="absolute inset-0"
+                  className="absolute inset-0 pointer-events-none"
                   style={{
                     background:
-                      'linear-gradient(to top, #0D0D0D 0%, rgba(22,22,22,0.85) 45%, rgba(22,22,22,0.2) 100%)',
+                      'linear-gradient(to top, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.65) 42%, rgba(10,10,10,0.15) 75%, transparent 100%)',
                   }}
                 />
               </div>
@@ -95,26 +101,26 @@ export default function CollectionGrid() {
               {/* Foreground Content */}
               <div className="relative z-10 h-full p-7 flex flex-col justify-between">
                 
-                {/* Number Badge & Subtitle */}
+                {/* Number Badge & Subtitle in Montserrat */}
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono tracking-widest text-[#F5D900] font-bold">
+                  <span className="text-xs font-sans tracking-widest text-[#F5D900] font-bold">
                     [ {cat.num} ]
                   </span>
-                  <span className="text-[10px] font-mono tracking-wider text-[#888888] uppercase">
+                  <span className="text-[11px] font-sans tracking-wider text-neutral-300 uppercase font-medium">
                     {cat.subtitle}
                   </span>
                 </div>
 
                 {/* Title & Explore Link */}
                 <div>
-                  <h3 className="font-serif text-3xl text-[#FFFFFF] mb-2 group-hover:text-[#F5D900] transition-colors leading-tight">
+                  <h3 className="font-serif text-3xl sm:text-[2rem] text-[#FFFFFF] mb-2 group-hover:text-[#F5D900] transition-colors leading-tight">
                     {cat.label}
                   </h3>
-                  <p className="text-xs text-[#A0A0A0] leading-relaxed mb-6 font-light min-h-[36px]">
+                  <p className="text-xs sm:text-[13px] text-neutral-300 leading-relaxed mb-6 font-sans font-normal min-h-[38px]">
                     {cat.desc}
                   </p>
 
-                  <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#F5D900]">
+                  <div className="flex items-center gap-1.5 text-xs font-sans font-bold uppercase tracking-wider text-[#F5D900]">
                     <span>Explore selection</span>
                     <span className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-0.5">↗</span>
                   </div>

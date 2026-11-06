@@ -94,6 +94,19 @@ export default function Header() {
                   className="absolute top-full left-0 mt-2 w-72 bg-[#0B0C0E] border border-white/10 shadow-2xl p-2 z-50"
                 >
                   <div className="space-y-0.5">
+                    <Link
+                      href="/products"
+                      onClick={() => setDropdownOpen(false)}
+                      className="group block px-3.5 py-2.5 bg-[#141519] border-b border-white/[0.06] mb-1 hover:bg-[#1a1b20] transition-colors"
+                    >
+                      <p className="text-xs font-bold text-[#F5D900] uppercase tracking-wider">
+                        Browse All Bottles ↗
+                      </p>
+                      <p className="text-[10px] text-neutral-400 font-light mt-0.5">
+                        Complete cellar &amp; allocated spirits inventory
+                      </p>
+                    </Link>
+
                     {DEPARTMENTS.map((dept) => (
                       <Link
                         key={dept.href}
@@ -197,6 +210,13 @@ export default function Header() {
             className="block text-xs font-bold uppercase tracking-[0.2em] text-white hover:text-[#F5D900]"
           >
             Overview
+          </Link>
+          <Link
+            href="/products"
+            onClick={() => setMobileOpen(false)}
+            className="block text-xs font-bold uppercase tracking-[0.2em] text-[#F5D900] hover:underline"
+          >
+            Browse All Bottles ↗
           </Link>
           <div className="pl-3 space-y-2 border-l border-white/10 ml-1">
             <p className="text-[10px] uppercase font-mono tracking-widest text-neutral-500">Vault Departments</p>
