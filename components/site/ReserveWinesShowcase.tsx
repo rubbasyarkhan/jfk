@@ -8,7 +8,7 @@ const WINE_LINEUP = [
     region: 'Fort Ross-Seaview, Sonoma Coast',
     notes: 'Meyer lemon curd, toasted brioche, flinty mineral salinity',
     price: 89.99,
-    image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1558001373-7b93ee48ffa0?auto=format&fit=crop&w=600&q=80',
   },
   {
     name: 'Shafer TD-9 Napa Valley Red Blend',
@@ -16,7 +16,7 @@ const WINE_LINEUP = [
     region: 'Stags Leap District, Napa Valley',
     notes: 'Black plum, crushed blackberries, licorice, and sweet tobacco',
     price: 74.99,
-    image: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1645784125191-d93e079b5861?auto=format&fit=crop&w=600&q=80',
   },
   {
     name: 'Sea Sun California Chardonnay',
@@ -24,7 +24,7 @@ const WINE_LINEUP = [
     region: 'Coastal Vineyards, California',
     notes: 'Crisp green apple, warm toasted oak, and smooth vanilla finish',
     price: 24.99,
-    image: 'https://images.unsplash.com/photo-1558001373-7b93ee48ffa0?auto=format&fit=crop&w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1568213816046-0ee1c42bd559?auto=format&fit=crop&w=600&q=80',
   },
   {
     name: 'Quilt Reserve Cabernet Sauvignon',
@@ -32,7 +32,7 @@ const WINE_LINEUP = [
     region: 'Rutherford & Oakville, Napa Valley',
     notes: 'Dark currant, cocoa, cassis, and velvety full-bodied tannins',
     price: 119.99,
-    image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1555554317-78e53094da14?auto=format&fit=crop&w=600&q=80',
   },
   {
     name: 'Diora La Petite Grace Pinot Noir',
@@ -40,7 +40,7 @@ const WINE_LINEUP = [
     region: 'San Bernabe Vineyard, Monterey',
     notes: 'Wild black cherry, roasted mocha, dark chocolate, and spice',
     price: 29.99,
-    image: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1645784125191-d93e079b5861?auto=format&fit=crop&w=600&q=80',
   },
 ];
 
@@ -57,11 +57,11 @@ export default function ReserveWinesShowcase() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-          
+
           {/* Left Column: Symmetrical Backlit 5-Bottle Lineup */}
           <div className="lg:col-span-7">
             <div className="relative rounded-2xl bg-gradient-to-b from-[#141414] via-[#0E0D0D] to-[#080808] border border-[#2E2E2E] p-6 sm:p-8 shadow-2xl">
-              
+
               {/* Backlit spotlight glow behind bottles */}
               <div
                 className="absolute inset-x-8 top-12 bottom-16 opacity-30 filter blur-2xl pointer-events-none"
@@ -75,9 +75,8 @@ export default function ReserveWinesShowcase() {
                 {WINE_LINEUP.map((wine, i) => (
                   <div
                     key={wine.name}
-                    className={`flex flex-col items-center group transition-transform duration-500 hover:-translate-y-2 ${
-                      i === 2 ? 'scale-105 z-20' : 'scale-95'
-                    }`}
+                    className={`flex flex-col items-center group transition-transform duration-500 hover:-translate-y-2 ${i === 2 ? 'scale-105 z-20' : 'scale-95'
+                      }`}
                   >
                     {/* Bottle thumbnail */}
                     <div className="relative w-full aspect-[1/3] rounded-lg overflow-hidden bg-[#080808] border border-[#262626] group-hover:border-[#D4AF37] transition-colors shadow-lg">
@@ -106,7 +105,7 @@ export default function ReserveWinesShowcase() {
               {/* Reflective Dark Base Slab */}
               <div className="w-full h-3 rounded-full bg-gradient-to-r from-transparent via-[#D4AF37]/40 to-transparent" />
               <div className="mt-4 text-center">
-                <p className="text-[10.5px] font-mono uppercase tracking-[0.2em] text-[#737373]">
+                <p className="text-[10.5px] font-mono uppercase tracking-[0.2em] text-[#F5D900]">
                   Napa Valley &bull; Sonoma Coast &bull; Bordeaux &bull; Champagne
                 </p>
               </div>
@@ -116,7 +115,7 @@ export default function ReserveWinesShowcase() {
 
           {/* Right Column: Editorial Typography matching the ReserveBar headline */}
           <div className="lg:col-span-5 flex flex-col justify-center">
-            
+
             <p className="eyebrow mb-3">
               Enjoy From The Comfort of Home
             </p>
@@ -162,13 +161,13 @@ export default function ReserveWinesShowcase() {
                 <span className="text-[#D4AF37] font-bold block uppercase tracking-wider mb-0.5">
                   Temperature Controlled
                 </span>
-                <span className="text-[#737373]">Stored at precise 55°F cellar condition</span>
+                <span className="text-[#F5D900]">Stored at precise 55°F cellar condition</span>
               </div>
               <div>
                 <span className="text-[#D4AF37] font-bold block uppercase tracking-wider mb-0.5">
                   Fast Delivery
                 </span>
-                <span className="text-[#737373]">Via Uber Eats &amp; DoorDash partners</span>
+                <span className="text-[#F5D900]">Via Uber Eats &amp; DoorDash partners</span>
               </div>
             </div>
 

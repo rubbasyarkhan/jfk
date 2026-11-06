@@ -16,8 +16,13 @@ import { db } from './firebase';
 import type { Product, Category, SiteSettings } from '@/types';
 import { INITIAL_PRODUCTS, INITIAL_CATEGORIES } from './initialData';
 
-// Track if Firestore is active or in offline fallback mode for instant page loads
-let firestoreDisabled = false;
+// Check if real Firebase credentials are provided
+const HAS_REAL_FIREBASE = Boolean(
+  process.env.NEXT_PUBLIC_FIREBASE_API_KEY &&
+  process.env.NEXT_PUBLIC_FIREBASE_API_KEY !== 'mock-api-key-jfk-liquors'
+);
+
+let firestoreDisabled = !HAS_REAL_FIREBASE;
 
 // ─── Products ──────────────────────────────────────────────────────────────
 
@@ -144,28 +149,32 @@ export async function deleteProduct(id: string): Promise<void> {
 // ─── Categories ────────────────────────────────────────────────────────────
 
 export async function getCategories(): Promise<Category[]> {
-  try {
-    const q = query(collection(db, 'categories'), orderBy('sortOrder', 'asc'));
-    const snap = await getDocs(q);
-    if (!snap.empty) {
-      return snap.docs.map(d => ({ id: d.id, ...d.data() } as Category));
+  if (!firestoreDisabled) {
+    try {
+      const q = query(collection(db, 'categories'), orderBy('sortOrder', 'asc'));
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        return snap.docs.map(d => ({ id: d.id, ...d.data() } as Category));
+      }
+    } catch (err) {
+      firestoreDisabled = true;
     }
-  } catch (err) {
-    console.warn('Firestore fallback getCategories');
   }
   return INITIAL_CATEGORIES;
 }
 
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
-  try {
-    const q = query(collection(db, 'categories'), where('slug', '==', slug), limit(1));
-    const snap = await getDocs(q);
-    if (!snap.empty) {
-      const d = snap.docs[0];
-      return { id: d.id, ...d.data() } as Category;
+  if (!firestoreDisabled) {
+    try {
+      const q = query(collection(db, 'categories'), where('slug', '==', slug), limit(1));
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        const d = snap.docs[0];
+        return { id: d.id, ...d.data() } as Category;
+      }
+    } catch (err) {
+      firestoreDisabled = true;
     }
-  } catch (err) {
-    console.warn('Firestore fallback getCategoryBySlug');
   }
 
   const found = INITIAL_CATEGORIES.find(c => c.slug === slug);
@@ -188,13 +197,15 @@ export async function deleteCategory(id: string): Promise<void> {
 // ─── Site Settings ─────────────────────────────────────────────────────────
 
 export async function getSiteSettings(): Promise<SiteSettings | null> {
-  try {
-    const snap = await getDoc(doc(db, 'settings', 'main'));
-    if (snap.exists()) {
-      return snap.data() as SiteSettings;
+  if (!firestoreDisabled) {
+    try {
+      const snap = await getDoc(doc(db, 'settings', 'main'));
+      if (snap.exists()) {
+        return snap.data() as SiteSettings;
+      }
+    } catch (err) {
+      firestoreDisabled = true;
     }
-  } catch (err) {
-    console.warn('Firestore fallback getSiteSettings');
   }
 
   return {

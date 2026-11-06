@@ -8,7 +8,7 @@ const CATEGORIES = [
     label: 'Spirits',
     subtitle: 'Bourbon & Single Malts',
     desc: 'Allocated Kentucky bourbon, peated Islay scotch & rare French cognac.',
-    image: 'https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1604681310895-d3ddfd650861?auto=format&fit=crop&w=800&q=80',
   },
   {
     num: '02',
@@ -16,7 +16,7 @@ const CATEGORIES = [
     label: 'Wines',
     subtitle: 'Cellar & Champagne',
     desc: 'Napa Valley Cabernet, Burgundy pinot noir & Grand Cru vintage champagne.',
-    image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1645784125191-d93e079b5861?auto=format&fit=crop&w=800&q=80',
   },
   {
     num: '03',
@@ -24,7 +24,7 @@ const CATEGORIES = [
     label: 'Beer',
     subtitle: 'Texas Craft & Imports',
     desc: 'Chilled local IPAs, Belgian ales, crisp lagers & party-ready cold packs.',
-    image: 'https://images.unsplash.com/photo-1608270586620-248524c67de9?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1703564803585-48b51539e119?auto=format&fit=crop&w=800&q=80',
   },
   {
     num: '04',
@@ -32,7 +32,7 @@ const CATEGORIES = [
     label: 'Agave & More',
     subtitle: 'Tequila, Mezcal & Mixers',
     desc: '100% Blue Agave blanco to extra añejo, artisanal Oaxaca mezcal & crystal ice.',
-    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1698288547419-407ca6bafe2a?auto=format&fit=crop&w=800&q=80',
   },
 ];
 
@@ -90,9 +90,9 @@ export default function CollectionGrid() {
                 />
 
                 {/* Minimal Corner Department Index */}
-                <span className="absolute top-3 left-3 px-2.5 py-1 rounded-sm text-[10px] font-sans font-bold uppercase tracking-[0.18em] bg-[#0A0A0A]/90 text-[#F5D900] border border-white/10 backdrop-blur-sm shadow-md">
+                {/* <span className="absolute top-3 left-3 px-2.5 py-1 rounded-sm text-[10px] font-sans font-bold uppercase tracking-[0.18em] bg-[#0A0A0A]/90 text-[#F5D900] border border-white/10 backdrop-blur-sm shadow-md">
                   [ {cat.num} ]
-                </span>
+                </span> */}
               </div>
 
               {/* Detail Content Strictly Below the Image */}

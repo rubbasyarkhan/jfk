@@ -56,7 +56,7 @@ export default function AgeGate() {
         <h2 className="font-serif text-3xl sm:text-4xl text-[#FFFFFF] mb-3">
           Are you 21 or older?
         </h2>
-        
+
         <p className="text-[#A0A0A0] text-sm leading-relaxed mb-8 font-light">
           You must be of legal drinking age in the United States to explore and purchase from JFK Liquors.
         </p>
@@ -69,7 +69,7 @@ export default function AgeGate() {
           >
             Yes, I am 21+
           </button>
-          
+
           <a
             href="https://www.google.com"
             className="btn-ghost flex-1 text-xs"
@@ -78,7 +78,7 @@ export default function AgeGate() {
           </a>
         </div>
 
-        <p className="text-[10.5px] font-mono text-[#737373] mt-8 uppercase tracking-widest">
+        <p className="text-[10.5px] font-mono text-[#F5D900] mt-8 uppercase tracking-widest">
           15655 John F Kennedy Blvd &bull; Houston, TX
         </p>
       </div>

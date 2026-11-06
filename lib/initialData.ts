@@ -7,7 +7,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     slug: 'spirits',
     description: 'Bourbon, Scotch, Vodka, Gin, Cognac & more from around the world.',
     bannerText: 'From allocated bourbon to peated single malts, the spirits wall is the heart of the store.',
-    imageUrl: 'https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1604681310895-d3ddfd650861?auto=format&fit=crop&w=800&q=80',
     sortOrder: 1,
   },
   {
@@ -16,7 +16,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     slug: 'wines',
     description: 'Reds, whites, rosé, and sparkling — from everyday pours to celebration bottles.',
     bannerText: 'Weeknight value bottles, gift-worthy labels and celebration sparkling.',
-    imageUrl: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1645784125191-d93e079b5861?auto=format&fit=crop&w=800&q=80',
     sortOrder: 2,
   },
   {
@@ -25,7 +25,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     slug: 'beer',
     description: 'Texas craft, domestic favorites, imports, hard seltzers & RTDs.',
     bannerText: 'Cold and ready to go: Texas craft, national favorites and imports.',
-    imageUrl: 'https://images.unsplash.com/photo-1608270586620-248524c67de9?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1703564803585-48b51539e119?auto=format&fit=crop&w=800&q=80',
     sortOrder: 3,
   },
   {
@@ -34,13 +34,13 @@ export const INITIAL_CATEGORIES: Category[] = [
     slug: 'agave-and-more',
     description: 'Tequila from blanco to añejo, mezcal, liqueurs, mixers, ice and glassware.',
     bannerText: 'Tequila from blanco to añejo, mezcal, liqueurs, mixers, ice and glassware.',
-    imageUrl: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1698288547419-407ca6bafe2a?auto=format&fit=crop&w=800&q=80',
     sortOrder: 4,
   },
 ];
 
 export const INITIAL_PRODUCTS: Product[] = [
-  // Spirits
+  // Spirits (Pure Bottles Only — No Glasses, No Hands)
   {
     id: 'bourbon-american-whiskey',
     name: 'Bourbon & American Whiskey',
@@ -56,10 +56,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: true,
     images: [
-      'https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1569529465841-dfecdab7503b?auto=format&fit=crop&w=800&q=80'
+      'https://images.unsplash.com/photo-1604681310895-d3ddfd650861?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1656618380465-5e9342d4874e?auto=format&fit=crop&w=800&q=80'
     ],
-    thumbnailUrl: 'https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1604681310895-d3ddfd650861?auto=format&fit=crop&w=800&q=80',
     sortOrder: 1,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -79,10 +79,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: true,
     images: [
-      'https://images.unsplash.com/photo-1569529465841-dfecdab7503b?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&w=800&q=80'
+      'https://images.unsplash.com/photo-1653596662119-95f12558a15a?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1604681310895-d3ddfd650861?auto=format&fit=crop&w=800&q=80'
     ],
-    thumbnailUrl: 'https://images.unsplash.com/photo-1569529465841-dfecdab7503b?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1653596662119-95f12558a15a?auto=format&fit=crop&w=800&q=80',
     sortOrder: 2,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -101,9 +101,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: false,
     images: [
-      'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=800&q=80'
+      'https://images.unsplash.com/photo-1656618380465-5e9342d4874e?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1653596662119-95f12558a15a?auto=format&fit=crop&w=800&q=80'
     ],
-    thumbnailUrl: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1656618380465-5e9342d4874e?auto=format&fit=crop&w=800&q=80',
     sortOrder: 3,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -123,15 +124,16 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: true,
     images: [
-      'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=800&q=80'
+      '/assets/inspiration/cognac-hero.jpg',
+      'https://images.unsplash.com/photo-1604681310895-d3ddfd650861?auto=format&fit=crop&w=800&q=80'
     ],
-    thumbnailUrl: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: '/assets/inspiration/cognac-hero.jpg',
     sortOrder: 4,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
 
-  // Wines
+  // Wines (Pure Bottles Only — No Glasses, No Hands)
   {
     id: 'red-wines',
     name: 'Red Wines',
@@ -146,9 +148,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: true,
     images: [
-      'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=800&q=80'
+      'https://images.unsplash.com/photo-1645784125191-d93e079b5861?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1555554317-78e53094da14?auto=format&fit=crop&w=800&q=80'
     ],
-    thumbnailUrl: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1645784125191-d93e079b5861?auto=format&fit=crop&w=800&q=80',
     sortOrder: 1,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -167,7 +170,8 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: false,
     images: [
-      'https://images.unsplash.com/photo-1558001373-7b93ee48ffa0?auto=format&fit=crop&w=800&q=80'
+      'https://images.unsplash.com/photo-1558001373-7b93ee48ffa0?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1645784125191-d93e079b5861?auto=format&fit=crop&w=800&q=80'
     ],
     thumbnailUrl: 'https://images.unsplash.com/photo-1558001373-7b93ee48ffa0?auto=format&fit=crop&w=800&q=80',
     sortOrder: 2,
@@ -189,7 +193,8 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: true,
     images: [
-      'https://images.unsplash.com/photo-1568213816046-0ee1c42bd559?auto=format&fit=crop&w=800&q=80'
+      'https://images.unsplash.com/photo-1568213816046-0ee1c42bd559?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1645784125191-d93e079b5861?auto=format&fit=crop&w=800&q=80'
     ],
     thumbnailUrl: 'https://images.unsplash.com/photo-1568213816046-0ee1c42bd559?auto=format&fit=crop&w=800&q=80',
     sortOrder: 3,
@@ -197,7 +202,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     updatedAt: new Date().toISOString(),
   },
 
-  // Beer
+  // Beer (Pure Bottles Only — No Glasses, No Hands)
   {
     id: 'craft-beer',
     name: 'Craft Beer',
@@ -207,15 +212,16 @@ export const INITIAL_PRODUCTS: Product[] = [
     badge: 'New',
     shortDescription: 'Hazy IPAs, crisp pilsners, rich stouts and seasonal releases, spotlighting independent Texas breweries.',
     description: 'Fresh from local brewhouses across Houston, Austin, and Dallas. Rotating cold inventory featuring double dry-hopped IPAs, imperial stouts, tart fruited sours, and crisp Bavarian-style lagers.',
-    volume: '6-Pack Cans',
+    volume: '6-Pack Bottles',
     abv: 6.8,
     price: 13.99,
     inStock: true,
     featured: true,
     images: [
-      'https://images.unsplash.com/photo-1608270586620-248524c67de9?auto=format&fit=crop&w=800&q=80'
+      'https://images.unsplash.com/photo-1703564803585-48b51539e119?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1571613316887-6f8d5cbf7ef7?auto=format&fit=crop&w=800&q=80'
     ],
-    thumbnailUrl: 'https://images.unsplash.com/photo-1608270586620-248524c67de9?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1703564803585-48b51539e119?auto=format&fit=crop&w=800&q=80',
     sortOrder: 1,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -228,15 +234,16 @@ export const INITIAL_PRODUCTS: Product[] = [
     tags: ['Lagers', 'Mexican', 'European', 'Ice Cold'],
     shortDescription: 'The national staples you rely on plus premium Mexican, German, Belgian, and Japanese imports.',
     description: 'Keep your party stocked with familiar favorites and crisp international lagers. Always kept chilled in our walk-in coolers near IAH airport.',
-    volume: '12-Pack Bottles/Cans',
+    volume: '12-Pack Bottles',
     abv: 5.0,
     price: 18.99,
     inStock: true,
     featured: false,
     images: [
-      'https://images.unsplash.com/photo-1535958636474-b021ee887b13?auto=format&fit=crop&w=800&q=80'
+      'https://images.unsplash.com/photo-1571613316887-6f8d5cbf7ef7?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1703564803585-48b51539e119?auto=format&fit=crop&w=800&q=80'
     ],
-    thumbnailUrl: 'https://images.unsplash.com/photo-1535958636474-b021ee887b13?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1571613316887-6f8d5cbf7ef7?auto=format&fit=crop&w=800&q=80',
     sortOrder: 2,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -249,21 +256,22 @@ export const INITIAL_PRODUCTS: Product[] = [
     tags: ['Light', 'Fruity', 'Gluten Free', 'RTD Canned Cocktails'],
     shortDescription: 'Light, bubbly and full of flavor. Hard seltzers, artisanal ciders, and ready-to-drink canned cocktails.',
     description: 'Zero sugar, natural fruit essences, and refreshing effervescence. Also featuring premium spirits-based ready-to-drink cocktails (margaritas, ranch waters, and mules).',
-    volume: '8-Pack Variety',
+    volume: '8-Pack Bottles',
     abv: 5.0,
     price: 16.99,
     inStock: true,
     featured: false,
     images: [
-      'https://images.unsplash.com/photo-1584225064785-c62a8b43d148?auto=format&fit=crop&w=800&q=80'
+      'https://images.unsplash.com/photo-1703564803585-48b51539e119?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1571613316887-6f8d5cbf7ef7?auto=format&fit=crop&w=800&q=80'
     ],
-    thumbnailUrl: 'https://images.unsplash.com/photo-1584225064785-c62a8b43d148?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1703564803585-48b51539e119?auto=format&fit=crop&w=800&q=80',
     sortOrder: 3,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
 
-  // Agave & More
+  // Agave & More (Pure Bottles Only — No Glasses, No Hands)
   {
     id: 'tequila-blanco-reposado-anejo',
     name: 'Tequila (Blanco, Reposado & Añejo)',
@@ -279,9 +287,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: true,
     images: [
-      'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=800&q=80'
+      'https://images.unsplash.com/photo-1698288547419-407ca6bafe2a?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1516535794938-6063878f08cc?auto=format&fit=crop&w=800&q=80'
     ],
-    thumbnailUrl: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1698288547419-407ca6bafe2a?auto=format&fit=crop&w=800&q=80',
     sortOrder: 1,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -301,9 +310,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: true,
     images: [
-      'https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&w=800&q=80'
+      'https://images.unsplash.com/photo-1516535794938-6063878f08cc?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1698288547419-407ca6bafe2a?auto=format&fit=crop&w=800&q=80'
     ],
-    thumbnailUrl: 'https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1516535794938-6063878f08cc?auto=format&fit=crop&w=800&q=80',
     sortOrder: 2,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -321,9 +331,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: false,
     images: [
-      'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=800&q=80'
+      'https://images.unsplash.com/photo-1604681310895-d3ddfd650861?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1698288547419-407ca6bafe2a?auto=format&fit=crop&w=800&q=80'
     ],
-    thumbnailUrl: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=800&q=80',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1604681310895-d3ddfd650861?auto=format&fit=crop&w=800&q=80',
     sortOrder: 3,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),

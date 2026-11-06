@@ -3,13 +3,13 @@ export default function LocationSection() {
     <section className="py-24 sm:py-32 relative bg-[#0D0D0D] border-t border-white/[0.08]">
       <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-          
+
           {/* Location Info */}
           <div className="lg:col-span-5">
             <p className="index-tag mb-3">
               03 // VISIT THE BOTTLE SHOP
             </p>
-            
+
             <h2
               className="font-anton tracking-wide uppercase text-[#FFFFFF] mb-5"
               style={{ fontSize: 'clamp(2.4rem, 4.5vw, 3.8rem)', lineHeight: 1.05 }}
@@ -27,7 +27,7 @@ export default function LocationSection() {
             <p className="text-sm text-[#A0A0A0] mb-2 font-light">
               Houston, TX 77032
             </p>
-            <p className="text-xs text-[#737373] font-mono mb-8">
+            <p className="text-xs text-[#F5D900] font-mono mb-8">
               Conveniently located near George Bush Intercontinental Airport (IAH).
             </p>
 
@@ -39,7 +39,7 @@ export default function LocationSection() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-[#C7C7C7]">Sunday</span>
-                <span className="font-semibold text-[#737373]">Closed (Texas Law)</span>
+                <span className="font-semibold text-[#F5D900]">Closed (Texas Law)</span>
               </div>
             </div>
 

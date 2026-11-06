@@ -15,7 +15,7 @@ export default function Footer() {
     <footer className="bg-[#0A0A0A] border-t border-white/[0.08] text-[#FFFFFF]">
       <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 py-16 sm:py-20">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
-          
+
           {/* Col 1: Logo & Overview */}
           <div className="space-y-4">
             <Link href="/" className="inline-block transition-opacity hover:opacity-90">
@@ -27,7 +27,7 @@ export default function Footer() {
                 className="object-contain h-10 w-auto"
               />
             </Link>
-            <p className="text-[#888888] text-xs leading-relaxed max-w-xs font-light">
+            <p className="text-[#e0e0e0] text-xs leading-relaxed max-w-xs font-light">
               Houston’s elevated bottle shop on JFK Boulevard adjacent to George Bush Intercontinental Airport (IAH).
             </p>
             <div className="pt-1">
@@ -67,10 +67,10 @@ export default function Footer() {
               </div>
               <div className="flex justify-between py-1 border-b border-white/[0.06]">
                 <span>Sunday:</span>
-                <span className="font-semibold text-[#737373]">Closed (TX Law)</span>
+                <span className="font-semibold text-[#F5D900]">Closed (TX Law)</span>
               </div>
             </div>
-            <p className="text-[11px] text-[#737373] mt-3 font-mono">
+            <p className="text-[11px] text-[#F5D900] mt-3 font-mono">
               Delivery via Uber Eats &amp; DoorDash.
             </p>
           </div>
@@ -95,7 +95,7 @@ export default function Footer() {
               <li className="pt-3">
                 <Link
                   href="/admin/login"
-                  className="text-[11px] font-mono text-[#737373] hover:text-[#F5D900] uppercase tracking-wider transition-colors"
+                  className="text-[11px] font-mono text-[#F5D900] hover:text-[#F5D900] uppercase tracking-wider transition-colors"
                 >
                   Admin Management Portal ↗
                 </Link>
@@ -106,7 +106,7 @@ export default function Footer() {
         </div>
 
         {/* Legal Disclaimer */}
-        <div className="mt-16 pt-8 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left text-xs text-[#737373] font-mono">
+        <div className="mt-16 pt-8 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left text-xs text-[#F5D900] font-mono">
           <p>
             &copy; {year} JFK Liquors, Houston, Texas. All rights reserved.
           </p>

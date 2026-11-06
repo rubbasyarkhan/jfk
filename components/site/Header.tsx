@@ -119,7 +119,7 @@ export default function Header() {
                         <p className="text-xs font-semibold text-white group-hover:text-[#F5D900] transition-colors">
                           {dept.label}
                         </p>
-                        <p className="text-[10px] text-neutral-400 font-light mt-0.5 line-clamp-1">
+                        <p className="text-[10px]  font-light mt-0.5 line-clamp-1">
                           {dept.desc}
                         </p>
                       </Link>

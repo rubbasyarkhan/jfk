@@ -3,7 +3,7 @@ export default function DeliverySection() {
     <section id="delivery" className="py-24 sm:py-32 relative bg-[#111111] border-t border-white/[0.08]">
       <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-          
+
           {/* Left Column: Heading & Copy (Exact match to user screenshot) */}
           <div className="lg:col-span-6">
             <p className="index-tag mb-4">
@@ -25,14 +25,14 @@ export default function DeliverySection() {
               We&apos;re also available on Uber Eats and DoorDash. Open your preferred app and search for <strong className="text-[#FFFFFF] font-semibold">JFK Liquors, Houston</strong>.
             </p>
 
-            <p className="text-xs text-[#737373] font-mono leading-relaxed max-w-md">
+            <p className="text-xs text-[#F5D900] font-mono leading-relaxed max-w-md">
               Availability, selection, fees and delivery area are shown in the app. 21+ with valid ID.
             </p>
           </div>
 
           {/* Right Column: Two Charcoal Delivery Cards (Exact match to user screenshot) */}
           <div className="lg:col-span-6 flex flex-col gap-5">
-            
+
             {/* Uber Eats Card */}
             <a
               href="https://www.ubereats.com"
@@ -43,7 +43,7 @@ export default function DeliverySection() {
               <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#FFFFFF] mb-2 font-sans">
                 Uber <span className="text-[#67cb89]">Eats</span>
               </h3>
-              
+
               <p className="text-sm text-[#A0A0A0] font-light mb-5">
                 Find JFK Liquors in the Uber Eats app.
               </p>

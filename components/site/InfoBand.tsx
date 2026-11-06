@@ -7,7 +7,7 @@ export default function InfoBand() {
           {/* Col 1: Store Hours */}
           <div className="flex items-center justify-center py-4 px-6 text-center">
             <span className="text-xs sm:text-[13px] tracking-wider uppercase font-sans">
-              <span className="text-[#888888] font-normal">MON–SAT </span>
+              <span className="text-[#e0e0e0] font-normal">MON–SAT </span>
               <strong className="text-[#FFFFFF] font-bold">11:00 AM — 9:00 PM</strong>
               <span className="text-[#F5D900] font-bold ml-1.5">&bull; SUN CLOSED</span>
             </span>
@@ -16,7 +16,7 @@ export default function InfoBand() {
           {/* Col 2: On-Demand Delivery Partners */}
           <div className="flex items-center justify-center py-4 px-6 text-center">
             <span className="text-xs sm:text-[13px] tracking-wider uppercase font-sans">
-              <span className="text-[#888888] font-normal">FIND US ON </span>
+              <span className="text-[#e0e0e0] font-normal">FIND US ON </span>
               <a
                 href="https://www.ubereats.com"
                 target="_blank"
@@ -25,7 +25,7 @@ export default function InfoBand() {
               >
                 UBER EATS
               </a>
-              <span className="text-[#888888] mx-1"> + </span>
+              <span className="text-[#e0e0e0] mx-1"> + </span>
               <a
                 href="https://www.doordash.com"
                 target="_blank"

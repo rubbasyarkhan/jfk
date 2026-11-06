@@ -169,7 +169,7 @@ export default async function ProductDetailPage({ params }: Props) {
             <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
               <div>
                 <p className="meta-tag mb-1">More In This Department</p>
-                <h2 className="font-serif text-3xl sm:text-4xl text-white">Related Selections</h2>
+                <h2 className="font-anton tracking-wide uppercase text-3xl sm:text-4xl text-white">Related Selections</h2>
               </div>
               <Link
                 href={`/products/${product.category}`}

@@ -19,7 +19,7 @@ export default function ProductCard({ product }: Props) {
   const imageSrc =
     product.thumbnailUrl ||
     product.images?.[0] ||
-    'https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&w=800&q=80';
+    'https://images.unsplash.com/photo-1604681310895-d3ddfd650861?auto=format&fit=crop&w=800&q=80';
 
   return (
     <article className="group flex flex-col justify-between rounded-sm overflow-hidden bg-[#121316] border border-white/[0.08] transition-all duration-300 hover:border-[#F5D900]/70 hover:shadow-2xl">

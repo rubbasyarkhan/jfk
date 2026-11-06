@@ -13,7 +13,7 @@ export default function ProductImageGallery({ images, name, badge }: Props) {
   const [activeIndex, setActiveIndex] = useState(0);
 
   const displayImages = images?.length > 0 ? images : [
-    'https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&w=1200&q=85'
+    'https://images.unsplash.com/photo-1604681310895-d3ddfd650861?auto=format&fit=crop&w=1200&q=85'
   ];
 
   return (
