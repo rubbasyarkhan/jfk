@@ -2,44 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── Luxury Editorial Theme Variables (Whisky Foundation & ReserveBar Inspired) ─── */
+/* ─── Premium Liquor Store Color Palette ─── */
 :root {
-  /* Midnight Obsidian Backgrounds */
-  --midnight: #0E0D0D;
-  --midnight-pure: #080808;
-  --midnight-card: #141414;
-  --midnight-soft: #1A1A1A;
-
-  /* Rich Metallic Liquid Gold (Upgraded from yellow) */
-  --gold: #D4AF37;
-  --gold-hover: #E5C268;
-  --gold-light: #F3DB94;
-  --gold-muted: #9F7F28;
-  --gold-dark: #7D6118;
-  --gold-glow: rgba(212, 175, 55, 0.22);
-
-  /* Deep Burgundy - Collector Accents & Banners */
-  --burgundy: #5B1018;
+  --midnight: #111111;         /* Primary Background */
+  --gold: #F5D900;             /* Liquor Store Gold - Accent & CTAs */
+  --gold-hover: #FFE524;
+  --burgundy: #5B1018;         /* Deep Burgundy - Premium Sections */
   --burgundy-light: #781520;
-  --burgundy-dark: #3F0B10;
-  --burgundy-glow: rgba(91, 16, 24, 0.4);
-
-  /* Charcoal - Card Surfaces & Borders */
-  --charcoal: #161616;
-  --charcoal-light: #202020;
-  --charcoal-border: #2A2A2A;
-
-  /* Clean White & Muted Text */
-  --white: #FFFFFF;
-  --paper-soft: #E5E5E5;
-  --muted: #A5A5A5;
-  --dim: #707070;
-
-  --radius: 6px;
+  --charcoal: #242424;         /* Charcoal - Cards, Nav, Footer */
+  --charcoal-border: #333333;
+  --charcoal-light: #2D2D2D;
+  --white: #FFFFFF;            /* Clean White - Text & Contrast */
+  --muted: #A0A0A0;
 }
 
 /* ─── Base Styles ─────────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; }
+*, *::before, *::after {
+  box-sizing: border-box;
+}
 
 html {
   scroll-behavior: smooth;
@@ -55,34 +35,19 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ─── Editorial Headings (Cormorant Garamond) ──────────────────── */
-h1, h2, h3, h4, .font-serif, .font-editorial {
+/* Subtle background grain/texture for luxury feel */
+.bg-subtle-texture {
+  background-image: radial-gradient(circle at 50% 0%, rgba(245, 217, 0, 0.08) 0%, transparent 60%),
+                    radial-gradient(circle at 100% 50%, rgba(91, 16, 24, 0.12) 0%, transparent 50%);
+}
+
+/* ─── Typography ─────────────────────────────────────────────── */
+h1, h2, h3, h4, .font-serif {
   font-family: var(--font-cormorant), 'Playfair Display', Georgia, serif;
   letter-spacing: 0.01em;
-  line-height: 1.1;
   font-weight: 500;
 }
 
-/* ─── Bold Display Typography (Anton) ────────────────────────── */
-.font-anton {
-  font-family: var(--font-anton), 'Impact', 'Arial Narrow', sans-serif;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-/* ─── Metallic Gold Text Gradient ────────────────────────────── */
-.text-gold {
-  color: var(--gold);
-}
-
-.text-gold-gradient {
-  background: linear-gradient(135deg, #F3DB94 0%, #D4AF37 50%, #9F7F28 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* ─── Eyebrow Label ──────────────────────────────────────────── */
 .eyebrow {
   font-family: var(--font-figtree), sans-serif;
   font-size: 11px;
@@ -92,161 +57,77 @@ h1, h2, h3, h4, .font-serif, .font-editorial {
   color: var(--gold);
 }
 
-/* ─── Luxury CTA Buttons (Metallic Gold with Black Text) ───────── */
+/* ─── CTA Buttons (Gold with Black text) ───────────────────────── */
 .btn-gold {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.85rem;
+  padding: 0.85rem 1.85rem;
   background-color: var(--gold);
-  color: var(--midnight-pure);
-  font-family: var(--font-figtree), sans-serif;
+  color: #111111;
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: 0.8125rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  border: none;
-  border-radius: var(--radius);
-  cursor: pointer;
-  transition: all 0.25s ease-in-out;
-  text-decoration: none;
+  border-radius: 4px;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 18px rgba(245, 217, 0, 0.2);
 }
 
 .btn-gold:hover {
   background-color: var(--gold-hover);
-  box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(245, 217, 0, 0.35);
 }
 
-/* ─── Minimalist Outline Button (Whisky Foundation style) ─────── */
 .btn-ghost {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.85rem;
+  padding: 0.85rem 1.85rem;
   background-color: transparent;
   color: var(--white);
-  font-family: var(--font-figtree), sans-serif;
   font-weight: 600;
-  font-size: 0.8rem;
-  letter-spacing: 0.12em;
+  font-size: 0.8125rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: var(--radius);
-  cursor: pointer;
-  transition: all 0.25s ease-in-out;
-  text-decoration: none;
+  border: 1px solid var(--charcoal-border);
+  border-radius: 4px;
+  transition: all 0.25s ease;
 }
 
 .btn-ghost:hover {
   border-color: var(--gold);
   color: var(--gold);
-  background: rgba(212, 175, 55, 0.08);
+  background-color: rgba(245, 217, 0, 0.05);
 }
 
-/* ─── White Minimal Button (like 'Buy Now' in image 1) ────────── */
-.btn-white {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.65rem 1.25rem;
-  background-color: var(--white);
-  color: var(--midnight-pure);
-  font-family: var(--font-figtree), sans-serif;
-  font-weight: 700;
-  font-size: 0.75rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  border: none;
-  border-radius: var(--radius);
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-}
-
-.btn-white:hover {
-  background-color: var(--gold);
-  box-shadow: 0 0 20px rgba(212, 175, 55, 0.35);
-}
-
-/* ─── Product Card (Minimalist Luxury Dark Card) ─────────────── */
-.jfk-card {
-  background-color: var(--midnight-card);
-  border: 1px solid var(--charcoal-border);
-  border-radius: 8px;
-  overflow: hidden;
-  transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
-}
-
-.jfk-card:hover {
-  border-color: var(--gold);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(212, 175, 55, 0.15);
-  transform: translateY(-3px);
-}
-
-/* ─── Department Cards ───────────────────────────────────────── */
-.collection-card {
-  position: relative;
-  overflow: hidden;
-  border-radius: 10px;
+/* ─── Charcoal Cards ─────────────────────────────────────────── */
+.charcoal-card {
   background-color: var(--charcoal);
   border: 1px solid var(--charcoal-border);
-  transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+  border-radius: 8px;
+  transition: all 0.3s ease;
 }
 
-.collection-card:hover {
-  border-color: var(--gold);
-  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.9), 0 0 30px rgba(212, 175, 55, 0.15);
+.charcoal-card:hover {
+  border-color: rgba(245, 217, 0, 0.5);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
 }
 
-/* ─── Deep Burgundy Promotional Banner ───────────────────────── */
-.banner-burgundy {
-  background: linear-gradient(135deg, #5B1018 0%, #350A0E 100%);
-  border: 1px solid rgba(212, 175, 55, 0.35);
-  box-shadow: 0 20px 60px rgba(91, 16, 24, 0.4);
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
 }
-
-/* ─── Section Divider ────────────────────────────────────────── */
-.section-divider {
-  width: 45px;
-  height: 2px;
-  background-color: var(--gold);
+::-webkit-scrollbar-track {
+  background: #111111;
 }
-
-/* ─── Admin Form Inputs ──────────────────────────────────────── */
-.admin-input {
-  width: 100%;
-  background-color: var(--midnight-pure);
-  border: 1px solid var(--charcoal-border);
-  color: var(--white);
-  padding: 0.75rem 1rem;
-  border-radius: var(--radius);
-  font-family: var(--font-figtree), sans-serif;
-  font-size: 0.9rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  outline: none;
+::-webkit-scrollbar-thumb {
+  background: #242424;
+  border-radius: 4px;
 }
-
-.admin-input:focus {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold);
 }
-
-.admin-label {
-  font-family: var(--font-figtree), sans-serif;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
-  display: block;
-  margin-bottom: 0.4rem;
-}
-
-/* ─── Custom Scrollbar ───────────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--midnight-pure); }
-::-webkit-scrollbar-thumb { background: #262626; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--gold); }
-
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
