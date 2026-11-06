@@ -43,8 +43,12 @@ body {
 }
 
 /* ─── Editorial Headings ─── */
+.font-cinzel {
+  font-family: var(--font-cinzel), 'Cinzel', Georgia, serif;
+}
+
 .font-serif {
-  font-family: var(--font-cormorant), 'Playfair Display', Georgia, serif;
+  font-family: var(--font-cinzel), var(--font-cormorant), 'Playfair Display', Georgia, serif;
 }
 
 .font-anton {

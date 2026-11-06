@@ -9,30 +9,27 @@
 - **Text & Contrast**: Clean White (`#FFFFFF`) for primary headings & body, muted silver (`#A0A0A0` / `#C7C7C7`) for secondary copy.
 
 ## 2. Typography Rules
-- **Brand Display Headings**: Use `Anton` (`font-anton` or `font-display`) for high-impact bold condensed headlines (e.g. `STAYING IN? WE'VE GOT OPTIONS.`, collection headings).
-- **Luxury Editorial Headings**: `Cormorant Garamond` (`font-serif`) for luxury italic accents and editorial expressions.
+- **Brand Display Headings**: Use `Cinzel` (`font-cinzel` / `font-display`) for regal, editorial luxury headlines (all-caps or titled, elegant proportions, never oversized).
+- **Punchy Signage & Feature Headings**: Use `Anton` (`font-anton`) for high-impact bold condensed headlines (e.g. `STAYING IN? WE'VE GOT OPTIONS.`).
+- **Luxury Editorial Accents**: `Cormorant Garamond` (`font-serif`) for luxury italic accents.
 - **Body & Interface**: `Figtree` (`font-sans`) for crisp, legible UI copy, numbers, and navigation.
 
 ## 3. Hero Section Rules
-- **Background**: Complete black background (`#111111` / `#0A0A0A`).
-- **Main Visual**: `heromain.jpg` covers the background / right side with an ultra-smooth cinematic gradient fading to deep black on the left (`linear-gradient(90deg, #111111 0%, rgba(17,17,17,0.7) 45%, transparent 100%)`).
-- **Content Alignment**: Left-aligned, generous breathing room, perfectly balanced.
+- **Background**: Complete black background (`#050505` / `#111111`).
+- **Main Visual (heromain.jpg)**: Must be clearly visible! Never drown the image in opaque black gradients. Use a directed horizontal gradient (`linear-gradient(90deg, rgba(5,5,5,0.94) 0%, rgba(5,5,5,0.80) 35%, rgba(5,5,5,0.35) 68%, rgba(5,5,5,0.12) 100%)`) so the left text is 100% legible while the bottles on the right and center shine with full clarity.
+- **Heading Scale**: Refined, restrained luxury sizing (`text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem]`). Never blow it up to gigantic `text-8xl` that pushes elements out of view.
 - **Content Elements**:
-  - NO "Your Neighborhood Bottle Shop • Houston, TX" eyebrow tag in hero.
-  - Large, confident, minimal luxury heading (e.g. `Good taste. Great company. JFK Liquors.`).
-  - Small, strong, punchy paragraph.
-  - Exactly TWO CTAs:
-    1. Primary Gold Button (`Explore Our Selection ↗`)
-    2. Minimal Ghost Button (`Get Directions`)
+  - Refined micro-tag: `Private Client Cellar • Houston, Texas` with gold dot.
+  - Large, confident, minimal luxury heading in `Cinzel` (`Rare Provenance. Uncompromising Distinction.`).
+  - Small, strong, punchy paragraph (`max-w-lg`).
+  - Exactly TWO CTAs (`Explore Vault ↗` and `Private Concierge`).
   - NO phone number in hero section.
-  - Subtle location note at bottom of hero only (`Near IAH Airport • 15655 John F Kennedy Blvd`).
 
 ## 4. Navigation Bar Rules (Luxury & Professional, Never "Beginner")
-- Sleek sticky navbar with deep black backdrop blur (`#111111`/95).
-- Clean JFK logo sizing (h-10 to h-11, sharp object-contain).
-- Sophisticated menu links with refined tracking (`tracking-[0.14em] text-xs font-semibold uppercase`).
-- Polished dropdown menu with charcoal background (`#242424`), subtle borders (`#383838`), rounded corners, and smooth transitions.
-- Right side: Clean call link and crisp gold directions button. No amateur margins or misaligned elements.
+- Sleek sticky navbar with deep black backdrop blur (`#050505`/95).
+- Clean JFK logo sizing (`h-8 sm:h-9`, sharp object-contain). NO extraneous coordinate badges or wrapping tags beside the logo.
+- Exactly 4-5 concise, spaced menu links with `whitespace-nowrap`: `The Vault` (dropdown), `Departments`, `Delivery`, `Our Story`, `Contact`.
+- Right side: Clean, single-line phone `(281) 590-3300` and compact gold `Visit Us ↗` button. Everything strictly `whitespace-nowrap flex-shrink-0` — NEVER let text wrap into two broken lines.
 
 ## 5. Anti-Slop & Minimalism Rules
 - **NO Emojis anywhere** in the UI. Use sleek minimal vector SVG icons only where necessary.

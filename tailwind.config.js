@@ -45,8 +45,9 @@ module.exports = {
         white: '#FFFFFF',
       },
       fontFamily: {
-        serif: ['var(--font-cormorant)', 'Playfair Display', 'Georgia', 'serif'],
-        display: ['var(--font-cormorant)', 'Playfair Display', 'Georgia', 'serif'],
+        cinzel: ['var(--font-cinzel)', 'Cinzel', 'serif'],
+        display: ['var(--font-cinzel)', 'var(--font-cormorant)', 'Playfair Display', 'serif'],
+        serif: ['var(--font-cinzel)', 'var(--font-cormorant)', 'Playfair Display', 'Georgia', 'serif'],
         sans: ['var(--font-figtree)', 'system-ui', '-apple-system', 'sans-serif'],
         anton: ['var(--font-anton)', 'Impact', 'Arial Narrow', 'sans-serif'],
       },

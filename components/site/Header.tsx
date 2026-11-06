@@ -20,7 +20,7 @@ export default function Header() {
   const pathname = usePathname();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    const onScroll = () => setScrolled(window.scrollY > 15);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -39,60 +39,45 @@ export default function Header() {
     <header
       className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-[#050505]/95 backdrop-blur-md border-b border-white/[0.08] shadow-2xl'
-          : 'bg-gradient-to-b from-black/90 via-black/50 to-transparent border-b border-white/[0.04]'
+          ? 'bg-[#050505]/98 backdrop-blur-md border-b border-white/[0.08] shadow-2xl'
+          : 'bg-[#050505]/85 backdrop-blur-sm border-b border-white/[0.06]'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-        <div className="flex items-center justify-between h-[76px] sm:h-[84px]">
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
+        <div className="flex items-center justify-between h-[74px] sm:h-[80px]">
 
-          {/* Left: Brand Identity */}
-          <div className="flex items-center gap-6">
-            <Link href="/" className="flex-shrink-0 flex items-center transition-opacity hover:opacity-90">
+          {/* Left: Brand Identity (Clean, Pure, No Clutter) */}
+          <div className="flex items-center flex-shrink-0">
+            <Link href="/" className="flex items-center transition-opacity hover:opacity-90">
               <Image
                 src="/assets/logo.png"
                 alt="JFK Liquors Houston"
-                width={150}
-                height={50}
-                className="h-9 sm:h-10 w-auto object-contain"
+                width={140}
+                height={44}
+                className="h-8 sm:h-9 w-auto object-contain"
                 priority
               />
             </Link>
-
-            {/* Subtle Coordinate Beacon */}
-            <div className="hidden xl:flex items-center gap-2 pl-6 border-l border-white/10 text-[10px] font-mono tracking-widest text-neutral-400">
-              <span className="w-1.5 h-1.5 bg-[#F5D900]" />
-              <span>HOUSTON &bull; IAH AIRPORT CORRIDOR</span>
-            </div>
           </div>
 
-          {/* Center: Editorial Navigation */}
-          <nav className="hidden lg:flex items-center gap-8 xl:gap-9">
-            <Link
-              href="/"
-              className={`text-[11px] font-semibold uppercase tracking-[0.22em] transition-colors ${
-                pathname === '/' ? 'text-[#F5D900]' : 'text-white hover:text-[#F5D900]'
-              }`}
-            >
-              Overview
-            </Link>
-
-            {/* Portfolio / Departments Dropdown */}
+          {/* Center: Refined Editorial Navigation */}
+          <nav className="hidden lg:flex items-center gap-7 xl:gap-8 flex-shrink-0">
+            {/* The Vault Dropdown */}
             <div ref={dropdownRef} className="relative">
               <button
                 type="button"
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 onMouseEnter={() => setDropdownOpen(true)}
-                className={`flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] transition-colors py-2 ${
+                className={`flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.2em] transition-colors py-2 whitespace-nowrap ${
                   dropdownOpen || pathname.startsWith('/products')
                     ? 'text-[#F5D900]'
-                    : 'text-white hover:text-[#F5D900]'
+                    : 'text-neutral-300 hover:text-white'
                 }`}
               >
-                <span>Curated Vault</span>
+                <span>The Vault</span>
                 <svg
                   className={`w-3 h-3 transition-transform duration-200 ${
-                    dropdownOpen ? 'rotate-180 text-[#F5D900]' : 'text-neutral-400'
+                    dropdownOpen ? 'rotate-180 text-[#F5D900]' : 'text-neutral-500'
                   }`}
                   fill="none"
                   viewBox="0 0 24 24"
@@ -106,7 +91,7 @@ export default function Header() {
               {dropdownOpen && (
                 <div
                   onMouseLeave={() => setDropdownOpen(false)}
-                  className="absolute top-full left-0 mt-2 w-72 bg-[#0B0C0E] border border-white/10 shadow-2xl p-2 z-50 animate-in fade-in duration-150"
+                  className="absolute top-full left-0 mt-2 w-72 bg-[#0B0C0E] border border-white/10 shadow-2xl p-2 z-50"
                 >
                   <div className="space-y-0.5">
                     {DEPARTMENTS.map((dept) => (
@@ -114,12 +99,12 @@ export default function Header() {
                         key={dept.href}
                         href={dept.href}
                         onClick={() => setDropdownOpen(false)}
-                        className="group block px-3.5 py-2.5 hover:bg-[#121316] transition-colors"
+                        className="group block px-3.5 py-2.5 hover:bg-[#141519] transition-colors"
                       >
                         <p className="text-xs font-semibold text-white group-hover:text-[#F5D900] transition-colors">
                           {dept.label}
                         </p>
-                        <p className="text-[10.5px] text-neutral-400 font-light mt-0.5 line-clamp-1">
+                        <p className="text-[10px] text-neutral-400 font-light mt-0.5 line-clamp-1">
                           {dept.desc}
                         </p>
                       </Link>
@@ -131,42 +116,42 @@ export default function Header() {
 
             <Link
               href="/#collection"
-              className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white hover:text-[#F5D900] transition-colors"
+              className="text-[11px] font-medium uppercase tracking-[0.2em] text-neutral-300 hover:text-white transition-colors whitespace-nowrap"
             >
               Departments
             </Link>
 
             <Link
-              href="/about"
-              className={`text-[11px] font-semibold uppercase tracking-[0.22em] transition-colors ${
-                pathname === '/about' ? 'text-[#F5D900]' : 'text-white hover:text-[#F5D900]'
-              }`}
+              href="/#delivery"
+              className="text-[11px] font-medium uppercase tracking-[0.2em] text-neutral-300 hover:text-white transition-colors whitespace-nowrap"
             >
-              Heritage
+              Delivery
             </Link>
 
             <Link
-              href="/#delivery"
-              className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white hover:text-[#F5D900] transition-colors"
+              href="/about"
+              className={`text-[11px] font-medium uppercase tracking-[0.2em] transition-colors whitespace-nowrap ${
+                pathname === '/about' ? 'text-[#F5D900]' : 'text-neutral-300 hover:text-white'
+              }`}
             >
-              Concierge
+              Our Story
             </Link>
 
             <Link
               href="/contact"
-              className={`text-[11px] font-semibold uppercase tracking-[0.22em] transition-colors ${
-                pathname === '/contact' ? 'text-[#F5D900]' : 'text-white hover:text-[#F5D900]'
+              className={`text-[11px] font-medium uppercase tracking-[0.2em] transition-colors whitespace-nowrap ${
+                pathname === '/contact' ? 'text-[#F5D900]' : 'text-neutral-300 hover:text-white'
               }`}
             >
-              Visit
+              Contact
             </Link>
           </nav>
 
-          {/* Right: Phone & Directions CTA */}
-          <div className="hidden sm:flex items-center gap-5">
+          {/* Right: Phone & Action Button (Never wrap, strictly aligned) */}
+          <div className="hidden sm:flex items-center gap-6 flex-shrink-0">
             <a
               href="tel:+12815903300"
-              className="text-xs font-mono font-medium text-neutral-300 hover:text-[#F5D900] transition-colors tracking-widest"
+              className="text-xs font-mono font-medium text-neutral-300 hover:text-[#F5D900] transition-colors tracking-widest whitespace-nowrap"
             >
               (281) 590-3300
             </a>
@@ -175,18 +160,18 @@ export default function Header() {
               href="https://www.google.com/maps/dir/?api=1&destination=15655+John+F+Kennedy+Blvd+Suite+D+Houston+TX+77032"
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-primary !px-5 !py-2.5 text-xs tracking-wider"
+              className="btn-primary !px-4 !py-2.5 text-[11px] tracking-wider whitespace-nowrap"
             >
               <span>Visit Us</span>
-              <span className="text-[10px]">↗</span>
+              <span className="text-[9px]">↗</span>
             </a>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Toggle Button */}
           <button
             type="button"
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="lg:hidden p-2 text-white hover:text-[#F5D900] transition-colors"
+            className="lg:hidden p-2 text-white hover:text-[#F5D900] transition-colors flex-shrink-0"
             aria-label="Toggle navigation"
           >
             {mobileOpen ? (
@@ -234,25 +219,25 @@ export default function Header() {
             Departments
           </Link>
           <Link
-            href="/about"
-            onClick={() => setMobileOpen(false)}
-            className="block text-xs font-bold uppercase tracking-[0.2em] text-white hover:text-[#F5D900]"
-          >
-            Heritage
-          </Link>
-          <Link
             href="/#delivery"
             onClick={() => setMobileOpen(false)}
             className="block text-xs font-bold uppercase tracking-[0.2em] text-white hover:text-[#F5D900]"
           >
-            Concierge
+            Delivery
+          </Link>
+          <Link
+            href="/about"
+            onClick={() => setMobileOpen(false)}
+            className="block text-xs font-bold uppercase tracking-[0.2em] text-white hover:text-[#F5D900]"
+          >
+            Our Story
           </Link>
           <Link
             href="/contact"
             onClick={() => setMobileOpen(false)}
             className="block text-xs font-bold uppercase tracking-[0.2em] text-white hover:text-[#F5D900]"
           >
-            Visit Us
+            Contact
           </Link>
 
           <div className="pt-4 border-t border-white/10 flex flex-col gap-2.5">
