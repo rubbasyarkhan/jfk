@@ -1,27 +1,20 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Figtree, Anton, Cinzel } from "next/font/google";
+import { Montserrat, Playfair_Display, Anton } from "next/font/google";
 import "./globals.css";
 
-const cinzel = Cinzel({
-  weight: ["400", "500", "600", "700", "800"],
+const montserrat = Montserrat({
   subsets: ["latin"],
-  variable: "--font-cinzel",
+  variable: "--font-montserrat",
   display: "swap",
+  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
-const cormorant = Cormorant_Garamond({
-  weight: ["400", "500", "600", "700"],
+const playfair = Playfair_Display({
   subsets: ["latin"],
-  variable: "--font-cormorant",
+  variable: "--font-playfair",
   display: "swap",
+  weight: ["400", "500", "600", "700", "800", "900"],
   style: ["normal", "italic"],
-});
-
-const figtree = Figtree({
-  subsets: ["latin"],
-  variable: "--font-figtree",
-  display: "swap",
-  weight: ["400", "500", "600", "700"],
 });
 
 const anton = Anton({
@@ -43,8 +36,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${cinzel.variable} ${cormorant.variable} ${figtree.variable} ${anton.variable}`}>
-      <body className="bg-[#050505] text-[#FFFFFF] antialiased selection:bg-[#F5D900] selection:text-[#050505]">
+    <html lang="en" className={`${montserrat.variable} ${playfair.variable} ${anton.variable}`}>
+      <body className="bg-[#050505] text-[#FFFFFF] font-sans antialiased selection:bg-[#F5D900] selection:text-[#050505]">
         {children}
       </body>
     </html>

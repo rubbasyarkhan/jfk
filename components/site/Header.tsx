@@ -188,9 +188,9 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Drawer (Responsive with safe scroll area) */}
       {mobileOpen && (
-        <div className="lg:hidden bg-[#050505] border-b border-white/10 px-6 pt-4 pb-8 space-y-4">
+        <div className="lg:hidden bg-[#050505] border-b border-white/10 px-6 pt-4 pb-8 space-y-4 max-h-[calc(100vh-80px)] overflow-y-auto shadow-2xl">
           <Link
             href="/"
             onClick={() => setMobileOpen(false)}

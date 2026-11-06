@@ -9,10 +9,10 @@
 - **Text & Contrast**: Clean White (`#FFFFFF`) for primary headings & body, muted silver (`#A0A0A0` / `#C7C7C7`) for secondary copy.
 
 ## 2. Typography Rules
-- **Brand Display Headings**: Use `Cinzel` (`font-cinzel` / `font-display`) for regal, editorial luxury headlines (all-caps or titled, elegant proportions, never oversized).
+- **Brand Editorial Headings**: Use `Playfair Display` (`font-serif` / `font-display`) for luxury editorial headlines with italic accents (e.g. `Rare Provenance. Uncompromising Distinction.`).
 - **Punchy Signage & Feature Headings**: Use `Anton` (`font-anton`) for high-impact bold condensed headlines (e.g. `STAYING IN? WE'VE GOT OPTIONS.`).
-- **Luxury Editorial Accents**: `Cormorant Garamond` (`font-serif`) for luxury italic accents.
-- **Body & Interface**: `Figtree` (`font-sans`) for crisp, legible UI copy, numbers, and navigation.
+- **Body & Content (Strict)**: Use `Montserrat` (`font-sans` / `font-montserrat`) for all interface copy, body text, buttons, and navigation.
+- **Micro-Metadata**: Montserrat uppercase with refined tracking (`tracking-[0.22em] text-[11px] font-bold`).
 
 ## 3. Hero Section Rules
 - **Background**: Complete black background (`#050505` / `#111111`).
