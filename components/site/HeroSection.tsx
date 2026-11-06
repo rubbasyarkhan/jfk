@@ -37,7 +37,6 @@ export default function HeroSection() {
         {/* 2. Top Alignment: Editorial Main Heading in Luxury Playfair Display Serif */}
         <div className="max-w-3xl">
           <div className="flex items-center gap-2.5 mb-3 sm:mb-4">
-            <span className="w-1.5 h-1.5 bg-[#F5D900]" />
             <p className="meta-tag">
               Private Client Cellar &bull; Houston, Texas
             </p>
@@ -74,12 +73,15 @@ export default function HeroSection() {
               <span className="text-[10px]">↗</span>
             </Link>
 
-            <Link
-              href="/contact"
-              className="btn-secondary w-full sm:w-auto text-center !px-6 !py-3.5 text-xs font-semibold uppercase tracking-[0.14em]"
+            <a
+              href="https://www.google.com/maps/dir/?api=1&destination=15655+John+F+Kennedy+Blvd+Suite+D+Houston+TX+77032"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-secondary w-full sm:w-auto text-center !px-6 !py-3.5 text-xs font-semibold uppercase tracking-[0.14em] inline-flex items-center justify-center gap-1.5"
             >
-              Private Concierge
-            </Link>
+              <span>Get Directions</span>
+              <span className="text-[10px]">↗</span>
+            </a>
           </div>
 
         </div>
