@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import type { Category } from '@/types';
 
-const CATEGORIES = [
+const FALLBACK_CATEGORIES = [
   {
     num: '01',
     slug: 'spirits',
@@ -36,7 +37,26 @@ const CATEGORIES = [
   },
 ];
 
-export default function CollectionGrid() {
+interface Props {
+  categories?: Category[];
+}
+
+export default function CollectionGrid({ categories }: Props) {
+  const displayCategories =
+    categories && categories.length > 0
+      ? categories.map((cat, idx) => ({
+          num: String(idx + 1).padStart(2, '0'),
+          slug: cat.slug,
+          label: cat.name,
+          subtitle: cat.bannerText ? cat.bannerText.slice(0, 32) : 'Curated Selection',
+          desc: cat.description || 'Premium handpicked bottles, rare editions & everyday favorites.',
+          image:
+            cat.imageUrl ||
+            FALLBACK_CATEGORIES[idx % FALLBACK_CATEGORIES.length]?.image ||
+            'https://res.cloudinary.com/ovmougmy/image/upload/v1793981778/jfk-liquors/bourbon-jim-beam.jpg',
+        }))
+      : FALLBACK_CATEGORIES;
+
   return (
     <section id="collection" className="py-24 sm:py-32 relative bg-[#0A0A0A]">
       <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20">
@@ -70,9 +90,9 @@ export default function CollectionGrid() {
           </div>
         </div>
 
-        {/* 4 Standalone Minimal Department Cards (NO Image Overlay - Content Strictly Below) */}
+        {/* Standalone Minimal Department Cards (NO Image Overlay - Content Strictly Below) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {CATEGORIES.map((cat) => (
+          {displayCategories.map((cat) => (
             <Link
               key={cat.slug}
               href={`/products/${cat.slug}`}

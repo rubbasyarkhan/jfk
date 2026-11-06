@@ -4,6 +4,7 @@ import {
   getDocs,
   getDoc,
   addDoc,
+  setDoc,
   updateDoc,
   deleteDoc,
   query,
@@ -15,9 +16,15 @@ import {
 import { db } from './firebase';
 import type { Product, Category, SiteSettings } from '@/types';
 import { INITIAL_PRODUCTS, INITIAL_CATEGORIES } from './initialData';
+import {
+  getLocalProducts,
+  saveLocalProducts,
+  getLocalCategories,
+  saveLocalCategories,
+} from './localStore';
 
 // Check if real Firebase credentials are provided
-const HAS_REAL_FIREBASE = Boolean(
+export const HAS_REAL_FIREBASE = Boolean(
   process.env.NEXT_PUBLIC_FIREBASE_API_KEY &&
   process.env.NEXT_PUBLIC_FIREBASE_API_KEY !== 'mock-api-key-jfk-liquors'
 );
@@ -48,11 +55,12 @@ export async function getProducts(categorySlug?: string): Promise<Product[]> {
     }
   }
 
-  // Instant fallback to mock data
+  // Fallback to local store
+  const all = getLocalProducts();
   if (categorySlug) {
-    return INITIAL_PRODUCTS.filter(p => p.category === categorySlug);
+    return all.filter(p => p.category === categorySlug);
   }
-  return INITIAL_PRODUCTS;
+  return all;
 }
 
 export async function getFeaturedProducts(count = 8): Promise<Product[]> {
@@ -73,7 +81,7 @@ export async function getFeaturedProducts(count = 8): Promise<Product[]> {
     }
   }
 
-  return INITIAL_PRODUCTS.filter(p => p.featured).slice(0, count);
+  return getLocalProducts().filter(p => p.featured).slice(0, count);
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
@@ -90,7 +98,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
     }
   }
 
-  const found = INITIAL_PRODUCTS.find(p => p.slug === slug);
+  const found = getLocalProducts().find(p => p.slug === slug);
   return found || null;
 }
 
@@ -106,7 +114,7 @@ export async function getProductById(id: string): Promise<Product | null> {
     }
   }
 
-  const found = INITIAL_PRODUCTS.find(p => p.id === id);
+  const found = getLocalProducts().find(p => p.id === id);
   return found || null;
 }
 
@@ -121,29 +129,82 @@ export async function getAllProducts(): Promise<Product[]> {
       firestoreDisabled = true;
     }
   }
-  return INITIAL_PRODUCTS;
+  return getLocalProducts();
 }
 
 export async function createProduct(
   data: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>
 ): Promise<string> {
-  const ref = await addDoc(collection(db, 'products'), {
+  const newId = (data.slug || `prod-${Date.now()}`).toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  const now = new Date().toISOString();
+
+  if (!firestoreDisabled) {
+    try {
+      const ref = await addDoc(collection(db, 'products'), {
+        ...data,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+      return ref.id;
+    } catch (err) {
+      console.warn('Firestore write failed, falling back to localStore:', err);
+    }
+  }
+
+  // Local fallback
+  const products = getLocalProducts();
+  const newProduct: Product = {
     ...data,
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  });
-  return ref.id;
+    id: newId,
+    createdAt: now,
+    updatedAt: now,
+  };
+  products.unshift(newProduct);
+  saveLocalProducts(products);
+  return newId;
 }
 
 export async function updateProduct(id: string, data: Partial<Product>): Promise<void> {
-  await updateDoc(doc(db, 'products', id), {
-    ...data,
-    updatedAt: serverTimestamp(),
-  });
+  const now = new Date().toISOString();
+
+  if (!firestoreDisabled) {
+    try {
+      await updateDoc(doc(db, 'products', id), {
+        ...data,
+        updatedAt: serverTimestamp(),
+      });
+      return;
+    } catch (err) {
+      console.warn('Firestore update failed, falling back to localStore:', err);
+    }
+  }
+
+  // Local fallback
+  const products = getLocalProducts();
+  const idx = products.findIndex(p => p.id === id);
+  if (idx !== -1) {
+    products[idx] = {
+      ...products[idx],
+      ...data,
+      updatedAt: now,
+    };
+    saveLocalProducts(products);
+  }
 }
 
 export async function deleteProduct(id: string): Promise<void> {
-  await deleteDoc(doc(db, 'products', id));
+  if (!firestoreDisabled) {
+    try {
+      await deleteDoc(doc(db, 'products', id));
+      return;
+    } catch (err) {
+      console.warn('Firestore delete failed, falling back to localStore:', err);
+    }
+  }
+
+  // Local fallback
+  const products = getLocalProducts().filter(p => p.id !== id);
+  saveLocalProducts(products);
 }
 
 // ─── Categories ────────────────────────────────────────────────────────────
@@ -160,7 +221,7 @@ export async function getCategories(): Promise<Category[]> {
       firestoreDisabled = true;
     }
   }
-  return INITIAL_CATEGORIES;
+  return getLocalCategories();
 }
 
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
@@ -177,21 +238,68 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
     }
   }
 
-  const found = INITIAL_CATEGORIES.find(c => c.slug === slug);
+  const found = getLocalCategories().find(c => c.slug === slug);
   return found || null;
 }
 
 export async function createCategory(data: Omit<Category, 'id'>): Promise<string> {
-  const ref = await addDoc(collection(db, 'categories'), data);
-  return ref.id;
+  const newId = (data.slug || `cat-${Date.now()}`).toLowerCase().replace(/[^a-z0-9]+/g, '-');
+
+  if (!firestoreDisabled) {
+    try {
+      const ref = await addDoc(collection(db, 'categories'), data);
+      return ref.id;
+    } catch (err) {
+      console.warn('Firestore category write failed, falling back to localStore:', err);
+    }
+  }
+
+  // Local fallback
+  const categories = getLocalCategories();
+  const newCat: Category = {
+    ...data,
+    id: newId,
+  };
+  categories.push(newCat);
+  saveLocalCategories(categories);
+  return newId;
 }
 
 export async function updateCategory(id: string, data: Partial<Category>): Promise<void> {
-  await updateDoc(doc(db, 'categories', id), data);
+  if (!firestoreDisabled) {
+    try {
+      await updateDoc(doc(db, 'categories', id), data);
+      return;
+    } catch (err) {
+      console.warn('Firestore category update failed, falling back to localStore:', err);
+    }
+  }
+
+  // Local fallback
+  const categories = getLocalCategories();
+  const idx = categories.findIndex(c => c.id === id);
+  if (idx !== -1) {
+    categories[idx] = {
+      ...categories[idx],
+      ...data,
+    };
+    saveLocalCategories(categories);
+  }
 }
 
 export async function deleteCategory(id: string): Promise<void> {
-  await deleteDoc(doc(db, 'categories', id));
+  if (!firestoreDisabled) {
+    try {
+      await deleteDoc(doc(db, 'categories', id));
+      return;
+    } catch (err) {
+      console.warn('Firestore category delete failed, falling back to localStore:', err);
+    }
+  }
+
+  // Local fallback
+  const categories = getLocalCategories().filter(c => c.id !== id);
+  saveLocalCategories(categories);
 }
 
 // ─── Site Settings ─────────────────────────────────────────────────────────
@@ -223,5 +331,34 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
 }
 
 export async function updateSiteSettings(data: Partial<SiteSettings>): Promise<void> {
-  await updateDoc(doc(db, 'settings', 'main'), data);
+  if (!firestoreDisabled) {
+    try {
+      await updateDoc(doc(db, 'settings', 'main'), data);
+      return;
+    } catch (err) {
+      console.warn('Firestore settings update failed:', err);
+    }
+  }
+}
+
+// Helper to seed initial catalog to real Firestore
+export async function seedInitialDataToFirestore(): Promise<{ products: number; categories: number }> {
+  let catCount = 0;
+  let prodCount = 0;
+
+  for (const cat of INITIAL_CATEGORIES) {
+    await setDoc(doc(db, 'categories', cat.id), cat);
+    catCount++;
+  }
+
+  for (const prod of INITIAL_PRODUCTS) {
+    await setDoc(doc(db, 'products', prod.id), {
+      ...prod,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+    prodCount++;
+  }
+
+  return { products: prodCount, categories: catCount };
 }

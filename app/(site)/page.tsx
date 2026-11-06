@@ -5,7 +5,7 @@ import StorySection from '@/components/site/StorySection';
 import DeliverySection from '@/components/site/DeliverySection';
 import LocationSection from '@/components/site/LocationSection';
 import ProductCard from '@/components/site/ProductCard';
-import { getFeaturedProducts } from '@/lib/firestore';
+import { getFeaturedProducts, getCategories } from '@/lib/firestore';
 import Link from 'next/link';
 
 export const metadata = {
@@ -15,7 +15,10 @@ export const metadata = {
 };
 
 export default async function HomePage() {
-  const featuredProducts = await getFeaturedProducts(6);
+  const [featuredProducts, categories] = await Promise.all([
+    getFeaturedProducts(6),
+    getCategories(),
+  ]);
 
   return (
     <div className="bg-[#050505] text-[#FFFFFF]">
@@ -23,7 +26,7 @@ export default async function HomePage() {
       <HeroSection />
 
       {/* 2. Curated Department Gallery (01 // THE ARCHIVE) */}
-      <CollectionGrid />
+      <CollectionGrid categories={categories} />
 
       {/* 3. The Allocated Vault / Featured Bottles — 3 Cards in a Row */}
       {featuredProducts.length > 0 && (

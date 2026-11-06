@@ -16,8 +16,30 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [departments, setDepartments] = useState(DEPARTMENTS);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+
+  useEffect(() => {
+    async function loadDepts() {
+      try {
+        const res = await fetch('/api/admin/categories');
+        const data = await res.json();
+        if (res.ok && Array.isArray(data.categories) && data.categories.length > 0) {
+          setDepartments(
+            data.categories.map((c: any) => ({
+              label: c.name,
+              href: `/products/${c.slug}`,
+              desc: c.description || c.bannerText || 'Curated selection',
+            }))
+          );
+        }
+      } catch (e) {
+        // Fallback to default
+      }
+    }
+    loadDepts();
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 15);
@@ -108,7 +130,7 @@ export default function Header() {
                       </p>
                     </Link>
 
-                    {DEPARTMENTS.map((dept) => (
+                    {departments.map((dept) => (
                       <Link
                         key={dept.href}
                         href={dept.href}
@@ -119,7 +141,7 @@ export default function Header() {
                         <p className="text-xs font-semibold text-white group-hover:text-[#F5D900] transition-colors">
                           {dept.label}
                         </p>
-                        <p className="text-[10px]  font-light mt-0.5 line-clamp-1">
+                        <p className="text-[10px] text-neutral-400 font-light mt-0.5 line-clamp-1">
                           {dept.desc}
                         </p>
                       </Link>
@@ -224,7 +246,7 @@ export default function Header() {
           </Link>
           <div className="pl-3 space-y-2 border-l border-white/10 ml-1">
             <p className="text-[10px] uppercase font-mono tracking-widest text-neutral-500">Vault Departments</p>
-            {DEPARTMENTS.map((dept) => (
+            {departments.map((dept) => (
               <Link
                 key={dept.href}
                 href={dept.href}

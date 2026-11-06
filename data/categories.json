@@ -1,0 +1,38 @@
+[
+  {
+    "id": "spirits",
+    "name": "Spirits",
+    "slug": "spirits",
+    "description": "Bourbon, Scotch, Vodka, Gin, Cognac & more from around the world.",
+    "bannerText": "From allocated bourbon to peated single malts, the spirits wall is the heart of the store.",
+    "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981778/jfk-liquors/bourbon-jim-beam.jpg",
+    "sortOrder": 1
+  },
+  {
+    "id": "wines",
+    "name": "Wines",
+    "slug": "wines",
+    "description": "Reds, whites, rosé, and sparkling — from everyday pours to celebration bottles.",
+    "bannerText": "Weeknight value bottles, gift-worthy labels and celebration sparkling.",
+    "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981782/jfk-liquors/wine-silver-oak.jpg",
+    "sortOrder": 2
+  },
+  {
+    "id": "beer",
+    "name": "Beer",
+    "slug": "beer",
+    "description": "Texas craft, domestic favorites, imports, hard seltzers & RTDs.",
+    "bannerText": "Cold and ready to go: Texas craft, national favorites and imports.",
+    "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981786/jfk-liquors/beer-dark-bottle.jpg",
+    "sortOrder": 3
+  },
+  {
+    "id": "agave-and-more",
+    "name": "Agave & More",
+    "slug": "agave-and-more",
+    "description": "Tequila from blanco to añejo, mezcal, liqueurs, mixers, ice and glassware.",
+    "bannerText": "Tequila from blanco to añejo, mezcal, liqueurs, mixers, ice and glassware.",
+    "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981788/jfk-liquors/tequila-don-julio.jpg",
+    "sortOrder": 4
+  }
+]

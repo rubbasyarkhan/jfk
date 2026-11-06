@@ -12,49 +12,35 @@ interface Props {
 export default function ImageUploader({ value, onChange, productId }: Props) {
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  const [customUrl, setCustomUrl] = useState('');
+  const [error, setError] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
 
   async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
     setUploading(true);
+    setError('');
     const newUrls: string[] = [];
-    const pid = productId || `prod-${Date.now()}`;
 
     for (const file of Array.from(files)) {
       try {
-        // Use client-side FormData to server WebP conversion endpoint
         const formData = new FormData();
         formData.append('file', file);
 
-        const res = await fetch('/api/convert-webp', {
+        const res = await fetch('/api/admin/upload-image', {
           method: 'POST',
           body: formData,
         });
 
-        if (res.ok) {
-          const blob = await res.blob();
-          // Create local Object URL or upload to Firebase Storage if available
-          try {
-            const { uploadProductImage } = await import('@/lib/storage');
-            const webpFile = new File([blob], `${file.name.replace(/\.[^.]+$/, '')}.webp`, {
-              type: 'image/webp',
-            });
-            const downloadUrl = await uploadProductImage(pid, webpFile);
-            newUrls.push(downloadUrl);
-          } catch (storageErr) {
-            console.warn('Firebase Storage offline, using direct WebP data URL:', storageErr);
-            // Convert to data URI for immediate persistent storage in Firestore/document
-            const reader = new FileReader();
-            const dataUrlPromise = new Promise<string>((resolve) => {
-              reader.onloadend = () => resolve(reader.result as string);
-              reader.readAsDataURL(blob);
-            });
-            const dataUrl = await dataUrlPromise;
-            newUrls.push(dataUrl);
-          }
+        const data = await res.json();
+        if (res.ok && data.url) {
+          newUrls.push(data.url);
+        } else {
+          setError(data.error || 'Failed to upload image to Cloudinary');
         }
-      } catch (err) {
-        console.error('Image upload failed:', err);
+      } catch (err: any) {
+        console.error('Upload error:', err);
+        setError(err?.message || 'Network error during image upload');
       }
     }
 
@@ -62,6 +48,13 @@ export default function ImageUploader({ value, onChange, productId }: Props) {
       onChange([...value, ...newUrls]);
     }
     setUploading(false);
+  }
+
+  function handleAddCustomUrl(e: React.FormEvent) {
+    e.preventDefault();
+    if (!customUrl.trim()) return;
+    onChange([...value, customUrl.trim()]);
+    setCustomUrl('');
   }
 
   function removeImage(index: number) {
@@ -78,12 +71,18 @@ export default function ImageUploader({ value, onChange, productId }: Props) {
 
   return (
     <div className="space-y-4">
+      {error && (
+        <div className="p-3 rounded-lg bg-red-900/60 border border-red-500/50 text-red-200 text-xs">
+          {error}
+        </div>
+      )}
+
       {/* Drag & Drop Area */}
       <div
         className={`relative rounded-xl p-8 text-center cursor-pointer border-2 border-dashed transition-all ${
           dragOver
-            ? 'border-gold bg-gold/10'
-            : 'border-line hover:border-gold/60 bg-ink-3'
+            ? 'border-[#F5D900] bg-[#F5D900]/10'
+            : 'border-white/15 hover:border-[#F5D900]/60 bg-[#161616]'
         }`}
         onClick={() => fileRef.current?.click()}
         onDragOver={(e) => {
@@ -108,28 +107,46 @@ export default function ImageUploader({ value, onChange, productId }: Props) {
 
         {uploading ? (
           <div className="flex flex-col items-center gap-3">
-            <div className="w-8 h-8 rounded-full border-2 border-gold border-t-transparent animate-spin" />
-            <p className="text-xs font-bold text-gold uppercase tracking-wider">
-              Converting to .WebP &amp; Storing...
+            <div className="w-8 h-8 rounded-full border-2 border-[#F5D900] border-t-transparent animate-spin" />
+            <p className="text-xs font-bold text-[#F5D900] uppercase tracking-wider font-sans">
+              Uploading Directly to Cloudinary...
             </p>
           </div>
         ) : (
           <div className="flex flex-col items-center gap-3">
-            <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gold/10 text-gold border border-gold/20">
+            <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#F5D900]/10 text-[#F5D900] border border-[#F5D900]/20">
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
             <div>
-              <p className="text-sm font-semibold text-paper">
-                Drop bottle photos here or <span className="text-gold underline">click to browse</span>
+              <p className="text-sm font-semibold text-white">
+                Drop bottle photos here or <span className="text-[#F5D900] underline">click to browse</span>
               </p>
-              <p className="text-xs text-muted mt-1">
-                Automatic server-side conversion to .WebP &amp; Firebase Storage
+              <p className="text-xs text-neutral-400 mt-1">
+                Direct Cloudinary CDN upload &bull; Auto-optimized WebP
               </p>
             </div>
           </div>
         )}
+      </div>
+
+      {/* Or Paste Direct Image URL */}
+      <div className="flex gap-2">
+        <input
+          type="url"
+          placeholder="Or paste an existing Cloudinary / Image URL..."
+          value={customUrl}
+          onChange={(e) => setCustomUrl(e.target.value)}
+          className="flex-1 bg-[#161616] border border-white/10 rounded-lg px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#F5D900]"
+        />
+        <button
+          type="button"
+          onClick={handleAddCustomUrl}
+          className="px-4 py-2 rounded-lg bg-[#242424] hover:bg-[#333333] border border-white/10 text-xs font-semibold text-white uppercase tracking-wider"
+        >
+          Add URL
+        </button>
       </div>
 
       {/* Image Gallery Previews */}
@@ -138,32 +155,32 @@ export default function ImageUploader({ value, onChange, productId }: Props) {
           {value.map((url, idx) => (
             <div
               key={idx}
-              className={`relative aspect-square rounded-xl overflow-hidden border bg-ink-2 group ${
-                idx === 0 ? 'border-gold ring-2 ring-gold/30' : 'border-line'
+              className={`relative aspect-square rounded-xl overflow-hidden border bg-[#111111] group ${
+                idx === 0 ? 'border-[#F5D900] ring-2 ring-[#F5D900]/30' : 'border-white/10'
               }`}
             >
               <Image
                 src={url}
                 alt={`Product visual ${idx + 1}`}
                 fill
-                className="object-cover"
+                className="object-cover object-center"
                 sizes="150px"
               />
 
-              {/* Badges */}
+              {/* Main Badge */}
               {idx === 0 && (
-                <span className="absolute top-2 left-2 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-gold text-ink-4">
+                <span className="absolute top-2 left-2 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#F5D900] text-[#050505]">
                   Primary
                 </span>
               )}
 
               {/* Hover actions overlay */}
-              <div className="absolute inset-0 bg-ink-4/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+              <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                 {idx !== 0 && (
                   <button
                     type="button"
                     onClick={() => setMainImage(idx)}
-                    className="p-1.5 rounded-lg bg-gold text-ink-4 text-xs font-bold hover:bg-gold-light"
+                    className="p-1.5 rounded-lg bg-[#F5D900] text-[#050505] text-xs font-bold hover:bg-[#FFE524]"
                     title="Make Main Image"
                   >
                     ★ Main
@@ -172,7 +189,7 @@ export default function ImageUploader({ value, onChange, productId }: Props) {
                 <button
                   type="button"
                   onClick={() => removeImage(idx)}
-                  className="p-1.5 rounded-lg bg-red-500 text-white text-xs font-bold hover:bg-red-600"
+                  className="p-1.5 rounded-lg bg-red-600 text-white text-xs font-bold hover:bg-red-700"
                   title="Remove Image"
                 >
                   ✕

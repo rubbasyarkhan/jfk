@@ -1,48 +1,48 @@
 import { notFound } from 'next/navigation';
-import { getProducts, getCategoryBySlug } from '@/lib/firestore';
+import { getProducts, getCategoryBySlug, getCategories } from '@/lib/firestore';
 import ProductCard from '@/components/site/ProductCard';
 import CategorySwitcher from '@/components/site/CategorySwitcher';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 
-const VALID_CATEGORIES = ['spirits', 'wines', 'beer', 'agave-and-more'];
+export const revalidate = 60;
 
-export function generateStaticParams() {
-  return VALID_CATEGORIES.map((category) => ({ category }));
+export async function generateStaticParams() {
+  const categories = await getCategories();
+  return categories.map((c) => ({ category: c.slug }));
 }
-
-const CATEGORY_BANNERS: Record<string, string> = {
-  spirits: 'From allocated bourbon to peated single malts, the spirits wall is the heart of our store.',
-  wines: 'Weeknight value bottles, gift-worthy labels, and celebration French Champagne.',
-  beer: 'Cold and ready to go: Texas craft, national favorites, and European imports.',
-  'agave-and-more': '100% Blue Agave tequila from blanco to añejo, Oaxaca mezcal, liqueurs, mixers, and ice.',
-};
 
 interface Props {
   params: { category: string };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const cat = params.category.replace(/-/g, ' ');
-  const capitalized = cat.charAt(0).toUpperCase() + cat.slice(1);
+  const category = await getCategoryBySlug(params.category);
+  const catName = category?.name || params.category.replace(/-/g, ' ');
+  const capitalized = catName.charAt(0).toUpperCase() + catName.slice(1);
   return {
     title: `${capitalized} Department | JFK Liquors Houston`,
-    description: CATEGORY_BANNERS[params.category] || 'Shop our curated collection at JFK Liquors Houston near IAH.',
+    description: category?.bannerText || category?.description || `Explore our ${capitalized} collection at JFK Liquors Houston near IAH.`,
   };
 }
 
 export default async function CategoryPage({ params }: Props) {
-  if (!VALID_CATEGORIES.includes(params.category)) {
+  const [products, category, allCategories] = await Promise.all([
+    getProducts(params.category),
+    getCategoryBySlug(params.category),
+    getCategories(),
+  ]);
+
+  // If the category does not exist in taxonomy and no products have this category
+  if (!category && products.length === 0) {
     notFound();
   }
 
-  const [products, category] = await Promise.all([
-    getProducts(params.category),
-    getCategoryBySlug(params.category),
-  ]);
-
-  const bannerText = category?.bannerText || CATEGORY_BANNERS[params.category] || '';
-  const catName = category?.name || params.category.replace(/-/g, ' & ');
+  const catName = category?.name || params.category.replace(/-/g, ' ');
+  const bannerText =
+    category?.bannerText ||
+    category?.description ||
+    'Curated collection handpicked for quality, character, and exceptional value.';
 
   return (
     <div className="bg-[#050505] text-[#FFFFFF] min-h-screen">
@@ -103,7 +103,7 @@ export default async function CategoryPage({ params }: Props) {
 
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-[10px] font-sans font-bold uppercase tracking-[0.2em] text-neutral-400">
-                    Direct Cellar Concierge
+                    Cellar Concierge Service
                   </span>
                   <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm text-[10px] font-sans font-semibold uppercase tracking-wider bg-[#F5D900]/10 text-[#F5D900] border border-[#F5D900]/30">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#F5D900]" />
@@ -113,7 +113,7 @@ export default async function CategoryPage({ params }: Props) {
 
                 <div className="mb-4">
                   <span className="text-[11px] font-sans uppercase tracking-wider text-neutral-400 block mb-1">
-                    Direct Bottle Inquiry & Holding
+                    Direct Bottle Inquiry &amp; Holding
                   </span>
                   <a
                     href="tel:+12815903300"
@@ -147,7 +147,7 @@ export default async function CategoryPage({ params }: Props) {
       </section>
 
       {/* Category Switcher Tabs */}
-      <CategorySwitcher active={params.category} />
+      <CategorySwitcher active={params.category} categories={allCategories} />
 
       {/* Product Grid — 3 Cards In A Row */}
       <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 py-16 sm:py-20">

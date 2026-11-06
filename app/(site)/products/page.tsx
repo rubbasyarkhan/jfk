@@ -1,4 +1,4 @@
-import { getProducts } from '@/lib/firestore';
+import { getProducts, getCategories } from '@/lib/firestore';
 import ProductCard from '@/components/site/ProductCard';
 import CategorySwitcher from '@/components/site/CategorySwitcher';
 import Link from 'next/link';
@@ -11,7 +11,10 @@ export const metadata: Metadata = {
 };
 
 export default async function AllProductsPage() {
-  const products = await getProducts();
+  const [products, categories] = await Promise.all([
+    getProducts(),
+    getCategories(),
+  ]);
 
   return (
     <div className="bg-[#050505] text-[#FFFFFF] min-h-screen">
@@ -111,7 +114,7 @@ export default async function AllProductsPage() {
       </section>
 
       {/* Category Switcher Tabs */}
-      <CategorySwitcher active="" />
+      <CategorySwitcher active="" categories={categories} />
 
       {/* Product Grid — 3 Cards In A Row */}
       <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 py-16 sm:py-20">

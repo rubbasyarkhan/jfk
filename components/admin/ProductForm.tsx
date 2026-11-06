@@ -1,17 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { createProduct, updateProduct } from '@/lib/firestore';
 import ImageUploader from './ImageUploader';
-import type { Product } from '@/types';
+import type { Product, Category } from '@/types';
 
 interface Props {
   initialData?: Product;
   productId?: string;
+  availableCategories?: Category[];
 }
 
-const CATEGORIES = [
+const DEFAULT_CATEGORIES: { label: string; value: string }[] = [
   { label: 'Spirits & Bourbon', value: 'spirits' },
   { label: 'Wines & Champagne', value: 'wines' },
   { label: 'Beer & Craft', value: 'beer' },
@@ -20,10 +20,16 @@ const CATEGORIES = [
 
 const BADGES = ['', 'Allocated', 'Featured', 'Limited', 'New', 'Sale'];
 
-export default function ProductForm({ initialData, productId }: Props) {
+export default function ProductForm({ initialData, productId, availableCategories }: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const [categoriesList, setCategoriesList] = useState<{ label: string; value: string }[]>(
+    availableCategories && availableCategories.length > 0
+      ? availableCategories.map((c) => ({ label: c.name, value: c.slug }))
+      : DEFAULT_CATEGORIES
+  );
 
   const [name, setName] = useState(initialData?.name || '');
   const [slug, setSlug] = useState(initialData?.slug || '');
@@ -40,6 +46,23 @@ export default function ProductForm({ initialData, productId }: Props) {
   const [featured, setFeatured] = useState(initialData?.featured ?? true);
   const [inStock, setInStock] = useState(initialData?.inStock ?? true);
   const [images, setImages] = useState<string[]>(initialData?.images || []);
+
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const res = await fetch('/api/admin/categories');
+        const data = await res.json();
+        if (res.ok && Array.isArray(data.categories) && data.categories.length > 0) {
+          setCategoriesList(
+            data.categories.map((c: Category) => ({ label: c.name, value: c.slug }))
+          );
+        }
+      } catch (err) {
+        console.error('Failed to fetch categories:', err);
+      }
+    }
+    loadCategories();
+  }, []);
 
   function handleNameChange(val: string) {
     setName(val);
@@ -79,10 +102,19 @@ export default function ProductForm({ initialData, productId }: Props) {
         sortOrder: initialData?.sortOrder || 1,
       };
 
-      if (productId) {
-        await updateProduct(productId, productPayload);
-      } else {
-        await createProduct(productPayload);
+      const url = productId ? `/api/admin/products/${productId}` : '/api/admin/products';
+      const method = productId ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(productPayload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to save product');
       }
 
       router.push('/admin/products');
@@ -106,11 +138,11 @@ export default function ProductForm({ initialData, productId }: Props) {
       {/* Media Upload Section in Charcoal */}
       <div className="p-6 sm:p-8 rounded-2xl bg-[#242424] border border-[#3A3A3A] space-y-4">
         <div>
-          <h3 className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider mb-1">
-            Bottle Imagery &amp; WebP Conversion
+          <h3 className="text-xs font-bold text-[#F5D900] uppercase tracking-wider mb-1">
+            Bottle Imagery (Cloudinary Media)
           </h3>
           <p className="text-xs text-[#A0A0A0] font-light">
-            Upload high-res bottle photos. Images are automatically converted to optimized modern <strong>.WebP</strong> format.
+            Upload bottle photos directly. Images are hosted on Cloudinary and optimized for crisp, high-speed delivery.
           </p>
         </div>
         <ImageUploader value={images} onChange={setImages} productId={productId} />
@@ -118,7 +150,7 @@ export default function ProductForm({ initialData, productId }: Props) {
 
       {/* Primary Details in Charcoal */}
       <div className="p-6 sm:p-8 rounded-2xl bg-[#242424] border border-[#3A3A3A] space-y-6">
-        <h3 className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">
+        <h3 className="text-xs font-bold text-[#F5D900] uppercase tracking-wider">
           Bottle Information
         </h3>
 
@@ -154,7 +186,7 @@ export default function ProductForm({ initialData, productId }: Props) {
               onChange={(e) => setCategory(e.target.value)}
               className="admin-input"
             >
-              {CATEGORIES.map((c) => (
+              {categoriesList.map((c) => (
                 <option key={c.value} value={c.value}>
                   {c.label}
                 </option>
@@ -204,7 +236,7 @@ export default function ProductForm({ initialData, productId }: Props) {
 
       {/* Specifications & Pricing */}
       <div className="p-6 sm:p-8 rounded-2xl bg-[#242424] border border-[#3A3A3A] space-y-6">
-        <h3 className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">
+        <h3 className="text-xs font-bold text-[#F5D900] uppercase tracking-wider">
           Pricing &amp; Technical Specs
         </h3>
 
@@ -287,7 +319,7 @@ export default function ProductForm({ initialData, productId }: Props) {
               type="checkbox"
               checked={inStock}
               onChange={(e) => setInStock(e.target.checked)}
-              className="w-5 h-5 rounded border-[#3A3A3A] bg-[#111111] accent-[#D4AF37] cursor-pointer"
+              className="w-5 h-5 rounded border-[#3A3A3A] bg-[#111111] accent-[#F5D900] cursor-pointer"
             />
             <span className="text-sm font-bold text-[#FFFFFF]">Active in Stock</span>
           </label>
@@ -297,14 +329,14 @@ export default function ProductForm({ initialData, productId }: Props) {
               type="checkbox"
               checked={featured}
               onChange={(e) => setFeatured(e.target.checked)}
-              className="w-5 h-5 rounded border-[#3A3A3A] bg-[#111111] accent-[#D4AF37] cursor-pointer"
+              className="w-5 h-5 rounded border-[#3A3A3A] bg-[#111111] accent-[#F5D900] cursor-pointer"
             />
             <span className="text-sm font-bold text-[#FFFFFF]">Highlight in Homepage Allocated Vault</span>
           </label>
         </div>
       </div>
 
-      {/* Submit Actions: Gold Button with Black Text + Ghost Cancel */}
+      {/* Submit Actions */}
       <div className="flex items-center gap-4">
         <button
           type="submit"

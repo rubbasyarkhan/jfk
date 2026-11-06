@@ -1,8 +1,14 @@
 'use client';
 
 import Link from 'next/link';
+import type { Category } from '@/types';
 
-const CATEGORIES = [
+interface Props {
+  active: string;
+  categories?: Category[];
+}
+
+const DEFAULT_CATEGORIES = [
   { label: 'All Collection', slug: '' },
   { label: 'Spirits & Bourbon', slug: 'spirits' },
   { label: 'Wines & Champagne', slug: 'wines' },
@@ -10,18 +16,22 @@ const CATEGORIES = [
   { label: 'Agave & More', slug: 'agave-and-more' },
 ];
 
-interface Props {
-  active: string;
-}
+export default function CategorySwitcher({ active, categories }: Props) {
+  const tabs =
+    categories && categories.length > 0
+      ? [
+          { label: 'All Collection', slug: '' },
+          ...categories.map((c) => ({ label: c.name, slug: c.slug })),
+        ]
+      : DEFAULT_CATEGORIES;
 
-export default function CategorySwitcher({ active }: Props) {
   return (
     <div
       className="sticky top-[74px] sm:top-[80px] z-30 py-3.5 border-b border-white/[0.08] bg-[#050505]/95 backdrop-blur-md"
     >
       <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20">
         <div className="flex items-center gap-3 overflow-x-auto no-scrollbar py-1">
-          {CATEGORIES.map((cat) => {
+          {tabs.map((cat) => {
             const isActive = cat.slug === active;
             const href = cat.slug ? `/products/${cat.slug}` : '/products';
             return (
