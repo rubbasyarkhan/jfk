@@ -84,7 +84,7 @@ export default function ReserveWinesShowcase() {
                         src={wine.image}
                         alt={wine.name}
                         fill
-                        className="object-contain object-center p-1 group-hover:scale-105 transition-transform duration-500"
+                        className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                       <div className="absolute bottom-1.5 inset-x-1 text-center">

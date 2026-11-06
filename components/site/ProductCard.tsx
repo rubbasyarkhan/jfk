@@ -24,29 +24,19 @@ export default function ProductCard({ product }: Props) {
   return (
     <article className="group flex flex-col justify-between rounded-sm overflow-hidden bg-[#121316] border border-white/[0.08] transition-all duration-300 hover:border-[#F5D900]/70 hover:shadow-2xl">
       <div>
-        {/* Bottle Image Exhibition Area — Generous Space & Fully Visible */}
+        {/* Bottle Image Exhibition Area — Full-Frame, Big, Bold, Clean (No Box/Padding) */}
         <Link
           href={`/products/${product.category}/${product.slug}`}
           prefetch={true}
-          className="block relative aspect-square sm:aspect-[4/3] w-full overflow-hidden bg-gradient-to-b from-[#16171C] via-[#0E0F12] to-[#07080A] p-6 sm:p-7 flex items-center justify-center border-b border-white/[0.04]"
+          className="block relative aspect-[4/3] w-full overflow-hidden bg-[#0A0A0A]"
         >
-          {/* Subtle Ambient Backlight */}
-          <div
-            className="absolute inset-4 rounded-full opacity-15 filter blur-xl pointer-events-none"
-            style={{
-              background: 'radial-gradient(circle, rgba(245, 217, 0, 0.35) 0%, transparent 70%)',
-            }}
+          <Image
+            src={imageSrc}
+            alt={product.name}
+            fill
+            className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
-
-          <div className="relative w-full h-full z-10">
-            <Image
-              src={imageSrc}
-              alt={product.name}
-              fill
-              className="object-contain object-center p-2 transition-transform duration-500 ease-out group-hover:scale-105 drop-shadow-[0_15px_30px_rgba(0,0,0,0.9)]"
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            />
-          </div>
 
           {/* Allocation Badge in Montserrat */}
           {badgeStyle && product.badge && (
@@ -100,27 +90,25 @@ export default function ProductCard({ product }: Props) {
           <div>
             <span className="text-[10px] font-sans font-medium uppercase tracking-[0.18em] text-neutral-400 block">Valuation</span>
             {product.price ? (
-              <span className="font-serif text-2xl text-[#F5D900] font-semibold">
+              <span className="font-anton text-2xl sm:text-3xl text-[#F5D900] tracking-wide">
                 ${product.price.toFixed(2)}
               </span>
             ) : (
               <span className="text-xs text-neutral-400 font-sans font-medium">Inquire in Store</span>
             )}
           </div>
-          {product.abv && (
-            <span className="text-[11px] font-sans font-medium text-neutral-300 bg-[#1A1A1A] px-2.5 py-1 rounded-sm border border-white/10">
-              {product.abv}
-            </span>
-          )}
+          <span className="text-[11px] font-sans uppercase tracking-wider text-neutral-400">
+            {product.volume || 'In Store'}
+          </span>
         </div>
 
-        {/* Action Button: White with dark text, hover gold, Montserrat */}
         <Link
           href={`/products/${product.category}/${product.slug}`}
           prefetch={true}
-          className="block w-full text-center py-2.5 px-4 rounded-sm bg-[#FFFFFF] text-[#050505] font-sans font-bold text-xs uppercase tracking-[0.16em] hover:bg-[#F5D900] transition-colors"
+          className="w-full py-3 px-4 rounded-sm border border-white/20 text-center text-xs font-sans font-bold uppercase tracking-widest text-white hover:border-[#F5D900] hover:text-[#F5D900] hover:bg-white/[0.02] transition-all flex items-center justify-center gap-2 group/btn"
         >
-          View Bottle ↗
+          <span>View Details & Hold</span>
+          <span className="transition-transform group-hover/btn:translate-x-1 group-hover/btn:-translate-y-0.5">↗</span>
         </Link>
       </div>
     </article>

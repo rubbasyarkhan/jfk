@@ -124,10 +124,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: true,
     images: [
-      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981772/jfk-liquors/cognac-hero.jpg',
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793982975/jfk-liquors/cognac-hennessy-vsop.jpg',
       'https://res.cloudinary.com/ovmougmy/image/upload/v1793981778/jfk-liquors/bourbon-jim-beam.jpg'
     ],
-    thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981772/jfk-liquors/cognac-hero.jpg',
+    thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793982975/jfk-liquors/cognac-hennessy-vsop.jpg',
     sortOrder: 4,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),

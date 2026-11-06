@@ -63,7 +63,7 @@ const RARE_EDITIONS: RareBottle[] = [
     price: 585.0,
     abv: '51.5% ABV (103 Proof)',
     caskType: 'Warehouse H Virgin American Oak',
-    image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981772/jfk-liquors/cognac-hero.jpg',
+    image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793982975/jfk-liquors/cognac-hennessy-vsop.jpg',
     notes: 'Powerful spice, dried fruit, rich vanilla bean, and honeyed oak with horse stopper collector series.',
   },
   {
@@ -195,16 +195,14 @@ export default function RareEditionsShowcase() {
                     RARE
                   </div>
 
-                  {/* Bottle Display Area — Generous Space & Full Bottle Visibility */}
-                  <div className="relative w-full aspect-square sm:aspect-[4/3] rounded-xl overflow-hidden mb-4 bg-gradient-to-b from-[#16171C] via-[#0E0F12] to-[#080808] p-6 flex items-center justify-center">
-                    <div className="relative w-full h-full">
-                      <Image
-                        src={activeBottle.image}
-                        alt={activeBottle.name}
-                        fill
-                        className="object-contain object-center transition-all duration-700 ease-out p-2 drop-shadow-[0_15px_30px_rgba(0,0,0,0.9)]"
-                      />
-                    </div>
+                  {/* Bottle Display Area — Full-Frame, Big & Crisp */}
+                  <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden mb-4 bg-[#080808]">
+                    <Image
+                      src={activeBottle.image}
+                      alt={activeBottle.name}
+                      fill
+                      className="object-cover object-center transition-all duration-700 ease-out"
+                    />
 
                     {/* Bottom plinth light reflection */}
                     <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-[#D4AF37]/35 via-[#D4AF37]/10 to-transparent pointer-events-none" />

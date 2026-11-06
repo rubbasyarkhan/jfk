@@ -79,25 +79,15 @@ export default function CollectionGrid() {
               prefetch={true}
               className="group flex flex-col justify-between rounded-sm overflow-hidden bg-[#121316] border border-white/[0.08] transition-all duration-300 hover:border-[#F5D900]/70 hover:shadow-2xl cursor-pointer"
             >
-              {/* Standalone Image Frame — Generous Space & Full Bottle Visibility */}
-              <div className="relative aspect-square sm:aspect-[4/3] w-full overflow-hidden bg-gradient-to-b from-[#16171C] via-[#0E0F12] to-[#07080A] p-6 sm:p-7 flex items-center justify-center border-b border-white/[0.04]">
-                {/* Subtle Ambient Backlight Glow */}
-                <div
-                  className="absolute inset-4 rounded-full opacity-15 filter blur-xl pointer-events-none"
-                  style={{
-                    background: 'radial-gradient(circle, rgba(245, 217, 0, 0.35) 0%, transparent 70%)',
-                  }}
+              {/* Standalone Image Frame — 100% Crisp, Full-Frame, No Nested Black Box */}
+              <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#0A0A0A]">
+                <Image
+                  src={cat.image}
+                  alt={cat.label}
+                  fill
+                  className="object-cover object-center transition-transform duration-500 ease-out group-hover:scale-105"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                 />
-
-                <div className="relative w-full h-full z-10">
-                  <Image
-                    src={cat.image}
-                    alt={cat.label}
-                    fill
-                    className="object-contain object-center p-2 transition-transform duration-500 ease-out group-hover:scale-105 drop-shadow-[0_15px_30px_rgba(0,0,0,0.9)]"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                  />
-                </div>
               </div>
 
               {/* Detail Content Strictly Below the Image */}
