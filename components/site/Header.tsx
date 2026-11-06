@@ -72,7 +72,7 @@ export default function Header() {
           <div className="flex items-center flex-shrink-0">
             <Link href="/" className="flex items-center transition-opacity hover:opacity-90">
               <Image
-                src="/assets/logo.png"
+                src="https://res.cloudinary.com/ovmougmy/image/upload/v1793981764/jfk-liquors/logo.png"
                 alt="JFK Liquors Houston"
                 width={140}
                 height={44}

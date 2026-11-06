@@ -56,7 +56,7 @@ export default function AdminSidebar() {
       <div className="p-6 border-b border-[#2A2A2A] flex flex-col items-center text-center">
         <Link href="/admin/dashboard" className="mb-3 block">
           <Image
-            src="/assets/logo.png"
+            src="https://res.cloudinary.com/ovmougmy/image/upload/v1793981764/jfk-liquors/logo.png"
             alt="JFK Liquors Admin"
             width={140}
             height={50}

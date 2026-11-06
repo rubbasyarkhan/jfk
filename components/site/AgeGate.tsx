@@ -36,7 +36,7 @@ export default function AgeGate() {
 
         <div className="flex justify-center mb-7">
           <Image
-            src="/assets/logo.png"
+            src="https://res.cloudinary.com/ovmougmy/image/upload/v1793981764/jfk-liquors/logo.png"
             alt="JFK Liquors"
             width={180}
             height={60}

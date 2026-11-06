@@ -8,7 +8,7 @@ export default function HeroSection() {
       {/* 1. Visual Canvas: High-Resolution Bottle Image (heromain.jpg) Clearly Visible */}
       <div className="absolute inset-0 z-0">
         <Image
-          src="/assets/heromain.jpg"
+          src="https://res.cloudinary.com/ovmougmy/image/upload/v1793981766/jfk-liquors/hero-main.jpg"
           alt="JFK Liquors Private Collection & Rare Cellar Reserve"
           fill
           priority

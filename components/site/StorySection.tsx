@@ -11,7 +11,7 @@ export default function StorySection() {
           <div className="lg:col-span-6 relative">
             <div className="relative rounded overflow-hidden border border-white/10 bg-[#141414] aspect-[4/3] sm:aspect-[16/11] shadow-2xl group">
               <Image
-                src="/assets/collection-story.jpg"
+                src="https://res.cloudinary.com/ovmougmy/image/upload/v1793981770/jfk-liquors/collection-story.jpg"
                 alt="Curated spirits and tasting at JFK Liquors"
                 fill
                 className="object-cover transition-transform duration-700 ease-out group-hover:scale-104"

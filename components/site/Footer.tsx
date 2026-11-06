@@ -20,7 +20,7 @@ export default function Footer() {
           <div className="space-y-4">
             <Link href="/" className="inline-block transition-opacity hover:opacity-90">
               <Image
-                src="/assets/logo.png"
+                src="https://res.cloudinary.com/ovmougmy/image/upload/v1793981764/jfk-liquors/logo.png"
                 alt="JFK Liquors"
                 width={160}
                 height={55}

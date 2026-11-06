@@ -50,7 +50,7 @@ export default function AdminLoginPage() {
         <div className="flex flex-col items-center text-center mb-8">
           <div className="relative w-44 h-16 mb-4">
             <Image
-              src="/assets/logo.png"
+              src="https://res.cloudinary.com/ovmougmy/image/upload/v1793981764/jfk-liquors/logo.png"
               alt="JFK Liquors Admin"
               fill
               className="object-contain"
