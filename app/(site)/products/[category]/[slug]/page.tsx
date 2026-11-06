@@ -41,14 +41,14 @@ export default async function ProductDetailPage({ params }: Props) {
   const images = product.images?.length > 0 ? product.images : [product.thumbnailUrl];
 
   return (
-    <div className="bg-[#111111] text-[#FFFFFF] min-h-screen py-16">
+    <div className="bg-[#0A0A0A] text-[#FFFFFF] min-h-screen py-16 sm:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-xs text-[#A0A0A0] mb-10 uppercase tracking-widest font-bold">
-          <Link href="/" className="hover:text-[#D4AF37] transition-colors">Home</Link>
+        {/* Breadcrumb Navigation */}
+        <nav className="flex items-center gap-2 text-xs text-[#888888] mb-12 uppercase tracking-widest font-mono">
+          <Link href="/" className="hover:text-[#F5D900] transition-colors">Home</Link>
           <span>/</span>
-          <Link href={`/products/${product.category}`} className="hover:text-[#D4AF37] transition-colors">
+          <Link href={`/products/${product.category}`} className="hover:text-[#F5D900] transition-colors">
             {product.category.replace(/-/g, ' ')}
           </Link>
           <span>/</span>
@@ -60,7 +60,7 @@ export default async function ProductDetailPage({ params }: Props) {
           
           {/* Media Showcase */}
           <div className="lg:col-span-6 space-y-4">
-            <div className="relative aspect-square rounded-2xl overflow-hidden border border-[#3A3A3A] bg-[#242424] shadow-2xl">
+            <div className="relative aspect-square rounded overflow-hidden border border-white/10 bg-[#141414] shadow-2xl">
               <Image
                 src={images[0] || 'https://images.unsplash.com/photo-1527281400683-1aae777175f8?auto=format&fit=crop&w=800&q=80'}
                 alt={product.name}
@@ -69,7 +69,7 @@ export default async function ProductDetailPage({ params }: Props) {
                 priority
               />
               {product.badge && (
-                <span className="absolute top-4 left-4 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider bg-[#5B1018] text-[#D4AF37] border border-[#D4AF37]/40 shadow-lg">
+                <span className="absolute top-4 left-4 px-3 py-1 rounded-sm text-xs font-bold uppercase tracking-wider bg-[#5B1018] text-[#F5D900] border border-[#F5D900]/40 shadow-lg">
                   {product.badge}
                 </span>
               )}
@@ -78,7 +78,7 @@ export default async function ProductDetailPage({ params }: Props) {
             {images.length > 1 && (
               <div className="grid grid-cols-4 gap-3">
                 {images.map((img, i) => (
-                  <div key={i} className="relative aspect-square rounded-xl overflow-hidden border border-[#3A3A3A] bg-[#242424]">
+                  <div key={i} className="relative aspect-square rounded overflow-hidden border border-white/10 bg-[#161616]">
                     <Image src={img} alt={`${product.name} preview ${i+1}`} fill className="object-cover" />
                   </div>
                 ))}
@@ -91,36 +91,36 @@ export default async function ProductDetailPage({ params }: Props) {
             
             {/* Tags */}
             {product.tags?.length > 0 && (
-              <p className="eyebrow mb-2">
+              <p className="index-tag mb-3">
                 {product.tags.join(' • ')}
               </p>
             )}
 
             <h1
-              className="font-display tracking-tight text-[#FFFFFF] uppercase mb-4"
-              style={{ fontSize: 'clamp(2.4rem, 5vw, 3.8rem)', lineHeight: 1.05 }}
+              className="font-serif tracking-tight text-[#FFFFFF] mb-4"
+              style={{ fontSize: 'clamp(2.6rem, 5vw, 4rem)', lineHeight: 1.05 }}
             >
               {product.name}
             </h1>
 
             {/* Price & Stock Row */}
-            <div className="flex items-center gap-6 py-4 border-y border-[#242424] my-6">
+            <div className="flex items-center gap-6 py-5 border-y border-white/10 my-6">
               {product.price ? (
                 <div>
-                  <span className="text-[11px] text-[#A0A0A0] block uppercase tracking-wider mb-1 font-bold">Standard Bottle</span>
-                  <span className="font-display text-3xl sm:text-4xl text-[#D4AF37]">
+                  <span className="text-[10px] font-mono text-[#888888] block uppercase tracking-widest mb-1">Vault Price</span>
+                  <span className="font-serif text-3xl sm:text-4xl text-[#F5D900] font-semibold">
                     ${product.price.toFixed(2)}
                   </span>
                 </div>
               ) : (
-                <span className="text-[#D4AF37] font-bold">In-Store Allocation</span>
+                <span className="text-[#F5D900] font-bold font-mono">Inquire in Store</span>
               )}
 
-              <div className="h-10 w-px bg-[#3A3A3A]" />
+              <div className="h-10 w-px bg-white/10" />
 
               <div>
-                <span className="text-[11px] text-[#A0A0A0] block uppercase tracking-wider mb-1 font-bold">Availability</span>
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-green-400">
+                <span className="text-[10px] font-mono text-[#888888] block uppercase tracking-widest mb-1">Status</span>
+                <span className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-green-400">
                   <span className="w-2 h-2 rounded-full bg-green-400" />
                   In Stock At JFK Blvd
                 </span>
@@ -132,37 +132,37 @@ export default async function ProductDetailPage({ params }: Props) {
               <p>{product.description || product.shortDescription}</p>
             </div>
 
-            {/* Bottle Specifications in Charcoal Box */}
-            <div className="rounded-2xl border border-[#3A3A3A] bg-[#242424] p-6 mb-8 space-y-3">
-              <h3 className="text-xs font-bold text-[#D4AF37] uppercase tracking-widest mb-3">
+            {/* Bottle Specifications in Architectural Box */}
+            <div className="rounded border border-white/10 bg-[#141414] p-6 mb-8 space-y-3 font-mono">
+              <h3 className="text-xs font-bold text-[#F5D900] uppercase tracking-widest mb-3">
                 Bottle Specifications
               </h3>
-              <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="grid grid-cols-2 gap-4 text-xs">
                 <div>
-                  <span className="text-[#A0A0A0] block text-xs uppercase font-bold">Department</span>
+                  <span className="text-[#737373] block uppercase font-bold">Department</span>
                   <span className="font-semibold text-[#FFFFFF] capitalize">{product.category.replace(/-/g, ' ')}</span>
                 </div>
                 {product.volume && (
                   <div>
-                    <span className="text-[#A0A0A0] block text-xs uppercase font-bold">Volume</span>
+                    <span className="text-[#737373] block uppercase font-bold">Volume</span>
                     <span className="font-semibold text-[#FFFFFF]">{product.volume}</span>
                   </div>
                 )}
                 {product.abv && (
                   <div>
-                    <span className="text-[#A0A0A0] block text-xs uppercase font-bold">Alcohol Content</span>
+                    <span className="text-[#737373] block uppercase font-bold">Alcohol Content</span>
                     <span className="font-semibold text-[#FFFFFF]">{product.abv}% ABV</span>
                   </div>
                 )}
                 {product.origin && (
                   <div>
-                    <span className="text-[#A0A0A0] block text-xs uppercase font-bold">Origin</span>
+                    <span className="text-[#737373] block uppercase font-bold">Origin</span>
                     <span className="font-semibold text-[#FFFFFF]">{product.origin}</span>
                   </div>
                 )}
                 {product.brand && (
                   <div>
-                    <span className="text-[#A0A0A0] block text-xs uppercase font-bold">Distiller / Brand</span>
+                    <span className="text-[#737373] block uppercase font-bold">Distiller / Brand</span>
                     <span className="font-semibold text-[#FFFFFF]">{product.brand}</span>
                   </div>
                 )}
@@ -176,10 +176,10 @@ export default async function ProductDetailPage({ params }: Props) {
                   href="tel:+12815903300"
                   className="btn-gold flex-1 justify-center !py-3.5"
                 >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <svg className="w-4 h-4 text-[#0A0A0A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
-                  Call To Hold Bottle: (281) 590-3300
+                  <span>Call To Hold: (281) 590-3300</span>
                 </a>
 
                 <a
@@ -188,12 +188,12 @@ export default async function ProductDetailPage({ params }: Props) {
                   rel="noopener noreferrer"
                   className="btn-ghost flex-1 justify-center !py-3.5"
                 >
-                  Get Directions
+                  <span>Get Directions ↗</span>
                 </a>
               </div>
 
               {/* Delivery Partner Strip */}
-              <div className="p-4 rounded-xl border border-[#3A3A3A] bg-[#242424] flex items-center justify-between text-xs text-[#A0A0A0]">
+              <div className="p-4 rounded border border-white/10 bg-[#141414] flex items-center justify-between text-xs text-[#888888] font-mono">
                 <span>Order on delivery apps:</span>
                 <div className="flex gap-4 font-bold uppercase tracking-wider">
                   <a href="https://www.ubereats.com" target="_blank" rel="noopener noreferrer" className="text-[#67cb89] hover:underline">Uber Eats</a>
@@ -209,14 +209,14 @@ export default async function ProductDetailPage({ params }: Props) {
 
         {/* Related Products */}
         {relatedProducts.length > 0 && (
-          <section className="mt-28 pt-16 border-t border-[#242424]">
+          <section className="mt-28 pt-16 border-t border-white/10">
             <div className="flex items-center justify-between mb-10">
               <div>
-                <p className="eyebrow mb-1">More In This Department</p>
-                <h2 className="font-display text-3xl text-[#FFFFFF]">Related Selections</h2>
+                <p className="index-tag mb-1">More In This Department</p>
+                <h2 className="font-serif text-3xl text-[#FFFFFF]">Related Selections</h2>
               </div>
-              <Link href={`/products/${product.category}`} className="text-xs font-bold uppercase text-[#D4AF37] hover:underline">
-                View Department &rarr;
+              <Link href={`/products/${product.category}`} className="text-xs font-mono font-bold uppercase text-[#F5D900] hover:underline">
+                View Department ↗
               </Link>
             </div>
 

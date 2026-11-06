@@ -1,13 +1,13 @@
 export default function LocationSection() {
   return (
-    <section className="py-24 sm:py-32 relative bg-[#1A1A1A] border-t border-[#333333]">
+    <section className="py-24 sm:py-32 relative bg-[#0D0D0D] border-t border-white/[0.08]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           
           {/* Location Info */}
           <div className="lg:col-span-5">
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#F5D900] mb-3 font-sans">
-              COME SAY HELLO
+            <p className="index-tag mb-3">
+              03 // VISIT THE BOTTLE SHOP
             </p>
             
             <h2
@@ -24,22 +24,22 @@ export default function LocationSection() {
             <p className="text-lg text-[#FFFFFF] font-medium leading-relaxed mb-1">
               15655 John F Kennedy Blvd, Suite D
             </p>
-            <p className="text-sm text-[#C7C7C7] mb-2 font-light">
+            <p className="text-sm text-[#A0A0A0] mb-2 font-light">
               Houston, TX 77032
             </p>
-            <p className="text-xs text-[#888888] font-light mb-8">
+            <p className="text-xs text-[#737373] font-mono mb-8">
               Conveniently located near George Bush Intercontinental Airport (IAH).
             </p>
 
             {/* Store Hours Table */}
-            <div className="border-t border-b border-white/10 py-4 mb-8 text-xs sm:text-sm space-y-2.5">
+            <div className="border-t border-b border-white/10 py-4 mb-8 text-xs sm:text-sm space-y-2.5 font-mono">
               <div className="flex justify-between items-center">
                 <span className="text-[#C7C7C7]">Monday — Saturday</span>
                 <span className="font-semibold text-[#F5D900]">11:00 AM — 9:00 PM</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-[#C7C7C7]">Sunday</span>
-                <span className="font-semibold text-[#888888]">Closed</span>
+                <span className="font-semibold text-[#737373]">Closed (Texas Law)</span>
               </div>
             </div>
 
@@ -65,7 +65,7 @@ export default function LocationSection() {
 
           {/* Embedded Google Map */}
           <div className="lg:col-span-7">
-            <div className="relative rounded-lg overflow-hidden border border-[#333333] shadow-2xl bg-[#111111] aspect-[16/11]">
+            <div className="relative rounded overflow-hidden border border-white/10 shadow-2xl bg-[#141414] aspect-[16/11]">
               <iframe
                 title="Find JFK Liquors in Houston"
                 src="https://maps.google.com/maps?q=15655+John+F+Kennedy+Blvd+Suite+D+Houston+TX+77032&t=&z=15&ie=UTF8&iwloc=&output=embed"

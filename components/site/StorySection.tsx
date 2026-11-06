@@ -3,23 +3,23 @@ import Link from 'next/link';
 
 export default function StorySection() {
   return (
-    <section className="py-24 sm:py-32 relative overflow-hidden bg-[#161616] border-t border-[#242424]">
+    <section className="py-24 sm:py-32 relative overflow-hidden bg-[#0A0A0A] border-t border-white/[0.08]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           
           {/* Left Column: Real Bottle Art Photo */}
           <div className="lg:col-span-6 relative">
-            <div className="relative rounded-lg overflow-hidden border border-[#333333] bg-[#111111] aspect-[4/3] sm:aspect-[16/11] shadow-2xl group">
+            <div className="relative rounded overflow-hidden border border-white/10 bg-[#141414] aspect-[4/3] sm:aspect-[16/11] shadow-2xl group">
               <Image
                 src="/assets/collection-story.jpg"
                 alt="Curated spirits and tasting at JFK Liquors"
                 fill
-                className="object-cover transition-transform duration-500 group-hover:scale-102"
+                className="object-cover transition-transform duration-700 ease-out group-hover:scale-104"
                 sizes="(max-width: 1024px) 100vw, 50vw"
               />
               
               {/* Gold Label on bottom left like original storefront */}
-              <div className="absolute bottom-0 left-0 bg-[#F5D900] text-[#111111] py-3 px-5 text-[11px] font-bold tracking-widest uppercase">
+              <div className="absolute bottom-0 left-0 bg-[#F5D900] text-[#0A0A0A] py-3 px-5 text-[10.5px] font-bold tracking-[0.16em] uppercase">
                 A BOTTLE FOR EVERY OCCASION
               </div>
             </div>
@@ -27,8 +27,8 @@ export default function StorySection() {
 
           {/* Right Column: Editorial Copy */}
           <div className="lg:col-span-6">
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#F5D900] mb-3 font-sans">
-              LOCAL STORE &bull; PERSONAL TOUCH
+            <p className="index-tag mb-3">
+              02 // LOCAL STORE &bull; PERSONAL TOUCH
             </p>
             
             <h2
@@ -49,6 +49,22 @@ export default function StorySection() {
               <p>
                 You&apos;ll find us on John F Kennedy Boulevard, near George Bush Intercontinental Airport in Houston. Ask our team for help choosing what to take home.
               </p>
+            </div>
+
+            {/* Micro Stats */}
+            <div className="grid grid-cols-3 gap-6 pt-6 mb-8 border-t border-white/10 text-xs font-mono">
+              <div>
+                <span className="text-2xl sm:text-3xl font-serif text-[#F5D900] block mb-1">500+</span>
+                <span className="text-[10px] uppercase tracking-widest text-[#888888]">Labels in Stock</span>
+              </div>
+              <div>
+                <span className="text-2xl sm:text-3xl font-serif text-[#FFFFFF] block mb-1">6 Days</span>
+                <span className="text-[10px] uppercase tracking-widest text-[#888888]">11 AM — 9 PM</span>
+              </div>
+              <div>
+                <span className="text-2xl sm:text-3xl font-serif text-[#F5D900] block mb-1">IAH</span>
+                <span className="text-[10px] uppercase tracking-widest text-[#888888]">3 Min Away</span>
+              </div>
             </div>
 
             <div>

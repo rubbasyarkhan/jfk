@@ -21,60 +21,65 @@ export default function AgeGate() {
   return (
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6"
-      style={{ backgroundColor: 'rgba(17, 17, 17, 0.96)', backdropFilter: 'blur(12px)' }}
+      style={{ backgroundColor: 'rgba(10, 10, 10, 0.96)', backdropFilter: 'blur(16px)' }}
     >
       <div
-        className="relative max-w-md w-full text-center px-8 sm:px-10 py-12 rounded-2xl bg-[#242424] border border-[#3A3A3A] shadow-2xl"
+        className="relative max-w-md w-full text-center px-8 sm:px-10 py-12 rounded bg-[#161616] border border-white/10 shadow-2xl"
         style={{
-          boxShadow: '0 25px 70px rgba(0, 0, 0, 0.9), 0 0 35px rgba(245, 217, 0, 0.1)',
+          boxShadow: '0 25px 70px rgba(0, 0, 0, 0.95), 0 0 35px rgba(245, 217, 0, 0.15)',
         }}
       >
         {/* Top Gold Accent Line */}
         <div
-          className="absolute top-0 left-1/2 -translate-x-1/2 h-1 w-24 rounded-full bg-[#D4AF37]"
+          className="absolute top-0 left-1/2 -translate-x-1/2 h-1 w-20 bg-[#F5D900]"
         />
 
         <div className="flex justify-center mb-7">
           <Image
             src="/assets/logo.png"
             alt="JFK Liquors"
-            width={200}
-            height={70}
+            width={180}
+            height={60}
             className="object-contain"
             priority
           />
         </div>
 
         <div className="flex items-center gap-3 mb-6">
-          <div className="flex-1 h-px bg-[#3A3A3A]" />
-          <span className="text-[11px] font-bold tracking-widest text-[#D4AF37] uppercase">
-            Legal Age Verification
+          <div className="flex-1 h-px bg-white/10" />
+          <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-[#F5D900] uppercase">
+            LEGAL AGE VERIFICATION
           </span>
-          <div className="flex-1 h-px bg-[#3A3A3A]" />
+          <div className="flex-1 h-px bg-white/10" />
         </div>
 
-        <h2 className="font-display text-3xl sm:text-4xl text-[#FFFFFF] uppercase mb-3">
-          Are You 21 or Older?
+        <h2 className="font-serif text-3xl sm:text-4xl text-[#FFFFFF] mb-3">
+          Are you 21 or older?
         </h2>
         
-        <p className="text-[#C7C7C7] text-sm leading-relaxed mb-8 font-light">
-          Welcome to JFK Liquors. You must be of legal drinking age in the United States to browse our selection. Please confirm your age to enter.
+        <p className="text-[#A0A0A0] text-sm leading-relaxed mb-8 font-light">
+          You must be of legal drinking age in the United States to explore and purchase from JFK Liquors.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3">
-          <button onClick={confirm} className="btn-gold flex-1 justify-center !py-3">
-            Yes, I Am 21+
+          <button
+            type="button"
+            onClick={confirm}
+            className="btn-gold flex-1 text-xs"
+          >
+            Yes, I am 21+
           </button>
+          
           <a
             href="https://www.google.com"
-            className="btn-ghost flex-1 justify-center !py-3 !border-[#3A3A3A] hover:!border-[#D4AF37]"
+            className="btn-ghost flex-1 text-xs"
           >
-            No, Leave
+            No, leave
           </a>
         </div>
 
-        <p className="mt-6 text-[11px] text-[#A0A0A0] font-light">
-          Must be 21+ with valid ID. Drink responsibly.
+        <p className="text-[10.5px] font-mono text-[#737373] mt-8 uppercase tracking-widest">
+          15655 John F Kennedy Blvd &bull; Houston, TX
         </p>
       </div>
     </div>

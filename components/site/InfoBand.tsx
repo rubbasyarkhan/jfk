@@ -1,6 +1,6 @@
 export default function InfoBand() {
   return (
-    <div className="w-full relative z-20 bg-[#1A1A1A] border-y border-[#333333]">
+    <div className="w-full relative z-20 bg-[#161616] border-y border-[#333333]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[#333333]">
 

@@ -1,20 +1,20 @@
 export default function DeliverySection() {
   return (
-    <section id="delivery" className="py-24 sm:py-32 relative bg-[#111111] border-t border-[#242424]">
+    <section id="delivery" className="py-24 sm:py-32 relative bg-[#111111] border-t border-white/[0.08]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           
-          {/* Left Column: Heading & Copy (Exact match to Image 2) */}
+          {/* Left Column: Heading & Copy (Exact match to user screenshot) */}
           <div className="lg:col-span-6">
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#F5D900] mb-4 font-sans">
+            <p className="index-tag mb-4">
               YOUR FAVORITES, DELIVERED
             </p>
 
             <h2
               className="font-anton tracking-wide uppercase mb-6"
               style={{
-                fontSize: 'clamp(2.8rem, 5.5vw, 4.5rem)',
-                lineHeight: 0.96,
+                fontSize: 'clamp(2.8rem, 5.5vw, 4.6rem)',
+                lineHeight: 0.95,
               }}
             >
               <span className="text-[#FFFFFF] block">STAYING IN?</span>
@@ -25,12 +25,12 @@ export default function DeliverySection() {
               We&apos;re also available on Uber Eats and DoorDash. Open your preferred app and search for <strong className="text-[#FFFFFF] font-semibold">JFK Liquors, Houston</strong>.
             </p>
 
-            <p className="text-xs text-[#888888] font-mono leading-relaxed max-w-md">
+            <p className="text-xs text-[#737373] font-mono leading-relaxed max-w-md">
               Availability, selection, fees and delivery area are shown in the app. 21+ with valid ID.
             </p>
           </div>
 
-          {/* Right Column: Two Charcoal Delivery Cards (Exact match to Image 2) */}
+          {/* Right Column: Two Charcoal Delivery Cards (Exact match to user screenshot) */}
           <div className="lg:col-span-6 flex flex-col gap-5">
             
             {/* Uber Eats Card */}
@@ -38,7 +38,7 @@ export default function DeliverySection() {
               href="https://www.ubereats.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="group block p-7 sm:p-8 rounded-lg border border-[#333333] bg-[#1A1A1A] transition-all duration-300 hover:border-[#F5D900] hover:bg-[#202020]"
+              className="group block p-7 sm:p-8 rounded-sm border border-[#333333] bg-[#161616] transition-all duration-300 hover:border-[#F5D900] hover:bg-[#1C1C1C]"
             >
               <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#FFFFFF] mb-2 font-sans">
                 Uber <span className="text-[#67cb89]">Eats</span>
@@ -59,7 +59,7 @@ export default function DeliverySection() {
               href="https://www.doordash.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="group block p-7 sm:p-8 rounded-lg border border-[#333333] bg-[#1A1A1A] transition-all duration-300 hover:border-[#F5D900] hover:bg-[#202020]"
+              className="group block p-7 sm:p-8 rounded-sm border border-[#333333] bg-[#161616] transition-all duration-300 hover:border-[#F5D900] hover:bg-[#1C1C1C]"
             >
               <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#ff6451] mb-2 font-sans">
                 DoorDash
