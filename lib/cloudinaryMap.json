@@ -124,5 +124,40 @@
     "publicId": "jfk-liquors/tequila-jose-cuervo",
     "width": 1200,
     "height": 1797
+  },
+  "mezcal-artisan-oaxaca": {
+    "original": "generated/mezcal-artisan-oaxaca.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1794247325/jfk-liquors/mezcal-artisan-oaxaca.jpg",
+    "publicId": "jfk-liquors/mezcal-artisan-oaxaca",
+    "width": 1024,
+    "height": 1024
+  },
+  "gin-botanical-artisanal": {
+    "original": "generated/gin-botanical-artisanal.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1794247341/jfk-liquors/gin-botanical-artisanal.jpg",
+    "publicId": "jfk-liquors/gin-botanical-artisanal",
+    "width": 1024,
+    "height": 1024
+  },
+  "bourbon-kentucky-reserve": {
+    "original": "generated/bourbon-kentucky-reserve.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1794247348/jfk-liquors/bourbon-kentucky-reserve.jpg",
+    "publicId": "jfk-liquors/bourbon-kentucky-reserve",
+    "width": 1024,
+    "height": 1024
+  },
+  "cider-craft-orchard": {
+    "original": "generated/cider-craft-orchard.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1794247355/jfk-liquors/cider-craft-orchard.jpg",
+    "publicId": "jfk-liquors/cider-craft-orchard",
+    "width": 1024,
+    "height": 1024
+  },
+  "amaro-botanico-liqueur": {
+    "original": "generated/amaro-botanico-liqueur.jpg",
+    "cloudinaryUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1794247369/jfk-liquors/amaro-botanico-liqueur.jpg",
+    "publicId": "jfk-liquors/amaro-botanico-liqueur",
+    "width": 1024,
+    "height": 1024
   }
 }

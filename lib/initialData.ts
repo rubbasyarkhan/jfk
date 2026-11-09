@@ -55,10 +55,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: true,
     images: [
-      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981778/jfk-liquors/bourbon-jim-beam.jpg',
-      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981781/jfk-liquors/vodka-spirits-studio.jpg'
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1794247348/jfk-liquors/bourbon-kentucky-reserve.jpg',
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981778/jfk-liquors/bourbon-jim-beam.jpg'
     ],
-    thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981778/jfk-liquors/bourbon-jim-beam.jpg',
+    thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1794247348/jfk-liquors/bourbon-kentucky-reserve.jpg',
     sortOrder: 1,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -98,10 +98,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: false,
     images: [
-      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981781/jfk-liquors/vodka-spirits-studio.jpg',
-      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981780/jfk-liquors/scotch-single-malt.jpg'
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1794247341/jfk-liquors/gin-botanical-artisanal.jpg',
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981781/jfk-liquors/vodka-spirits-studio.jpg'
     ],
-    thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981781/jfk-liquors/vodka-spirits-studio.jpg',
+    thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1794247341/jfk-liquors/gin-botanical-artisanal.jpg',
     sortOrder: 3,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -252,10 +252,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: false,
     images: [
-      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981786/jfk-liquors/beer-dark-bottle.jpg',
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1794247355/jfk-liquors/cider-craft-orchard.jpg',
       'https://res.cloudinary.com/ovmougmy/image/upload/v1793981787/jfk-liquors/beer-craft-bottles.jpg'
     ],
-    thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981786/jfk-liquors/beer-dark-bottle.jpg',
+    thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1794247355/jfk-liquors/cider-craft-orchard.jpg',
     sortOrder: 3,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -298,10 +298,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: true,
     images: [
-      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981789/jfk-liquors/tequila-jose-cuervo.jpg',
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1794247325/jfk-liquors/mezcal-artisan-oaxaca.jpg',
       'https://res.cloudinary.com/ovmougmy/image/upload/v1793981788/jfk-liquors/tequila-don-julio.jpg'
     ],
-    thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981789/jfk-liquors/tequila-jose-cuervo.jpg',
+    thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1794247325/jfk-liquors/mezcal-artisan-oaxaca.jpg',
     sortOrder: 2,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -318,10 +318,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     inStock: true,
     featured: false,
     images: [
-      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981778/jfk-liquors/bourbon-jim-beam.jpg',
-      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981788/jfk-liquors/tequila-don-julio.jpg'
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1794247369/jfk-liquors/amaro-botanico-liqueur.jpg',
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1794247341/jfk-liquors/gin-botanical-artisanal.jpg'
     ],
-    thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981778/jfk-liquors/bourbon-jim-beam.jpg',
+    thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1794247369/jfk-liquors/amaro-botanico-liqueur.jpg',
     sortOrder: 3,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),

@@ -36,7 +36,7 @@ const RARE_EDITIONS: RareBottle[] = [
     edition: 'Extremely Limited Allocation',
     abv: '45.2% ABV (90.4 Proof)',
     caskType: 'Charred New American White Oak',
-    image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981778/jfk-liquors/bourbon-jim-beam.jpg',
+    image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1794247348/jfk-liquors/bourbon-kentucky-reserve.jpg',
     notes: 'Intense and velvety. Aromas of sweet vanilla, leather, cigar box, and caramelized butterscotch.',
   },
   {
