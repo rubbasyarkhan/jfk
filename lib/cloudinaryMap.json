@@ -8,10 +8,10 @@
   },
   "hero-main": {
     "original": "public/assets/heromain.jpg",
-    "cloudinaryUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981766/jfk-liquors/hero-main.jpg",
-    "publicId": "jfk-liquors/hero-main",
-    "width": 900,
-    "height": 700
+    "cloudinaryUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1794246857/jfk-liquors/hero-collection-bottles.jpg",
+    "publicId": "jfk-liquors/hero-collection-bottles",
+    "width": 1376,
+    "height": 768
   },
   "collection-story": {
     "original": "public/assets/collection-story.jpg",

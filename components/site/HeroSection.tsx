@@ -5,11 +5,11 @@ export default function HeroSection() {
   return (
     <section className="relative min-h-[100dvh] sm:h-[100dvh] min-h-[600px] w-full flex flex-col justify-between overflow-hidden bg-[#050505]">
       
-      {/* 1. Visual Canvas: High-Resolution Bottle Image (heromain.jpg) Clearly Visible */}
+      {/* 1. Visual Canvas: High-Resolution Bottle Collection clearly showcasing multiple spirits (Tequila, Gin, Tonic, Bourbon & Scotch) */}
       <div className="absolute inset-0 z-0">
         <Image
-          src="https://res.cloudinary.com/ovmougmy/image/upload/v1793981766/jfk-liquors/hero-main.jpg"
-          alt="JFK Liquors Private Collection & Rare Cellar Reserve"
+          src="https://res.cloudinary.com/ovmougmy/image/upload/v1794246857/jfk-liquors/hero-collection-bottles.jpg"
+          alt="JFK Liquors Curated Spirits Collection - Artisanal Tequila, Craft Gin, Botanical Tonic & Fine Scotch"
           fill
           priority
           sizes="100vw"
