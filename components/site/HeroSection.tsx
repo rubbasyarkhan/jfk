@@ -13,22 +13,8 @@ export default function HeroSection() {
           fill
           priority
           sizes="100vw"
-          className="object-cover object-right md:object-center brightness-[0.92]"
+          className="object-cover object-right md:object-center"
         />
-        
-        {/* Directed Cinematic Dark Gradient:
-            Protects left-side text legibility while allowing the bottles on the right and center to shine clearly */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background:
-              'linear-gradient(90deg, rgba(5,5,5,0.95) 0%, rgba(5,5,5,0.82) 35%, rgba(5,5,5,0.35) 68%, rgba(5,5,5,0.12) 100%)',
-          }}
-        />
-
-        {/* Subtle Top & Bottom Vignettes for Seamless Contrast */}
-        <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#050505]/70 to-transparent pointer-events-none" />
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#050505] via-[#050505]/50 to-transparent pointer-events-none" />
       </div>
 
       {/* Main Spatial Grid Container (Expanded for Big Screens with Zero Awkward Gaps) */}

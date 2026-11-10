@@ -30,7 +30,7 @@
 
 ## 3. Hero Section Rules
 - **Background**: Complete black background (`#050505` / `#111111`).
-- **Main Visual (heromain.jpg)**: Must be clearly visible! Directed horizontal gradient (`linear-gradient(90deg, rgba(5,5,5,0.95) 0%, rgba(5,5,5,0.82) 35%, rgba(5,5,5,0.35) 68%, rgba(5,5,5,0.12) 100%)`) keeps text readable while bottle photography shines.
+- **Main Visual**: Must be clearly visible and clean with no black overlay/backdrop masking the photography.
 - **Heading Line Spacing**: Multi-line block elements with distinct vertical margin (`mt-1.5 sm:mt-2.5`) and comfortable line height (`leading-[1.2] sm:leading-[1.22]`).
 - **No Divider / Info Strip Under Hero**: Do NOT place horizontal ticker strips (`InfoBand`) directly under the hero. Viewport flows directly into the curated department gallery.
 

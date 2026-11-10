@@ -7,7 +7,8 @@ export default function AgeGate() {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    const verified = sessionStorage.getItem('jfk-age-verified');
+    const isPreview = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('preview');
+    const verified = sessionStorage.getItem('jfk-age-verified') || isPreview;
     if (!verified) setShow(true);
   }, []);
 
