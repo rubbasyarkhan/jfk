@@ -13,7 +13,7 @@ export default function AboutPage() {
         
         {/* Header */}
         <div className="text-center mb-16">
-          <p className="index-tag mb-3">01 // ABOUT JFK LIQUORS</p>
+          <p className="index-tag mb-3">ABOUT JFK LIQUORS</p>
           <h1
             className="font-serif tracking-tight text-[#FFFFFF]"
             style={{ fontSize: 'clamp(3rem, 6vw, 4.8rem)', lineHeight: 1.05 }}

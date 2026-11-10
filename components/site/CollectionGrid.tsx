@@ -65,7 +65,7 @@ export default function CollectionGrid({ categories }: Props) {
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
           <div>
             <p className="meta-tag mb-3">
-              01 // THE ARCHIVE
+              THE ARCHIVE
             </p>
             <h2
               className="font-anton tracking-wide uppercase text-white"

@@ -65,6 +65,6 @@
 
 ## 7. Awwwards-Level Design Standards
 - **NO Generic Top Announcement Bars**: NEVER put e-commerce announcement ribbons across the top of the site. The viewport must open directly into the cinematic header and hero for an immersive, awards-worthy first impression.
-- **Micro-Typography**: Use fine index notation (e.g. `[ 29.9844° N, 95.3414° W ]`, `01 // ARCHIVE`, `VOL. XXIV`) with delicate letter-spacing (`tracking-[0.25em]`).
+- **Micro-Typography**: Use clean index notation and tags without artificial serial numbers (e.g. `[ 29.9844° N, 95.3414° W ]`, `ARCHIVE`, `VOL. XXIV`) with delicate letter-spacing (`tracking-[0.25em]`).
 - **Precision Spacing & Layout**: Generous whitespace, asymmetric editorial tension, flawless grid alignment, ultra-thin 1px borders (`rgba(255,255,255,0.08)` or `#262626`).
 - **Tactile Depth**: Use deep Obsidian Black (`#0A0A0A` / `#111111`), delicate gold accents, subtle radial atmospheric glows, and razor-sharp bottle photography.

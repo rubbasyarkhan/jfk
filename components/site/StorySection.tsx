@@ -28,7 +28,7 @@ export default function StorySection() {
           {/* Right Column: Editorial Copy */}
           <div className="lg:col-span-6">
             <p className="index-tag mb-3">
-              02 // LOCAL STORE &bull; PERSONAL TOUCH
+              LOCAL STORE &bull; PERSONAL TOUCH
             </p>
 
             <h2

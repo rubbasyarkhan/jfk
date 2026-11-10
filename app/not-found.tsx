@@ -35,7 +35,7 @@ export default function NotFound() {
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm bg-[#121316] border border-white/10 mb-6">
             <span className="w-1.5 h-1.5 rounded-full bg-[#F5D900] animate-pulse" />
             <span className="text-[10px] font-sans font-bold uppercase tracking-[0.22em] text-[#F5D900]">
-              00 // ARCHIVE INDEX &bull; VINTAGE UNRESOLVED
+              ARCHIVE INDEX &bull; VINTAGE UNRESOLVED
             </span>
           </div>
 

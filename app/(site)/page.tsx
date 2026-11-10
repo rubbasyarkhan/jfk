@@ -25,7 +25,7 @@ export default async function HomePage() {
       {/* 1. Primary Viewport Hero: High-Impact Editorial Canvas */}
       <HeroSection />
 
-      {/* 2. Curated Department Gallery (01 // THE ARCHIVE) */}
+      {/* 2. Curated Department Gallery (THE ARCHIVE) */}
       <CollectionGrid categories={categories} />
 
       {/* 3. The Allocated Vault / Featured Bottles — 3 Cards in a Row */}
@@ -37,7 +37,7 @@ export default async function HomePage() {
             <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-16 gap-6">
               <div>
                 <p className="meta-tag mb-3">
-                  02 // PRIVATE CELLAR ALLOCATIONS
+                  PRIVATE CELLAR ALLOCATIONS
                 </p>
                 <h2
                   className="font-anton tracking-wide uppercase text-white"

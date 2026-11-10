@@ -7,7 +7,7 @@ export default function LocationSection() {
           {/* Location Info */}
           <div className="lg:col-span-5">
             <p className="index-tag mb-3">
-              03 // VISIT THE BOTTLE SHOP
+              VISIT THE BOTTLE SHOP
             </p>
 
             <h2

@@ -37,7 +37,7 @@ export default async function AllProductsPage() {
               <div className="flex items-center gap-3 mb-4">
                 <span className="w-2 h-2 rounded-full bg-[#F5D900] animate-pulse" />
                 <p className="text-[11px] font-sans font-bold uppercase tracking-[0.22em] text-[#F5D900]">
-                  01 // THE PRIVATE ARCHIVE &bull; COMPLETE CELLAR
+                  THE PRIVATE ARCHIVE &bull; COMPLETE CELLAR
                 </p>
               </div>
 
