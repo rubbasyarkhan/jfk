@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { getCategories, createCategory, updateCategory, deleteCategory } from '@/lib/firestore';
+import { uploadImageToCloudinary } from '@/lib/cloudinaryClient';
 import type { Category } from '@/types';
 
 interface Props {
@@ -13,6 +15,14 @@ export default function CategoryManager({ initialCategories }: Props) {
   const [categories, setCategories] = useState<Category[]>(initialCategories);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+
+  useEffect(() => {
+    async function refreshCategories() {
+      const latest = await getCategories();
+      setCategories(latest);
+    }
+    refreshCategories();
+  }, []);
 
   // Form State
   const [name, setName] = useState('');
@@ -69,20 +79,8 @@ export default function CategoryManager({ initialCategories }: Props) {
     setError('');
 
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const res = await fetch('/api/admin/upload-image', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await res.json();
-      if (res.ok && data.url) {
-        setImageUrl(data.url);
-      } else {
-        setError(data.error || 'Failed to upload category image to Cloudinary');
-      }
+      const uploadedUrl = await uploadImageToCloudinary(file);
+      setImageUrl(uploadedUrl);
     } catch (err: any) {
       setError(err?.message || 'Error uploading image');
     } finally {
@@ -111,38 +109,16 @@ export default function CategoryManager({ initialCategories }: Props) {
       };
 
       if (editingCategory) {
-        // Update existing
-        const res = await fetch(`/api/admin/categories/${editingCategory.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-
-        if (!res.ok) {
-          const data = await res.json();
-          throw new Error(data.error || 'Failed to update category');
-        }
-
+        await updateCategory(editingCategory.id, payload);
         setCategories((prev) =>
           prev.map((c) =>
             c.id === editingCategory.id ? { ...c, ...payload } : c
           )
         );
       } else {
-        // Create new
-        const res = await fetch('/api/admin/categories', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.error || 'Failed to create category');
-        }
-
+        const newId = await createCategory(payload);
         const newCat: Category = {
-          id: data.id || payload.slug,
+          id: newId || payload.slug,
           ...payload,
         };
         setCategories((prev) => [...prev, newCat]);
@@ -162,15 +138,7 @@ export default function CategoryManager({ initialCategories }: Props) {
     }
 
     try {
-      const res = await fetch(`/api/admin/categories/${catId}`, {
-        method: 'DELETE',
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || 'Failed to delete category');
-      }
-
+      await deleteCategory(catId);
       setCategories((prev) => prev.filter((c) => c.id !== catId));
     } catch (err: any) {
       alert(`Error deleting category: ${err.message}`);

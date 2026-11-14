@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ImageUploader from './ImageUploader';
+import { getCategories, createProduct, updateProduct } from '@/lib/firestore';
 import type { Product, Category } from '@/types';
 
 interface Props {
@@ -49,12 +50,9 @@ export default function ProductForm({ initialData, productId, availableCategorie
   useEffect(() => {
     async function loadCategories() {
       try {
-        const res = await fetch('/api/admin/categories');
-        const data = await res.json();
-        if (res.ok && Array.isArray(data.categories) && data.categories.length > 0) {
-          setCategoriesList(
-            data.categories.map((c: Category) => ({ label: c.name, value: c.slug }))
-          );
+        const cats = await getCategories();
+        if (Array.isArray(cats) && cats.length > 0) {
+          setCategoriesList(cats.map((c: Category) => ({ label: c.name, value: c.slug })));
         }
       } catch (err) {
         console.error('Failed to fetch categories:', err);
@@ -100,19 +98,10 @@ export default function ProductForm({ initialData, productId, availableCategorie
         sortOrder: initialData?.sortOrder || 1,
       };
 
-      const url = productId ? `/api/admin/products/${productId}` : '/api/admin/products';
-      const method = productId ? 'PUT' : 'POST';
-
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(productPayload),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to save product');
+      if (productId) {
+        await updateProduct(productId, productPayload);
+      } else {
+        await createProduct(productPayload);
       }
 
       router.push('/admin/products');

@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import Image from 'next/image';
+import { uploadImageToCloudinary } from '@/lib/cloudinaryClient';
 
 interface Props {
   value: string[];
@@ -24,23 +25,11 @@ export default function ImageUploader({ value, onChange, productId }: Props) {
 
     for (const file of Array.from(files)) {
       try {
-        const formData = new FormData();
-        formData.append('file', file);
-
-        const res = await fetch('/api/admin/upload-image', {
-          method: 'POST',
-          body: formData,
-        });
-
-        const data = await res.json();
-        if (res.ok && data.url) {
-          newUrls.push(data.url);
-        } else {
-          setError(data.error || 'Failed to upload image to Cloudinary');
-        }
+        const uploadedUrl = await uploadImageToCloudinary(file);
+        newUrls.push(uploadedUrl);
       } catch (err: any) {
         console.error('Upload error:', err);
-        setError(err?.message || 'Network error during image upload');
+        setError(err?.message || 'Failed to upload image to Cloudinary');
       }
     }
 

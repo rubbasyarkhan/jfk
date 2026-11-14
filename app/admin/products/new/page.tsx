@@ -1,8 +1,6 @@
 import { getCategories } from '@/lib/firestore';
 import ProductForm from '@/components/admin/ProductForm';
 
-export const revalidate = 0;
-
 export default async function NewProductPage() {
   const categories = await getCategories();
 

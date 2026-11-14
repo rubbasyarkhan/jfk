@@ -1,11 +1,21 @@
-import Link from 'next/link';
-import { getAllProducts, getCategories } from '@/lib/firestore';
+'use client';
 
-export default async function AdminDashboardPage() {
-  const [products, categories] = await Promise.all([
-    getAllProducts(),
-    getCategories(),
-  ]);
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { getAllProducts } from '@/lib/firestore';
+import { INITIAL_PRODUCTS } from '@/lib/initialData';
+import type { Product } from '@/types';
+
+export default function AdminDashboardPage() {
+  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+
+  useEffect(() => {
+    getAllProducts().then((latest) => {
+      if (Array.isArray(latest) && latest.length > 0) {
+        setProducts(latest);
+      }
+    });
+  }, []);
 
   const spiritsCount = products.filter((p) => p.category === 'spirits').length;
   const wineCount = products.filter((p) => p.category === 'wines').length;
@@ -14,7 +24,6 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="space-y-10 text-[#FFFFFF]">
-      
       {/* Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -36,7 +45,6 @@ export default async function AdminDashboardPage() {
 
       {/* KPI Cards in Charcoal #242424 */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        
         <div className="p-6 rounded-2xl bg-[#242424] border border-[#3A3A3A] flex flex-col justify-between">
           <p className="text-xs font-bold text-[#A0A0A0] uppercase tracking-wider mb-2">
             Total Inventory Items
@@ -84,12 +92,10 @@ export default async function AdminDashboardPage() {
             Texas craft, Tequila, Mezcal
           </p>
         </div>
-
       </div>
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
         {/* Recent Items Table in Charcoal */}
         <div className="lg:col-span-8 p-6 sm:p-8 rounded-2xl bg-[#242424] border border-[#3A3A3A]">
           <div className="flex items-center justify-between mb-6">
@@ -129,10 +135,17 @@ export default async function AdminDashboardPage() {
                     </td>
                     <td className="py-4 text-[#C7C7C7] capitalize">{item.category.replace(/-/g, ' ')}</td>
                     <td className="py-4">
-                      <span className="inline-flex items-center gap-1.5 text-xs text-green-400 font-semibold">
-                        <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
-                        In Stock
-                      </span>
+                      {item.inStock ? (
+                        <span className="inline-flex items-center gap-1.5 text-xs text-green-400 font-semibold">
+                          <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
+                          In Stock
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 text-xs text-red-400 font-semibold">
+                          <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                          Out of Stock
+                        </span>
+                      )}
                     </td>
                     <td className="py-4 text-right">
                       <Link
@@ -173,16 +186,14 @@ export default async function AdminDashboardPage() {
 
           <div className="p-6 rounded-2xl bg-[#5B1018] border border-[#D4AF37]/40 shadow-xl">
             <h3 className="font-display text-lg text-[#D4AF37] mb-2 uppercase">
-              WebP Conversion Pipeline
+              Cloudinary Cloud Pipeline
             </h3>
             <p className="text-xs text-[#F4F4F4] leading-relaxed font-light">
-              Every bottle image uploaded through the admin panel is automatically converted into optimized modern <strong>.WebP</strong> format via `sharp` before cloud storage.
+              Every bottle image uploaded through the admin panel is directly signed and stored in your Cloudinary CDN bucket.
             </p>
           </div>
         </div>
-
       </div>
-
     </div>
   );
 }

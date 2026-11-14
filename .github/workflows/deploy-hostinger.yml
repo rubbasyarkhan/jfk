@@ -1,0 +1,83 @@
+name: Deploy Next.js to Hostinger
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Next.js application
+        env:
+          NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+          NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
+        run: npm run build
+
+      - name: Assemble Hostinger static bundle
+        run: |
+          mkdir -p hostinger_dist/_next/static
+          cp -r public/* hostinger_dist/ || true
+          [ -f app/favicon.ico ] && cp app/favicon.ico hostinger_dist/favicon.ico
+          cp -r .next/static/* hostinger_dist/_next/static/
+
+          cd .next/server/app
+          find . -type f \( -name "*.html" -o -name "*.rsc" \) | while read -r file; do
+            clean="${file#./}"
+            mkdir -p "../../../hostinger_dist/$(dirname "$clean")"
+            cp "$file" "../../../hostinger_dist/$clean"
+            if [[ "$clean" == *.html && "$clean" != "index.html" && "$clean" != "_not-found.html" ]]; then
+              dir_target="../../../hostinger_dist/${clean%.html}"
+              mkdir -p "$dir_target"
+              cp "$file" "$dir_target/index.html"
+            fi
+          done
+          cd ../../..
+
+          [ -f hostinger_dist/_not-found.html ] && cp hostinger_dist/_not-found.html hostinger_dist/404.html
+
+          cat << 'EOF' > hostinger_dist/.htaccess
+          Options -MultiViews
+          RewriteEngine On
+          DirectoryIndex index.html
+
+          RewriteCond %{REQUEST_FILENAME}.html -f
+          RewriteRule ^(.+?)/?$ $1.html [L]
+
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteCond %{REQUEST_FILENAME} !-d
+          RewriteRule ^admin/products/([^/]+)/?$ /admin/products/prod-1.html [L]
+
+          ErrorDocument 404 /404.html
+          EOF
+
+      - name: Deploy to Hostinger via FTP
+        if: ${{ secrets.FTP_SERVER != '' }}
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./hostinger_dist/
+          server-dir: ./

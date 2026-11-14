@@ -1,8 +1,6 @@
 import { getAllProducts, getCategories } from '@/lib/firestore';
 import ProductListManager from '@/components/admin/ProductListManager';
 
-export const revalidate = 0; // Dynamic admin view
-
 export default async function AdminProductsListPage() {
   const [products, categories] = await Promise.all([
     getAllProducts(),

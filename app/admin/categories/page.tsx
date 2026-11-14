@@ -1,8 +1,6 @@
 import { getCategories } from '@/lib/firestore';
 import CategoryManager from '@/components/admin/CategoryManager';
 
-export const revalidate = 0; // dynamic admin dashboard
-
 export default async function AdminCategoriesPage() {
   const categories = await getCategories();
 

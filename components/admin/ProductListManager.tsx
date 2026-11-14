@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { getAllProducts, getCategories, updateProduct, deleteProduct } from '@/lib/firestore';
 import type { Product, Category } from '@/types';
 
 interface Props {
@@ -10,8 +11,9 @@ interface Props {
   categories: Category[];
 }
 
-export default function ProductListManager({ initialProducts, categories }: Props) {
+export default function ProductListManager({ initialProducts, categories: initialCategories }: Props) {
   const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [categories, setCategories] = useState<Category[]>(initialCategories);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [stockFilter, setStockFilter] = useState<'all' | 'instock' | 'out'>('all');
@@ -19,6 +21,18 @@ export default function ProductListManager({ initialProducts, categories }: Prop
   const [togglingStockId, setTogglingStockId] = useState<string | null>(null);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  useEffect(() => {
+    async function refreshData() {
+      const [latestProducts, latestCategories] = await Promise.all([
+        getAllProducts(),
+        getCategories(),
+      ]);
+      setProducts(latestProducts);
+      setCategories(latestCategories);
+    }
+    refreshData();
+  }, []);
 
   // Filter products
   const filteredProducts = products.filter((p) => {
@@ -49,15 +63,7 @@ export default function ProductListManager({ initialProducts, categories }: Prop
     );
 
     try {
-      const res = await fetch(`/api/admin/products/${product.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ inStock: newStock }),
-      });
-
-      if (!res.ok) {
-        throw new Error('Failed to update stock status');
-      }
+      await updateProduct(product.id, { inStock: newStock });
 
       setFeedback({
         type: 'success',
@@ -84,13 +90,7 @@ export default function ProductListManager({ initialProducts, categories }: Prop
     setDeletingId(id);
 
     try {
-      const res = await fetch(`/api/admin/products/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (!res.ok) {
-        throw new Error('Failed to delete product');
-      }
+      await deleteProduct(id);
 
       setProducts((prev) => prev.filter((p) => p.id !== id));
       setFeedback({
