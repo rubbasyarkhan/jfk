@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getCategories, createCategory, updateCategory, deleteCategory } from '@/lib/firestore';
+import { getCategories, getInstantCategories, createCategory, updateCategory, deleteCategory } from '@/lib/firestore';
 import { uploadImageToCloudinary } from '@/lib/cloudinaryClient';
 import type { Category } from '@/types';
 
@@ -13,15 +13,25 @@ interface Props {
 
 export default function CategoryManager({ initialCategories }: Props) {
   const [categories, setCategories] = useState<Category[]>(initialCategories);
+  const [hydrated, setHydrated] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
 
   useEffect(() => {
+    setCategories(getInstantCategories());
+    setHydrated(true);
+
     async function refreshCategories() {
       const latest = await getCategories();
       setCategories(latest);
     }
     refreshCategories();
+    window.addEventListener('jfk-catalog-updated', refreshCategories);
+    window.addEventListener('storage', refreshCategories);
+    return () => {
+      window.removeEventListener('jfk-catalog-updated', refreshCategories);
+      window.removeEventListener('storage', refreshCategories);
+    };
   }, []);
 
   // Form State

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import ProductCard from './ProductCard';
 import ProductImageGallery from './ProductImageGallery';
-import { getProductBySlug, getProducts } from '@/lib/firestore';
+import { getProductBySlug, getProducts, getInstantProducts } from '@/lib/firestore';
 import type { Product } from '@/types';
 
 interface Props {
@@ -20,8 +20,19 @@ export default function ProductDetailClient({
 }: Props) {
   const [product, setProduct] = useState<Product>(initialProduct);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>(initialRelated);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
+    const allInst = getInstantProducts();
+    const instProd = allInst.find((p) => p.slug === slug || p.id === slug);
+    if (instProd) {
+      setProduct(instProd);
+      setRelatedProducts(
+        allInst.filter((p) => p.category === instProd.category && p.slug !== instProd.slug && p.id !== instProd.id).slice(0, 3)
+      );
+    }
+    setHydrated(true);
+
     async function syncDetail() {
       const latestProd = await getProductBySlug(slug);
       if (latestProd) {
@@ -40,6 +51,22 @@ export default function ProductDetailClient({
       window.removeEventListener('storage', syncDetail);
     };
   }, [slug]);
+
+  if (!hydrated) {
+    return (
+      <div className="bg-[#050505] text-[#FFFFFF] min-h-screen py-20 sm:py-28">
+        <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+            <div className="lg:col-span-6 aspect-[4/5] rounded bg-[#121316] border border-white/[0.06] animate-pulse" />
+            <div className="lg:col-span-6 space-y-6">
+              <div className="h-12 w-3/4 rounded bg-[#121316] animate-pulse" />
+              <div className="h-24 w-full rounded bg-[#121316] animate-pulse" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const images =
     product.images && product.images.length > 0

@@ -16,18 +16,27 @@ import {
   saveLocalProducts,
   getLocalCategories,
   saveLocalCategories,
+  getDeletedIds,
+  markIdDeleted,
   notifyCatalogUpdated,
 } from './localStore';
 
 export const HAS_REAL_FIREBASE = Boolean(
   process.env.NEXT_PUBLIC_FIREBASE_API_KEY &&
   process.env.NEXT_PUBLIC_FIREBASE_API_KEY !== 'mock-api-key-jfk-liquors' &&
+  !process.env.NEXT_PUBLIC_FIREBASE_API_KEY.includes('Placeholder') &&
   db &&
   db.app
 );
 
 export function invalidateCache() {
   notifyCatalogUpdated();
+}
+
+function isLocalhost(): boolean {
+  if (typeof window === 'undefined') return false;
+  const h = window.location.hostname;
+  return h === 'localhost' || h === '127.0.0.1';
 }
 
 function readServerJson<T>(fileName: string, fallback: T): T {
@@ -57,12 +66,12 @@ function sanitizeProductDoc(docSnap: any): Product {
   if (createdAt && typeof createdAt.toDate === 'function') {
     createdAt = createdAt.toDate().toISOString();
   } else if (!createdAt) {
-    createdAt = new Date().toISOString();
+    createdAt = '2026-01-01T00:00:00.000Z';
   }
   if (updatedAt && typeof updatedAt.toDate === 'function') {
     updatedAt = updatedAt.toDate().toISOString();
   } else if (!updatedAt) {
-    updatedAt = new Date().toISOString();
+    updatedAt = String(createdAt);
   }
   return {
     ...data,
@@ -70,6 +79,50 @@ function sanitizeProductDoc(docSnap: any): Product {
     createdAt: String(createdAt),
     updatedAt: String(updatedAt),
   } as Product;
+}
+
+// Merge cloud products with local products so newer local edits are NEVER overwritten by stale cloud docs
+function mergeProducts(localList: Product[], cloudList: Product[]): Product[] {
+  const deleted = new Set(getDeletedIds());
+  const map = new Map<string, Product>();
+
+  for (const p of localList) {
+    if (!deleted.has(p.id) && !deleted.has(p.slug)) {
+      map.set(p.id, p);
+    }
+  }
+
+  for (const cp of cloudList) {
+    if (deleted.has(cp.id) || deleted.has(cp.slug)) continue;
+    const existing = map.get(cp.id);
+    if (!existing) {
+      map.set(cp.id, cp);
+    } else {
+      const localTime = existing.updatedAt ? new Date(existing.updatedAt).getTime() : 0;
+      const cloudTime = cp.updatedAt ? new Date(cp.updatedAt).getTime() : 0;
+      if (cloudTime > localTime) {
+        map.set(cp.id, cp);
+      }
+    }
+  }
+
+  return Array.from(map.values()).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+}
+
+// ─── Instant Synchronous Getters (0ms on Client Reload — Zero Stale Flash) ───
+
+export function getInstantProducts(): Product[] {
+  if (typeof window === 'undefined') {
+    return readServerJson<Product[]>('products.json', INITIAL_PRODUCTS);
+  }
+  return getLocalProducts().sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+}
+
+export function getInstantCategories(): Category[] {
+  if (typeof window === 'undefined') {
+    return readServerJson<Category[]>('categories.json', INITIAL_CATEGORIES);
+  }
+  return getLocalCategories().sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
 }
 
 // ─── Products ──────────────────────────────────────────────────────────────
@@ -80,38 +133,40 @@ export async function getAllProducts(): Promise<Product[]> {
     return [...serverProds].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
   }
 
-  // 1. Try Node server API (/api/admin/products) when running on localhost/Node
-  try {
-    const res = await fetch('/api/admin/products', { cache: 'no-store' });
-    if (res.ok && (res.headers.get('content-type') || '').includes('application/json')) {
-      const data = await res.json();
-      if (Array.isArray(data.products) && data.products.length > 0) {
-        saveLocalProducts(data.products);
-        return [...data.products].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+  const localProds = getLocalProducts();
+
+  // 1. Only call /api/admin/products when running on localhost
+  if (isLocalhost()) {
+    try {
+      const res = await fetch('/api/admin/products', { cache: 'no-store' });
+      if (res.ok && (res.headers.get('content-type') || '').includes('application/json')) {
+        const data = await res.json();
+        if (Array.isArray(data.products) && data.products.length > 0) {
+          const merged = mergeProducts(localProds, data.products);
+          saveLocalProducts(merged, true);
+          return merged;
+        }
       }
+    } catch {
+      // Fallback below
     }
-  } catch {
-    // Static host fallback below
   }
 
-  // 2. Try Firebase Firestore on static host (Hostinger) so all visitors see admin updates
+  // 2. Sync with Firebase Firestore and merge by newest timestamp so local edits are never lost
   if (HAS_REAL_FIREBASE && db && db.app) {
     try {
       const snap = await getDocs(collection(db, 'products'));
       if (!snap.empty) {
-        const cloudProds = snap.docs
-          .map(sanitizeProductDoc)
-          .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-        saveLocalProducts(cloudProds);
-        return cloudProds;
+        const cloudProds = snap.docs.map(sanitizeProductDoc);
+        const merged = mergeProducts(localProds, cloudProds);
+        saveLocalProducts(merged, true);
+        return merged;
       }
     } catch {
-      // Fall back to localStorage
+      // Fallback to localStorage
     }
   }
 
-  // 3. Browser localStorage fallback
-  const localProds = getLocalProducts();
   return [...localProds].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
 }
 
@@ -138,20 +193,6 @@ export async function getProductById(id: string): Promise<Product | null> {
   return all.find((p) => p.id === id || p.slug === id) || null;
 }
 
-async function ensureFirestoreProductsSeeded(currentProducts: Product[]) {
-  if (!HAS_REAL_FIREBASE || !db || !db.app) return;
-  try {
-    const snap = await getDocs(collection(db, 'products'));
-    if (snap.empty) {
-      await Promise.all(
-        currentProducts.map((p) => setDoc(doc(db, 'products', p.id), p))
-      );
-    }
-  } catch {
-    // Ignore
-  }
-}
-
 export async function createProduct(
   data: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>
 ): Promise<string> {
@@ -175,7 +216,7 @@ export async function createProduct(
   }
   saveLocalProducts(products);
 
-  if (typeof window !== 'undefined') {
+  if (isLocalhost()) {
     try {
       await fetch('/api/admin/products', {
         method: 'POST',
@@ -183,13 +224,12 @@ export async function createProduct(
         body: JSON.stringify(newProduct),
       });
     } catch {
-      // Static host
+      // Ignore
     }
   }
 
   if (HAS_REAL_FIREBASE && db && db.app) {
     try {
-      await ensureFirestoreProductsSeeded(products);
       await setDoc(doc(db, 'products', newId), newProduct, { merge: true });
     } catch (err) {
       console.warn('Firestore create sync warning:', err);
@@ -220,7 +260,7 @@ export async function updateProduct(id: string, data: Partial<Product>): Promise
     saveLocalProducts(products);
   }
 
-  if (typeof window !== 'undefined') {
+  if (isLocalhost()) {
     try {
       await fetch(`/api/admin/products/${encodeURIComponent(id)}`, {
         method: 'PUT',
@@ -228,13 +268,12 @@ export async function updateProduct(id: string, data: Partial<Product>): Promise
         body: JSON.stringify(data),
       });
     } catch {
-      // Static host
+      // Ignore
     }
   }
 
   if (HAS_REAL_FIREBASE && db && db.app && updatedProduct) {
     try {
-      await ensureFirestoreProductsSeeded(products);
       await setDoc(doc(db, 'products', updatedProduct.id), updatedProduct, { merge: true });
     } catch (err) {
       console.warn('Firestore update sync warning:', err);
@@ -245,18 +284,17 @@ export async function updateProduct(id: string, data: Partial<Product>): Promise
 }
 
 export async function deleteProduct(id: string): Promise<void> {
-  const current = getLocalProducts();
-  await ensureFirestoreProductsSeeded(current);
-  const products = current.filter((p) => p.id !== id && p.slug !== id);
+  markIdDeleted(id);
+  const products = getLocalProducts().filter((p) => p.id !== id && p.slug !== id);
   saveLocalProducts(products);
 
-  if (typeof window !== 'undefined') {
+  if (isLocalhost()) {
     try {
       await fetch(`/api/admin/products/${encodeURIComponent(id)}`, {
         method: 'DELETE',
       });
     } catch {
-      // Static host
+      // Ignore
     }
   }
 
@@ -279,55 +317,51 @@ export async function getCategories(): Promise<Category[]> {
     return [...serverCats].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
   }
 
-  try {
-    const res = await fetch('/api/admin/categories', { cache: 'no-store' });
-    if (res.ok && (res.headers.get('content-type') || '').includes('application/json')) {
-      const data = await res.json();
-      if (Array.isArray(data.categories) && data.categories.length > 0) {
-        saveLocalCategories(data.categories);
-        return [...data.categories].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+  const localCats = getLocalCategories();
+
+  if (isLocalhost()) {
+    try {
+      const res = await fetch('/api/admin/categories', { cache: 'no-store' });
+      if (res.ok && (res.headers.get('content-type') || '').includes('application/json')) {
+        const data = await res.json();
+        if (Array.isArray(data.categories) && data.categories.length > 0) {
+          saveLocalCategories(data.categories, true);
+          return [...data.categories].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+        }
       }
+    } catch {
+      // Fallback
     }
-  } catch {
-    // Static host fallback
   }
 
   if (HAS_REAL_FIREBASE && db && db.app) {
     try {
       const snap = await getDocs(collection(db, 'categories'));
       if (!snap.empty) {
+        const deleted = new Set(getDeletedIds());
         const cloudCats = snap.docs
           .map((d) => ({ ...(d.data() as Category), id: d.id }))
-          .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-        saveLocalCategories(cloudCats);
-        return cloudCats;
+          .filter((c) => !deleted.has(c.id) && !deleted.has(c.slug));
+
+        // Keep local categories as source of truth and add any new cloud categories
+        const map = new Map<string, Category>();
+        for (const c of cloudCats) map.set(c.id, c);
+        for (const lc of localCats) map.set(lc.id, lc);
+        const merged = Array.from(map.values()).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+        saveLocalCategories(merged, true);
+        return merged;
       }
     } catch {
-      // Fallback below
+      // Fallback
     }
   }
 
-  const localCats = getLocalCategories();
   return [...localCats].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
 }
 
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
   const all = await getCategories();
   return all.find((c) => c.slug === slug || c.id === slug) || null;
-}
-
-async function ensureFirestoreCategoriesSeeded(currentCategories: Category[]) {
-  if (!HAS_REAL_FIREBASE || !db || !db.app) return;
-  try {
-    const snap = await getDocs(collection(db, 'categories'));
-    if (snap.empty) {
-      await Promise.all(
-        currentCategories.map((c) => setDoc(doc(db, 'categories', c.id), c))
-      );
-    }
-  } catch {
-    // Ignore
-  }
 }
 
 export async function createCategory(data: Omit<Category, 'id'>): Promise<string> {
@@ -347,7 +381,7 @@ export async function createCategory(data: Omit<Category, 'id'>): Promise<string
   }
   saveLocalCategories(categories);
 
-  if (typeof window !== 'undefined') {
+  if (isLocalhost()) {
     try {
       await fetch('/api/admin/categories', {
         method: 'POST',
@@ -355,13 +389,12 @@ export async function createCategory(data: Omit<Category, 'id'>): Promise<string
         body: JSON.stringify(newCat),
       });
     } catch {
-      // Static host
+      // Ignore
     }
   }
 
   if (HAS_REAL_FIREBASE && db && db.app) {
     try {
-      await ensureFirestoreCategoriesSeeded(categories);
       await setDoc(doc(db, 'categories', newId), newCat, { merge: true });
     } catch (err) {
       console.warn('Firestore category create warning:', err);
@@ -390,7 +423,7 @@ export async function updateCategory(id: string, data: Partial<Category>): Promi
     saveLocalCategories(categories);
   }
 
-  if (typeof window !== 'undefined') {
+  if (isLocalhost()) {
     try {
       await fetch(`/api/admin/categories/${encodeURIComponent(id)}`, {
         method: 'PUT',
@@ -398,13 +431,12 @@ export async function updateCategory(id: string, data: Partial<Category>): Promi
         body: JSON.stringify(data),
       });
     } catch {
-      // Static host
+      // Ignore
     }
   }
 
   if (HAS_REAL_FIREBASE && db && db.app && updatedCat) {
     try {
-      await ensureFirestoreCategoriesSeeded(categories);
       await setDoc(doc(db, 'categories', updatedCat.id), updatedCat, { merge: true });
     } catch (err) {
       console.warn('Firestore category update warning:', err);
@@ -415,18 +447,17 @@ export async function updateCategory(id: string, data: Partial<Category>): Promi
 }
 
 export async function deleteCategory(id: string): Promise<void> {
-  const current = getLocalCategories();
-  await ensureFirestoreCategoriesSeeded(current);
-  const categories = current.filter((c) => c.id !== id && c.slug !== id);
+  markIdDeleted(id);
+  const categories = getLocalCategories().filter((c) => c.id !== id && c.slug !== id);
   saveLocalCategories(categories);
 
-  if (typeof window !== 'undefined') {
+  if (isLocalhost()) {
     try {
       await fetch(`/api/admin/categories/${encodeURIComponent(id)}`, {
         method: 'DELETE',
       });
     } catch {
-      // Static host
+      // Ignore
     }
   }
 

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getCategories } from '@/lib/firestore';
+import { getCategories, getInstantCategories } from '@/lib/firestore';
 import type { Category } from '@/types';
 
 const FALLBACK_CATEGORIES = [
@@ -47,8 +47,12 @@ interface Props {
 
 export default function CollectionGrid({ categories: initialCategories }: Props) {
   const [categories, setCategories] = useState<Category[]>(initialCategories || []);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
+    setCategories(getInstantCategories());
+    setHydrated(true);
+
     async function syncCategories() {
       const latest = await getCategories();
       if (Array.isArray(latest) && latest.length > 0) {
@@ -64,8 +68,9 @@ export default function CollectionGrid({ categories: initialCategories }: Props)
     };
   }, []);
 
-  const displayCategories =
-    categories && categories.length > 0
+  const displayCategories = !hydrated
+    ? []
+    : categories && categories.length > 0
       ? categories.map((cat, idx) => ({
           num: String(idx + 1).padStart(2, '0'),
           slug: cat.slug,

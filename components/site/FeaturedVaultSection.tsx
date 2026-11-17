@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import ProductCard from './ProductCard';
-import { getFeaturedProducts } from '@/lib/firestore';
+import { getFeaturedProducts, getInstantProducts } from '@/lib/firestore';
 import type { Product } from '@/types';
 
 interface Props {
@@ -12,8 +12,12 @@ interface Props {
 
 export default function FeaturedVaultSection({ initialProducts }: Props) {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>(initialProducts);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
+    setFeaturedProducts(getInstantProducts().filter((p) => p.featured).slice(0, 6));
+    setHydrated(true);
+
     async function syncFeatured() {
       const latest = await getFeaturedProducts(6);
       setFeaturedProducts(latest);
@@ -27,7 +31,7 @@ export default function FeaturedVaultSection({ initialProducts }: Props) {
     };
   }, []);
 
-  if (featuredProducts.length === 0) return null;
+  if (hydrated && featuredProducts.length === 0) return null;
 
   return (
     <section id="vault" className="py-24 sm:py-32 relative bg-[#0B0C0E] border-b border-white/[0.08]">
@@ -61,9 +65,13 @@ export default function FeaturedVaultSection({ initialProducts }: Props) {
 
         {/* 3 Cards In A Row Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {featuredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+          {!hydrated
+            ? Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="aspect-[4/5] rounded bg-[#121316] border border-white/[0.06] animate-pulse" />
+              ))
+            : featuredProducts.map((product) => (
+                <ProductCard key={product.id + (product.updatedAt || '')} product={product} />
+              ))}
         </div>
       </div>
     </section>

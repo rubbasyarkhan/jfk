@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getAllProducts, getCategories, updateProduct, deleteProduct } from '@/lib/firestore';
+import { getAllProducts, getCategories, getInstantProducts, getInstantCategories, updateProduct, deleteProduct } from '@/lib/firestore';
 import type { Product, Category } from '@/types';
 
 interface Props {
@@ -14,6 +14,7 @@ interface Props {
 export default function ProductListManager({ initialProducts, categories: initialCategories }: Props) {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [categories, setCategories] = useState<Category[]>(initialCategories);
+  const [hydrated, setHydrated] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [stockFilter, setStockFilter] = useState<'all' | 'instock' | 'out'>('all');
@@ -23,6 +24,10 @@ export default function ProductListManager({ initialProducts, categories: initia
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   useEffect(() => {
+    setProducts(getInstantProducts());
+    setCategories(getInstantCategories());
+    setHydrated(true);
+
     async function refreshData() {
       const [latestProducts, latestCategories] = await Promise.all([
         getAllProducts(),
@@ -32,7 +37,21 @@ export default function ProductListManager({ initialProducts, categories: initia
       setCategories(latestCategories);
     }
     refreshData();
+    window.addEventListener('jfk-catalog-updated', refreshData);
+    window.addEventListener('storage', refreshData);
+    return () => {
+      window.removeEventListener('jfk-catalog-updated', refreshData);
+      window.removeEventListener('storage', refreshData);
+    };
   }, []);
+
+  if (!hydrated) {
+    return (
+      <div className="py-12 text-center text-[#A0A0A0] text-sm">
+        Loading catalog...
+      </div>
+    );
+  }
 
   // Filter products
   const filteredProducts = products.filter((p) => {
@@ -209,8 +228,8 @@ export default function ProductListManager({ initialProducts, categories: initia
               ) : (
                 filteredProducts.map((item) => {
                   const imageSrc =
-                    item.thumbnailUrl ||
                     item.images?.[0] ||
+                    item.thumbnailUrl ||
                     'https://res.cloudinary.com/ovmougmy/image/upload/v1793981778/jfk-liquors/bourbon-jim-beam.jpg';
 
                   return (

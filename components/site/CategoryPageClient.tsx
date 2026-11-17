@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import ProductCard from './ProductCard';
 import CategorySwitcher from './CategorySwitcher';
-import { getProducts, getCategoryBySlug, getCategories } from '@/lib/firestore';
+import { getProducts, getCategoryBySlug, getCategories, getInstantProducts, getInstantCategories } from '@/lib/firestore';
 import type { Product, Category } from '@/types';
 
 interface Props {
@@ -23,8 +23,16 @@ export default function CategoryPageClient({
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [category, setCategory] = useState<Category | null>(initialCategory);
   const [allCategories, setAllCategories] = useState<Category[]>(initialCategories);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
+    const instCats = getInstantCategories();
+    const instCat = instCats.find((c) => c.slug === categorySlug || c.id === categorySlug) || null;
+    setAllCategories(instCats);
+    if (instCat) setCategory(instCat);
+    setProducts(getInstantProducts().filter((p) => p.category === categorySlug));
+    setHydrated(true);
+
     async function syncCatPage() {
       const [latestProds, latestCat, latestCats] = await Promise.all([
         getProducts(categorySlug),
@@ -44,11 +52,12 @@ export default function CategoryPageClient({
     };
   }, [categorySlug]);
 
-  const catName = category?.name || categorySlug.replace(/-/g, ' ');
-  const bannerText =
-    category?.bannerText ||
-    category?.description ||
-    'Curated collection handpicked for quality, character, and exceptional value.';
+  const catName = !hydrated ? '' : category?.name || categorySlug.replace(/-/g, ' ');
+  const bannerText = !hydrated
+    ? ''
+    : category?.bannerText ||
+      category?.description ||
+      'Curated collection handpicked for quality, character, and exceptional value.';
 
   return (
     <div className="bg-[#050505] text-[#FFFFFF] min-h-screen">
@@ -157,7 +166,13 @@ export default function CategoryPageClient({
           </a>
         </div>
 
-        {products.length === 0 ? (
+        {!hydrated ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="aspect-[4/5] rounded bg-[#121316] border border-white/[0.06] animate-pulse" />
+            ))}
+          </div>
+        ) : products.length === 0 ? (
           <div className="text-center py-24 rounded bg-[#161616] border border-white/10">
             <h3 className="font-anton text-3xl text-[#FFFFFF] mb-2 uppercase tracking-wide">
               Catalog Updating

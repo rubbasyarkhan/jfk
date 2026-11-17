@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getProductById, getCategories } from '@/lib/firestore';
+import { getProductById, getCategories, getInstantProducts, getInstantCategories } from '@/lib/firestore';
 import ProductForm from './ProductForm';
 import type { Product, Category } from '@/types';
 
@@ -19,38 +19,46 @@ export default function EditProductClient({
   const [product, setProduct] = useState<Product | null>(initialProduct || null);
   const [resolvedId, setResolvedId] = useState<string>(initialId);
   const [categories, setCategories] = useState<Category[]>(availableCategories);
-  const [loading, setLoading] = useState(!initialProduct);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    async function loadLatest() {
-      let idFromUrl = initialId;
-      if (typeof window !== 'undefined') {
-        const searchId = new URLSearchParams(window.location.search).get('id');
-        const pathParts = window.location.pathname.replace(/\/+$/, '').split('/');
-        const lastSegment = pathParts[pathParts.length - 1];
-        if (searchId) {
-          idFromUrl = searchId;
-        } else if (lastSegment && lastSegment !== 'products' && lastSegment !== 'new') {
-          idFromUrl = lastSegment;
-        }
+    let idFromUrl = initialId;
+    if (typeof window !== 'undefined') {
+      const searchId = new URLSearchParams(window.location.search).get('id');
+      const pathParts = window.location.pathname.replace(/\/+$/, '').split('/');
+      const lastSegment = pathParts[pathParts.length - 1];
+      if (searchId) {
+        idFromUrl = searchId;
+      } else if (lastSegment && lastSegment !== 'products' && lastSegment !== 'new') {
+        idFromUrl = lastSegment;
       }
-      setResolvedId(idFromUrl);
+    }
+    setResolvedId(idFromUrl);
 
+    // 1. Instant synchronous load from localStorage so stale build-time data never flashes
+    const instProds = getInstantProducts();
+    const instProd = instProds.find((p) => p.id === idFromUrl || p.slug === idFromUrl);
+    if (instProd) setProduct(instProd);
+    const instCats = getInstantCategories();
+    if (instCats.length > 0) setCategories(instCats);
+    setHydrated(true);
+
+    // 2. Async cloud/server sync
+    async function loadLatest() {
       const [latestProd, latestCats] = await Promise.all([
         getProductById(idFromUrl),
         getCategories(),
       ]);
       if (latestProd) setProduct(latestProd);
       if (latestCats.length > 0) setCategories(latestCats);
-      setLoading(false);
     }
     loadLatest();
   }, [initialId]);
 
-  if (loading && !product) {
+  if (!hydrated) {
     return (
       <div className="py-16 text-center text-[#A0A0A0] text-sm">
-        Loading product details...
+        Loading bottle editor...
       </div>
     );
   }

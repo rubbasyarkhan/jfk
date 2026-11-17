@@ -2,20 +2,37 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getAllProducts } from '@/lib/firestore';
+import { getAllProducts, getInstantProducts } from '@/lib/firestore';
 import { INITIAL_PRODUCTS } from '@/lib/initialData';
 import type { Product } from '@/types';
 
 export default function AdminDashboardPage() {
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    getAllProducts().then((latest) => {
-      if (Array.isArray(latest) && latest.length > 0) {
-        setProducts(latest);
-      }
-    });
+    setProducts(getInstantProducts());
+    setHydrated(true);
+
+    function syncDashboard() {
+      getAllProducts().then((latest) => {
+        if (Array.isArray(latest)) {
+          setProducts(latest);
+        }
+      });
+    }
+    syncDashboard();
+    window.addEventListener('jfk-catalog-updated', syncDashboard);
+    window.addEventListener('storage', syncDashboard);
+    return () => {
+      window.removeEventListener('jfk-catalog-updated', syncDashboard);
+      window.removeEventListener('storage', syncDashboard);
+    };
   }, []);
+
+  if (!hydrated) {
+    return <div className="py-16 text-center text-[#A0A0A0] text-sm">Loading dashboard...</div>;
+  }
 
   const spiritsCount = products.filter((p) => p.category === 'spirits').length;
   const wineCount = products.filter((p) => p.category === 'wines').length;
@@ -121,9 +138,9 @@ export default function AdminDashboardPage() {
                 {products.slice(0, 6).map((item) => (
                   <tr key={item.id} className="hover:bg-[#111111]/40 transition-colors">
                     <td className="py-4 font-bold text-[#FFFFFF] flex items-center gap-3">
-                      {item.thumbnailUrl && (
+                      {(item.images?.[0] || item.thumbnailUrl) && (
                         <img
-                          src={item.thumbnailUrl}
+                          src={item.images?.[0] || item.thumbnailUrl}
                           alt=""
                           className="w-10 h-10 object-cover rounded-lg border border-[#3A3A3A] flex-shrink-0"
                         />

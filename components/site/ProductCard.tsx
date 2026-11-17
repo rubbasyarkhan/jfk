@@ -17,8 +17,8 @@ const BADGE_STYLES: Record<string, { bg: string; text: string; border: string }>
 export default function ProductCard({ product }: Props) {
   const badgeStyle = product.badge ? BADGE_STYLES[product.badge] || BADGE_STYLES.Featured : null;
   const imageSrc =
-    product.thumbnailUrl ||
     product.images?.[0] ||
+    product.thumbnailUrl ||
     'https://res.cloudinary.com/ovmougmy/image/upload/v1793981778/jfk-liquors/bourbon-jim-beam.jpg';
 
   return (

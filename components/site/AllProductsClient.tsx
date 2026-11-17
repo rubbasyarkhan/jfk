@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import ProductCard from './ProductCard';
 import CategorySwitcher from './CategorySwitcher';
-import { getProducts, getCategories } from '@/lib/firestore';
+import { getProducts, getCategories, getInstantProducts, getInstantCategories } from '@/lib/firestore';
 import type { Product, Category } from '@/types';
 
 interface Props {
@@ -15,8 +15,13 @@ interface Props {
 export default function AllProductsClient({ initialProducts, initialCategories }: Props) {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [categories, setCategories] = useState<Category[]>(initialCategories);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
+    setProducts(getInstantProducts());
+    setCategories(getInstantCategories());
+    setHydrated(true);
+
     async function syncAll() {
       const [latestProds, latestCats] = await Promise.all([
         getProducts(),
@@ -138,7 +143,13 @@ export default function AllProductsClient({ initialProducts, initialCategories }
           </a>
         </div>
 
-        {products.length === 0 ? (
+        {!hydrated ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="aspect-[4/5] rounded bg-[#121316] border border-white/[0.06] animate-pulse" />
+            ))}
+          </div>
+        ) : products.length === 0 ? (
           <div className="text-center py-24 rounded bg-[#121316] border border-white/10">
             <h3 className="font-anton text-3xl text-white mb-2 uppercase tracking-wide">
               Catalog Updating
