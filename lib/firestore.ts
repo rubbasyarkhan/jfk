@@ -3,14 +3,9 @@ import {
   doc,
   getDocs,
   getDoc,
-  addDoc,
   setDoc,
   updateDoc,
   deleteDoc,
-  query,
-  where,
-  orderBy,
-  limit,
   serverTimestamp,
 } from 'firebase/firestore';
 import { db } from './firebase';
@@ -21,9 +16,9 @@ import {
   saveLocalProducts,
   getLocalCategories,
   saveLocalCategories,
+  notifyCatalogUpdated,
 } from './localStore';
 
-// Check if real Firebase credentials are provided and db is initialized
 export const HAS_REAL_FIREBASE = Boolean(
   process.env.NEXT_PUBLIC_FIREBASE_API_KEY &&
   process.env.NEXT_PUBLIC_FIREBASE_API_KEY !== 'mock-api-key-jfk-liquors' &&
@@ -31,35 +26,44 @@ export const HAS_REAL_FIREBASE = Boolean(
   db.app
 );
 
-let firestoreDisabled = !HAS_REAL_FIREBASE;
-
-// In-Memory Fast Cache Engine for Sub-Millisecond Page Transitions
-let memoryProducts: { data: Product[]; expires: number } | null = null;
-let memoryCategories: { data: Category[]; expires: number } | null = null;
-const CACHE_LIFETIME = 120 * 1000; // 2 minutes
-
 export function invalidateCache() {
-  memoryProducts = null;
-  memoryCategories = null;
+  notifyCatalogUpdated();
+}
+
+function readServerJson<T>(fileName: string, fallback: T): T {
+  if (typeof window !== 'undefined') return fallback;
+  try {
+    const req = eval('require');
+    const fs = req('fs');
+    const path = req('path');
+    const filePath = path.join(process.cwd(), 'data', fileName);
+    if (fs.existsSync(filePath)) {
+      const raw = fs.readFileSync(filePath, 'utf-8');
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed as T;
+      }
+    }
+  } catch {
+    // Ignore on browser
+  }
+  return fallback;
 }
 
 function sanitizeProductDoc(docSnap: any): Product {
   const data = docSnap.data();
   let createdAt = data.createdAt;
   let updatedAt = data.updatedAt;
-
   if (createdAt && typeof createdAt.toDate === 'function') {
     createdAt = createdAt.toDate().toISOString();
   } else if (!createdAt) {
     createdAt = new Date().toISOString();
   }
-
   if (updatedAt && typeof updatedAt.toDate === 'function') {
     updatedAt = updatedAt.toDate().toISOString();
   } else if (!updatedAt) {
     updatedAt = new Date().toISOString();
   }
-
   return {
     ...data,
     id: docSnap.id,
@@ -68,42 +72,47 @@ function sanitizeProductDoc(docSnap: any): Product {
   } as Product;
 }
 
-function sanitizeCategoryDoc(docSnap: any): Category {
-  const data = docSnap.data();
-  return {
-    ...data,
-    id: docSnap.id,
-  } as Category;
-}
-
 // ─── Products ──────────────────────────────────────────────────────────────
 
 export async function getAllProducts(): Promise<Product[]> {
-  const now = Date.now();
-  if (memoryProducts && memoryProducts.expires > now) {
-    return memoryProducts.data;
+  if (typeof window === 'undefined') {
+    const serverProds = readServerJson<Product[]>('products.json', INITIAL_PRODUCTS);
+    return [...serverProds].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
   }
 
-  let prods: Product[] = [];
-  if (!firestoreDisabled && db && db.app) {
+  // 1. Try Node server API (/api/admin/products) when running on localhost/Node
+  try {
+    const res = await fetch('/api/admin/products', { cache: 'no-store' });
+    if (res.ok && (res.headers.get('content-type') || '').includes('application/json')) {
+      const data = await res.json();
+      if (Array.isArray(data.products) && data.products.length > 0) {
+        saveLocalProducts(data.products);
+        return [...data.products].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+      }
+    }
+  } catch {
+    // Static host fallback below
+  }
+
+  // 2. Try Firebase Firestore on static host (Hostinger) so all visitors see admin updates
+  if (HAS_REAL_FIREBASE && db && db.app) {
     try {
       const snap = await getDocs(collection(db, 'products'));
       if (!snap.empty) {
-        prods = snap.docs
+        const cloudProds = snap.docs
           .map(sanitizeProductDoc)
           .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+        saveLocalProducts(cloudProds);
+        return cloudProds;
       }
-    } catch (err) {
-      firestoreDisabled = true;
+    } catch {
+      // Fall back to localStorage
     }
   }
 
-  if (prods.length === 0) {
-    prods = getLocalProducts().sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-  }
-
-  memoryProducts = { data: prods, expires: now + CACHE_LIFETIME };
-  return prods;
+  // 3. Browser localStorage fallback
+  const localProds = getLocalProducts();
+  return [...localProds].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
 }
 
 export async function getProducts(categorySlug?: string): Promise<Product[]> {
@@ -121,12 +130,26 @@ export async function getFeaturedProducts(count = 8): Promise<Product[]> {
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   const all = await getAllProducts();
-  return all.find((p) => p.slug === slug) || null;
+  return all.find((p) => p.slug === slug || p.id === slug) || null;
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
   const all = await getAllProducts();
-  return all.find((p) => p.id === id) || null;
+  return all.find((p) => p.id === id || p.slug === id) || null;
+}
+
+async function ensureFirestoreProductsSeeded(currentProducts: Product[]) {
+  if (!HAS_REAL_FIREBASE || !db || !db.app) return;
+  try {
+    const snap = await getDocs(collection(db, 'products'));
+    if (snap.empty) {
+      await Promise.all(
+        currentProducts.map((p) => setDoc(doc(db, 'products', p.id), p))
+      );
+    }
+  } catch {
+    // Ignore
+  }
 }
 
 export async function createProduct(
@@ -135,192 +158,298 @@ export async function createProduct(
   const newId = (data.slug || `prod-${Date.now()}`).toLowerCase().replace(/[^a-z0-9]+/g, '-');
   const now = new Date().toISOString();
 
-  if (!firestoreDisabled && db && db.app) {
-    try {
-      const ref = await addDoc(collection(db, 'products'), {
-        ...data,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      });
-      invalidateCache();
-      return ref.id;
-    } catch (err) {
-      console.warn('Firestore write failed, falling back to localStore:', err);
-    }
-  }
-
-  // Local fallback
-  const products = getLocalProducts();
   const newProduct: Product = {
     ...data,
     id: newId,
+    slug: data.slug || newId,
     createdAt: now,
     updatedAt: now,
   };
-  products.unshift(newProduct);
+
+  const products = getLocalProducts();
+  const existingIdx = products.findIndex((p) => p.id === newId);
+  if (existingIdx !== -1) {
+    products[existingIdx] = newProduct;
+  } else {
+    products.unshift(newProduct);
+  }
   saveLocalProducts(products);
-  invalidateCache();
+
+  if (typeof window !== 'undefined') {
+    try {
+      await fetch('/api/admin/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newProduct),
+      });
+    } catch {
+      // Static host
+    }
+  }
+
+  if (HAS_REAL_FIREBASE && db && db.app) {
+    try {
+      await ensureFirestoreProductsSeeded(products);
+      await setDoc(doc(db, 'products', newId), newProduct, { merge: true });
+    } catch (err) {
+      console.warn('Firestore create sync warning:', err);
+    }
+  }
+
+  notifyCatalogUpdated();
   return newId;
 }
 
 export async function updateProduct(id: string, data: Partial<Product>): Promise<void> {
   const now = new Date().toISOString();
+  const products = getLocalProducts();
+  const idx = products.findIndex((p) => p.id === id || p.slug === id);
+  let updatedProduct: Product | null = null;
 
-  if (!firestoreDisabled && db && db.app) {
+  if (idx !== -1) {
+    const cleanData = Object.fromEntries(
+      Object.entries(data).filter(([, v]) => v !== undefined)
+    );
+    updatedProduct = {
+      ...products[idx],
+      ...cleanData,
+      id: products[idx].id,
+      updatedAt: now,
+    };
+    products[idx] = updatedProduct;
+    saveLocalProducts(products);
+  }
+
+  if (typeof window !== 'undefined') {
     try {
-      await updateDoc(doc(db, 'products', id), {
-        ...data,
-        updatedAt: serverTimestamp(),
+      await fetch(`/api/admin/products/${encodeURIComponent(id)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
       });
-      invalidateCache();
-      return;
-    } catch (err) {
-      console.warn('Firestore update failed, falling back to localStore:', err);
+    } catch {
+      // Static host
     }
   }
 
-  // Local fallback
-  const products = getLocalProducts();
-  const idx = products.findIndex((p) => p.id === id);
-  if (idx !== -1) {
-    products[idx] = {
-      ...products[idx],
-      ...data,
-      updatedAt: now,
-    };
-    saveLocalProducts(products);
+  if (HAS_REAL_FIREBASE && db && db.app && updatedProduct) {
+    try {
+      await ensureFirestoreProductsSeeded(products);
+      await setDoc(doc(db, 'products', updatedProduct.id), updatedProduct, { merge: true });
+    } catch (err) {
+      console.warn('Firestore update sync warning:', err);
+    }
   }
-  invalidateCache();
+
+  notifyCatalogUpdated();
 }
 
 export async function deleteProduct(id: string): Promise<void> {
-  if (!firestoreDisabled && db && db.app) {
+  const current = getLocalProducts();
+  await ensureFirestoreProductsSeeded(current);
+  const products = current.filter((p) => p.id !== id && p.slug !== id);
+  saveLocalProducts(products);
+
+  if (typeof window !== 'undefined') {
     try {
-      await deleteDoc(doc(db, 'products', id));
-      invalidateCache();
-      return;
-    } catch (err) {
-      console.warn('Firestore delete failed, falling back to localStore:', err);
+      await fetch(`/api/admin/products/${encodeURIComponent(id)}`, {
+        method: 'DELETE',
+      });
+    } catch {
+      // Static host
     }
   }
 
-  // Local fallback
-  const products = getLocalProducts().filter((p) => p.id !== id);
-  saveLocalProducts(products);
-  invalidateCache();
+  if (HAS_REAL_FIREBASE && db && db.app) {
+    try {
+      await deleteDoc(doc(db, 'products', id));
+    } catch (err) {
+      console.warn('Firestore delete sync warning:', err);
+    }
+  }
+
+  notifyCatalogUpdated();
 }
 
 // ─── Categories ────────────────────────────────────────────────────────────
 
 export async function getCategories(): Promise<Category[]> {
-  const now = Date.now();
-  if (memoryCategories && memoryCategories.expires > now) {
-    return memoryCategories.data;
+  if (typeof window === 'undefined') {
+    const serverCats = readServerJson<Category[]>('categories.json', INITIAL_CATEGORIES);
+    return [...serverCats].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
   }
 
-  let cats: Category[] = [];
-  if (!firestoreDisabled && db && db.app) {
-    try {
-      const q = query(collection(db, 'categories'), orderBy('sortOrder', 'asc'));
-      const snap = await getDocs(q);
-      if (!snap.empty) {
-        cats = snap.docs.map(sanitizeCategoryDoc);
+  try {
+    const res = await fetch('/api/admin/categories', { cache: 'no-store' });
+    if (res.ok && (res.headers.get('content-type') || '').includes('application/json')) {
+      const data = await res.json();
+      if (Array.isArray(data.categories) && data.categories.length > 0) {
+        saveLocalCategories(data.categories);
+        return [...data.categories].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
       }
-    } catch (err) {
-      firestoreDisabled = true;
+    }
+  } catch {
+    // Static host fallback
+  }
+
+  if (HAS_REAL_FIREBASE && db && db.app) {
+    try {
+      const snap = await getDocs(collection(db, 'categories'));
+      if (!snap.empty) {
+        const cloudCats = snap.docs
+          .map((d) => ({ ...(d.data() as Category), id: d.id }))
+          .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+        saveLocalCategories(cloudCats);
+        return cloudCats;
+      }
+    } catch {
+      // Fallback below
     }
   }
 
-  if (cats.length === 0) {
-    cats = getLocalCategories();
-  }
-
-  memoryCategories = { data: cats, expires: now + CACHE_LIFETIME };
-  return cats;
+  const localCats = getLocalCategories();
+  return [...localCats].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
 }
 
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
   const all = await getCategories();
-  return all.find((c) => c.slug === slug) || null;
+  return all.find((c) => c.slug === slug || c.id === slug) || null;
+}
+
+async function ensureFirestoreCategoriesSeeded(currentCategories: Category[]) {
+  if (!HAS_REAL_FIREBASE || !db || !db.app) return;
+  try {
+    const snap = await getDocs(collection(db, 'categories'));
+    if (snap.empty) {
+      await Promise.all(
+        currentCategories.map((c) => setDoc(doc(db, 'categories', c.id), c))
+      );
+    }
+  } catch {
+    // Ignore
+  }
 }
 
 export async function createCategory(data: Omit<Category, 'id'>): Promise<string> {
   const newId = (data.slug || `cat-${Date.now()}`).toLowerCase().replace(/[^a-z0-9]+/g, '-');
-
-  if (!firestoreDisabled && db && db.app) {
-    try {
-      const ref = await addDoc(collection(db, 'categories'), data);
-      invalidateCache();
-      return ref.id;
-    } catch (err) {
-      console.warn('Firestore category write failed, falling back to localStore:', err);
-    }
-  }
-
-  // Local fallback
-  const categories = getLocalCategories();
   const newCat: Category = {
     ...data,
     id: newId,
+    slug: data.slug || newId,
   };
-  categories.push(newCat);
+
+  const categories = getLocalCategories();
+  const existingIdx = categories.findIndex((c) => c.id === newId || c.slug === newCat.slug);
+  if (existingIdx !== -1) {
+    categories[existingIdx] = newCat;
+  } else {
+    categories.push(newCat);
+  }
   saveLocalCategories(categories);
-  invalidateCache();
+
+  if (typeof window !== 'undefined') {
+    try {
+      await fetch('/api/admin/categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newCat),
+      });
+    } catch {
+      // Static host
+    }
+  }
+
+  if (HAS_REAL_FIREBASE && db && db.app) {
+    try {
+      await ensureFirestoreCategoriesSeeded(categories);
+      await setDoc(doc(db, 'categories', newId), newCat, { merge: true });
+    } catch (err) {
+      console.warn('Firestore category create warning:', err);
+    }
+  }
+
+  notifyCatalogUpdated();
   return newId;
 }
 
 export async function updateCategory(id: string, data: Partial<Category>): Promise<void> {
-  if (!firestoreDisabled && db && db.app) {
+  const categories = getLocalCategories();
+  const idx = categories.findIndex((c) => c.id === id || c.slug === id);
+  let updatedCat: Category | null = null;
+
+  if (idx !== -1) {
+    const cleanData = Object.fromEntries(
+      Object.entries(data).filter(([, v]) => v !== undefined)
+    );
+    updatedCat = {
+      ...categories[idx],
+      ...cleanData,
+      id: categories[idx].id,
+    };
+    categories[idx] = updatedCat;
+    saveLocalCategories(categories);
+  }
+
+  if (typeof window !== 'undefined') {
     try {
-      await updateDoc(doc(db, 'categories', id), data);
-      invalidateCache();
-      return;
-    } catch (err) {
-      console.warn('Firestore category update failed, falling back to localStore:', err);
+      await fetch(`/api/admin/categories/${encodeURIComponent(id)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+    } catch {
+      // Static host
     }
   }
 
-  // Local fallback
-  const categories = getLocalCategories();
-  const idx = categories.findIndex((c) => c.id === id);
-  if (idx !== -1) {
-    categories[idx] = {
-      ...categories[idx],
-      ...data,
-    };
-    saveLocalCategories(categories);
+  if (HAS_REAL_FIREBASE && db && db.app && updatedCat) {
+    try {
+      await ensureFirestoreCategoriesSeeded(categories);
+      await setDoc(doc(db, 'categories', updatedCat.id), updatedCat, { merge: true });
+    } catch (err) {
+      console.warn('Firestore category update warning:', err);
+    }
   }
-  invalidateCache();
+
+  notifyCatalogUpdated();
 }
 
 export async function deleteCategory(id: string): Promise<void> {
-  if (!firestoreDisabled && db && db.app) {
+  const current = getLocalCategories();
+  await ensureFirestoreCategoriesSeeded(current);
+  const categories = current.filter((c) => c.id !== id && c.slug !== id);
+  saveLocalCategories(categories);
+
+  if (typeof window !== 'undefined') {
     try {
-      await deleteDoc(doc(db, 'categories', id));
-      invalidateCache();
-      return;
-    } catch (err) {
-      console.warn('Firestore category delete failed, falling back to localStore:', err);
+      await fetch(`/api/admin/categories/${encodeURIComponent(id)}`, {
+        method: 'DELETE',
+      });
+    } catch {
+      // Static host
     }
   }
 
-  // Local fallback
-  const categories = getLocalCategories().filter((c) => c.id !== id);
-  saveLocalCategories(categories);
-  invalidateCache();
+  if (HAS_REAL_FIREBASE && db && db.app) {
+    try {
+      await deleteDoc(doc(db, 'categories', id));
+    } catch (err) {
+      console.warn('Firestore category delete warning:', err);
+    }
+  }
+
+  notifyCatalogUpdated();
 }
 
-// ─── Site Settings ─────────────────────────────────────────────────────────
-
 export async function getSiteSettings(): Promise<SiteSettings | null> {
-  if (!firestoreDisabled && db && db.app) {
+  if (HAS_REAL_FIREBASE && db && db.app) {
     try {
       const snap = await getDoc(doc(db, 'settings', 'main'));
       if (snap.exists()) {
         return snap.data() as SiteSettings;
       }
-    } catch (err) {
-      firestoreDisabled = true;
+    } catch {
+      // Fallback below
     }
   }
 
@@ -339,17 +468,15 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
 }
 
 export async function updateSiteSettings(data: Partial<SiteSettings>): Promise<void> {
-  if (!firestoreDisabled && db && db.app) {
+  if (HAS_REAL_FIREBASE && db && db.app) {
     try {
       await updateDoc(doc(db, 'settings', 'main'), data);
-      return;
     } catch (err) {
       console.warn('Firestore settings update failed:', err);
     }
   }
 }
 
-// Helper to seed initial catalog to real Firestore
 export async function seedInitialDataToFirestore(): Promise<{ products: number; categories: number }> {
   let catCount = 0;
   let prodCount = 0;
@@ -368,6 +495,6 @@ export async function seedInitialDataToFirestore(): Promise<{ products: number; 
     prodCount++;
   }
 
-  invalidateCache();
+  notifyCatalogUpdated();
   return { products: prodCount, categories: catCount };
 }

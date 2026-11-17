@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { getCategories } from '@/lib/firestore';
 
 const DEPARTMENTS = [
   { label: 'Spirits & Allocated Bourbon', href: '/products/spirits', desc: 'Single barrel bourbons, peated Islays & French cognacs' },
@@ -23,13 +24,11 @@ export default function Header() {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (cachedClientDepts) return;
     async function loadDepts() {
       try {
-        const res = await fetch('/api/admin/categories');
-        const data = await res.json();
-        if (res.ok && Array.isArray(data.categories) && data.categories.length > 0) {
-          const formatted = data.categories.map((c: any) => ({
+        const cats = await getCategories();
+        if (Array.isArray(cats) && cats.length > 0) {
+          const formatted = cats.map((c: any) => ({
             label: c.name,
             href: `/products/${c.slug}`,
             desc: c.description || c.bannerText || 'Curated selection',
@@ -37,11 +36,17 @@ export default function Header() {
           cachedClientDepts = formatted;
           setDepartments(formatted);
         }
-      } catch (e) {
+      } catch {
         // Fallback to default
       }
     }
     loadDepts();
+    window.addEventListener('jfk-catalog-updated', loadDepts);
+    window.addEventListener('storage', loadDepts);
+    return () => {
+      window.removeEventListener('jfk-catalog-updated', loadDepts);
+      window.removeEventListener('storage', loadDepts);
+    };
   }, []);
 
   useEffect(() => {

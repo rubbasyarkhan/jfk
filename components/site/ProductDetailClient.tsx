@@ -1,0 +1,194 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import ProductCard from './ProductCard';
+import ProductImageGallery from './ProductImageGallery';
+import { getProductBySlug, getProducts } from '@/lib/firestore';
+import type { Product } from '@/types';
+
+interface Props {
+  slug: string;
+  initialProduct: Product;
+  initialRelated: Product[];
+}
+
+export default function ProductDetailClient({
+  slug,
+  initialProduct,
+  initialRelated,
+}: Props) {
+  const [product, setProduct] = useState<Product>(initialProduct);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>(initialRelated);
+
+  useEffect(() => {
+    async function syncDetail() {
+      const latestProd = await getProductBySlug(slug);
+      if (latestProd) {
+        setProduct(latestProd);
+        const allCatProds = await getProducts(latestProd.category);
+        setRelatedProducts(
+          allCatProds.filter((p) => p.slug !== latestProd.slug && p.id !== latestProd.id).slice(0, 3)
+        );
+      }
+    }
+    syncDetail();
+    window.addEventListener('jfk-catalog-updated', syncDetail);
+    window.addEventListener('storage', syncDetail);
+    return () => {
+      window.removeEventListener('jfk-catalog-updated', syncDetail);
+      window.removeEventListener('storage', syncDetail);
+    };
+  }, [slug]);
+
+  const images =
+    product.images && product.images.length > 0
+      ? product.images
+      : [product.thumbnailUrl];
+
+  return (
+    <div className="bg-[#050505] text-[#FFFFFF] min-h-screen py-20 sm:py-28">
+      <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20">
+        {/* Minimal Breadcrumb */}
+        <nav className="flex items-center gap-2 text-xs text-neutral-400 mb-10 uppercase tracking-widest font-sans">
+          <Link href="/" className="hover:text-[#F5D900] transition-colors">Home</Link>
+          <span>/</span>
+          <Link href="/products" className="hover:text-[#F5D900] transition-colors">The Collection</Link>
+          <span>/</span>
+          <Link href={`/products/${product.category}`} className="hover:text-[#F5D900] transition-colors capitalize">
+            {product.category.replace(/-/g, ' ')}
+          </Link>
+          <span>/</span>
+          <span className="text-white truncate max-w-[220px] font-medium">{product.name}</span>
+        </nav>
+
+        {/* Minimal Product Showcase Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+          {/* Left Column: Visual Showcase with Interactive Image Switcher */}
+          <div className="lg:col-span-6">
+            <ProductImageGallery
+              images={images}
+              name={product.name}
+              badge={product.badge}
+            />
+          </div>
+
+          {/* Right Column: Editorial Details & Clear Action */}
+          <div className="lg:col-span-6 lg:pl-4">
+            {product.tags?.length > 0 && (
+              <p className="text-xs font-sans font-bold text-[#F5D900] tracking-[0.2em] uppercase mb-3">
+                {product.tags.join(' • ')}
+              </p>
+            )}
+
+            <h1
+              className="font-anton tracking-wide uppercase text-white mb-5 leading-[1.05]"
+              style={{ fontSize: 'clamp(2.4rem, 4.5vw, 3.8rem)' }}
+            >
+              {product.name}
+            </h1>
+
+            <div className="flex flex-wrap items-center gap-3 mb-6 pb-6 border-b border-white/10">
+              {product.inStock !== false ? (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-sm text-xs font-sans font-semibold uppercase tracking-wider bg-emerald-950/70 text-emerald-300 border border-emerald-500/40">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  In Store Today
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-sm text-xs font-sans font-semibold uppercase tracking-wider bg-red-950/70 text-red-300 border border-red-500/40">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                  Call For Allocation
+                </span>
+              )}
+
+              {product.volume && (
+                <span className="px-3 py-1 rounded-sm text-xs font-sans font-medium text-neutral-300 bg-[#161616] border border-white/10">
+                  {product.volume}
+                </span>
+              )}
+              {product.abv && (
+                <span className="px-3 py-1 rounded-sm text-xs font-sans font-medium text-neutral-300 bg-[#161616] border border-white/10">
+                  {product.abv}% ABV
+                </span>
+              )}
+              {product.origin && (
+                <span className="px-3 py-1 rounded-sm text-xs font-sans font-medium text-neutral-300 bg-[#161616] border border-white/10">
+                  {product.origin}
+                </span>
+              )}
+              {product.brand && (
+                <span className="px-3 py-1 rounded-sm text-xs font-sans font-medium text-neutral-300 bg-[#161616] border border-white/10">
+                  {product.brand}
+                </span>
+              )}
+              {product.category && (
+                <span className="px-3 py-1 rounded-sm text-xs font-sans font-medium text-neutral-300 bg-[#161616] border border-white/10 capitalize">
+                  {product.category.replace(/-/g, ' ')}
+                </span>
+              )}
+            </div>
+
+            <div className="text-neutral-300 font-sans text-sm sm:text-base leading-relaxed font-normal mb-8">
+              <p>{product.description || product.shortDescription}</p>
+            </div>
+
+            <div className="p-4 rounded-sm bg-[#121316] border border-[#F5D900]/30 text-xs sm:text-[13px] font-sans text-neutral-300 leading-relaxed mb-8">
+              <span className="text-[#F5D900] font-semibold">Stock changes daily.</span>{' '}
+              Call{' '}
+              <a href="tel:+12815903300" className="text-[#F5D900] font-bold underline hover:text-white transition-colors">
+                +1 281-590-3300
+              </a>{' '}
+              to check availability. Must be 21+ with valid ID.
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4 mb-8">
+              <a
+                href="tel:+12815903300"
+                className="btn-primary flex-1 text-center justify-center !py-4 text-xs font-bold uppercase tracking-[0.16em]"
+              >
+                <span>Call Store: (281) 590-3300</span>
+              </a>
+
+              <a
+                href="https://www.google.com/maps/dir/?api=1&destination=15655+John+F+Kennedy+Blvd+Suite+D+Houston+TX+77032"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-secondary flex-1 text-center justify-center !py-4 text-xs font-semibold uppercase tracking-[0.14em]"
+              >
+                <span>Get Directions ↗</span>
+              </a>
+            </div>
+
+            <div className="pt-6 border-t border-white/10 flex items-center justify-between text-xs text-neutral-400 font-sans">
+              <span>JFK Liquors &bull; 15655 John F Kennedy Blvd</span>
+              <span className="text-[#F5D900] font-medium">3 min from IAH Airport</span>
+            </div>
+          </div>
+        </div>
+
+        {relatedProducts.length > 0 && (
+          <section className="mt-28 pt-16 border-t border-white/10">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+              <div>
+                <p className="meta-tag mb-1">More In This Department</p>
+                <h2 className="font-anton tracking-wide uppercase text-3xl sm:text-4xl text-white">Related Selections</h2>
+              </div>
+              <Link
+                href={`/products/${product.category}`}
+                className="text-xs font-sans font-bold uppercase tracking-wider text-[#F5D900] hover:underline"
+              >
+                View Department ↗
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {relatedProducts.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
+    </div>
+  );
+}

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { updateProduct, deleteProduct, getProductById } from '@/lib/firestore';
+import { readServerProducts, writeServerProducts } from '@/lib/serverStore';
+
+export const dynamic = 'force-dynamic';
 
 interface Props {
   params: { id: string };
@@ -7,7 +9,8 @@ interface Props {
 
 export async function GET(req: NextRequest, { params }: Props) {
   try {
-    const product = await getProductById(params.id);
+    const products = readServerProducts();
+    const product = products.find((p) => p.id === params.id || p.slug === params.id);
     if (!product) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
@@ -20,8 +23,20 @@ export async function GET(req: NextRequest, { params }: Props) {
 export async function PUT(req: NextRequest, { params }: Props) {
   try {
     const body = await req.json();
-    await updateProduct(params.id, body);
-    return NextResponse.json({ success: true, message: 'Product updated successfully' });
+    const products = readServerProducts();
+    const idx = products.findIndex((p) => p.id === params.id || p.slug === params.id);
+    if (idx === -1) {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    }
+
+    products[idx] = {
+      ...products[idx],
+      ...body,
+      id: products[idx].id,
+      updatedAt: new Date().toISOString(),
+    };
+    writeServerProducts(products);
+    return NextResponse.json({ success: true, product: products[idx] });
   } catch (err: any) {
     console.error('Error in updateProduct API:', err);
     return NextResponse.json({ error: err?.message || 'Failed to update product' }, { status: 500 });
@@ -30,7 +45,10 @@ export async function PUT(req: NextRequest, { params }: Props) {
 
 export async function DELETE(req: NextRequest, { params }: Props) {
   try {
-    await deleteProduct(params.id);
+    const products = readServerProducts().filter(
+      (p) => p.id !== params.id && p.slug !== params.id
+    );
+    writeServerProducts(products);
     return NextResponse.json({ success: true, message: 'Product deleted successfully' });
   } catch (err: any) {
     console.error('Error in deleteProduct API:', err);

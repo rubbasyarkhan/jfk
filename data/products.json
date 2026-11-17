@@ -1,7 +1,7 @@
 [
   {
     "id": "bourbon-american-whiskey",
-    "name": "Bourbon & American Whiskey",
+    "name": "Bourbon",
     "slug": "bourbon-american-whiskey",
     "category": "spirits",
     "tags": [
@@ -18,12 +18,14 @@
     "featured": true,
     "images": [
       "https://res.cloudinary.com/ovmougmy/image/upload/v1794247348/jfk-liquors/bourbon-kentucky-reserve.jpg",
-      "https://res.cloudinary.com/ovmougmy/image/upload/v1793981778/jfk-liquors/bourbon-jim-beam.jpg"
+      "https://res.cloudinary.com/ovmougmy/image/upload/v1794904162/jfk-liquors/products/gofjthamxxcmjwwcjcxv.webp"
     ],
     "thumbnailUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1794247348/jfk-liquors/bourbon-kentucky-reserve.jpg",
     "sortOrder": 1,
     "createdAt": "2026-11-06T17:56:15.478Z",
-    "updatedAt": "2026-11-09T18:04:27.173Z"
+    "updatedAt": "2026-11-17T08:29:32.584Z",
+    "brand": "",
+    "origin": ""
   },
   {
     "id": "scotch-whisky",

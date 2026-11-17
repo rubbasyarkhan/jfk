@@ -1,8 +1,14 @@
 import type { Product, Category } from '@/types';
 import { INITIAL_PRODUCTS, INITIAL_CATEGORIES } from './initialData';
 
-const PRODUCTS_STORAGE_KEY = 'jfk_liquors_products_v1';
-const CATEGORIES_STORAGE_KEY = 'jfk_liquors_categories_v1';
+const PRODUCTS_STORAGE_KEY = 'jfk_liquors_products_v2';
+const CATEGORIES_STORAGE_KEY = 'jfk_liquors_categories_v2';
+
+export function notifyCatalogUpdated() {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new Event('jfk-catalog-updated'));
+  }
+}
 
 export function getLocalProducts(): Product[] {
   if (typeof window !== 'undefined') {
@@ -10,7 +16,7 @@ export function getLocalProducts(): Product[] {
       const raw = window.localStorage.getItem(PRODUCTS_STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed)) {
           return parsed;
         }
       }
@@ -19,13 +25,14 @@ export function getLocalProducts(): Product[] {
       console.warn('Error reading products from localStorage:', err);
     }
   }
-  return INITIAL_PRODUCTS;
+  return [...INITIAL_PRODUCTS];
 }
 
 export function saveLocalProducts(products: Product[]): void {
   if (typeof window !== 'undefined') {
     try {
       window.localStorage.setItem(PRODUCTS_STORAGE_KEY, JSON.stringify(products));
+      notifyCatalogUpdated();
     } catch (err) {
       console.error('Error saving products to localStorage:', err);
     }
@@ -38,7 +45,7 @@ export function getLocalCategories(): Category[] {
       const raw = window.localStorage.getItem(CATEGORIES_STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed)) {
           return parsed;
         }
       }
@@ -47,13 +54,14 @@ export function getLocalCategories(): Category[] {
       console.warn('Error reading categories from localStorage:', err);
     }
   }
-  return INITIAL_CATEGORIES;
+  return [...INITIAL_CATEGORIES];
 }
 
 export function saveLocalCategories(categories: Category[]): void {
   if (typeof window !== 'undefined') {
     try {
       window.localStorage.setItem(CATEGORIES_STORAGE_KEY, JSON.stringify(categories));
+      notifyCatalogUpdated();
     } catch (err) {
       console.error('Error saving categories to localStorage:', err);
     }

@@ -1,5 +1,9 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { getCategories } from '@/lib/firestore';
 import type { Category } from '@/types';
 
 const FALLBACK_CATEGORIES = [
@@ -41,7 +45,25 @@ interface Props {
   categories?: Category[];
 }
 
-export default function CollectionGrid({ categories }: Props) {
+export default function CollectionGrid({ categories: initialCategories }: Props) {
+  const [categories, setCategories] = useState<Category[]>(initialCategories || []);
+
+  useEffect(() => {
+    async function syncCategories() {
+      const latest = await getCategories();
+      if (Array.isArray(latest) && latest.length > 0) {
+        setCategories(latest);
+      }
+    }
+    syncCategories();
+    window.addEventListener('jfk-catalog-updated', syncCategories);
+    window.addEventListener('storage', syncCategories);
+    return () => {
+      window.removeEventListener('jfk-catalog-updated', syncCategories);
+      window.removeEventListener('storage', syncCategories);
+    };
+  }, []);
+
   const displayCategories =
     categories && categories.length > 0
       ? categories.map((cat, idx) => ({

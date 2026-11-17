@@ -1,7 +1,11 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { getCategories } from '@/lib/firestore';
 
-const SHOP_LINKS = [
+const DEFAULT_SHOP_LINKS = [
   { label: 'Spirits Selection', href: '/products/spirits' },
   { label: 'Wine Selection', href: '/products/wines' },
   { label: 'Beer Selection', href: '/products/beer' },
@@ -10,6 +14,28 @@ const SHOP_LINKS = [
 
 export default function Footer() {
   const year = new Date().getFullYear();
+  const [shopLinks, setShopLinks] = useState(DEFAULT_SHOP_LINKS);
+
+  useEffect(() => {
+    async function syncFooterCats() {
+      const cats = await getCategories();
+      if (Array.isArray(cats) && cats.length > 0) {
+        setShopLinks(
+          cats.map((c) => ({
+            label: `${c.name} Selection`,
+            href: `/products/${c.slug}`,
+          }))
+        );
+      }
+    }
+    syncFooterCats();
+    window.addEventListener('jfk-catalog-updated', syncFooterCats);
+    window.addEventListener('storage', syncFooterCats);
+    return () => {
+      window.removeEventListener('jfk-catalog-updated', syncFooterCats);
+      window.removeEventListener('storage', syncFooterCats);
+    };
+  }, []);
 
   return (
     <footer className="bg-[#0A0A0A] border-t border-white/[0.08] text-[#FFFFFF]">
@@ -81,7 +107,7 @@ export default function Footer() {
               Shop Departments
             </h4>
             <ul className="space-y-2 text-xs">
-              {SHOP_LINKS.map((link) => (
+              {shopLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}

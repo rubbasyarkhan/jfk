@@ -29,6 +29,10 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://jfkliquoriah.com"),
+  alternates: {
+    canonical: "https://jfkliquoriah.com",
+  },
   title: "JFK Liquors — Houston, TX | Luxury Spirits, Fine Wine & Allocated Vault Near IAH",
   description:
     "Discover allocated bourbon, rare single malts, cellar wines, and cold craft beer on JFK Boulevard, Houston. 3 minutes from George Bush Intercontinental Airport (IAH).",
