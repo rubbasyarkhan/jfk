@@ -1,64 +1,76 @@
+'use client';
+
+import { useSiteContent } from '@/lib/useSiteContent';
+
 export default function LocationSection() {
+  const { brand, locationSection } = useSiteContent();
+
   return (
     <section className="py-24 sm:py-32 relative bg-[#0D0D0D] border-t border-white/[0.08]">
       <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-
           {/* Location Info */}
           <div className="lg:col-span-5">
-            <p className="index-tag mb-3">
-              VISIT THE BOTTLE SHOP
-            </p>
+            <p className="index-tag mb-3">{locationSection.eyebrow}</p>
 
             <h2
               className="font-anton tracking-wide uppercase text-[#FFFFFF] mb-5"
-              style={{ fontSize: 'clamp(2.4rem, 4.5vw, 3.8rem)', lineHeight: 1.05 }}
+              style={{
+                fontSize: 'clamp(2.4rem, 4.5vw, 3.8rem)',
+                lineHeight: 1.05,
+              }}
             >
-              Right on JFK.
+              {locationSection.headingLine1}
               <br />
               <span className="text-[#F5D900]">
-                Close to IAH.
+                {locationSection.headingLine2Gold}
               </span>
             </h2>
 
             <p className="text-lg text-[#FFFFFF] font-medium leading-relaxed mb-1">
-              15655 John F Kennedy Blvd, Suite D
+              {brand.addressLine1}
             </p>
             <p className="text-sm text-[#A0A0A0] mb-2 font-light">
-              Houston, TX 77032
+              {brand.addressLine2}
             </p>
             <p className="text-xs text-[#F5D900] font-mono mb-8">
-              Conveniently located near George Bush Intercontinental Airport (IAH).
+              {locationSection.proximityNote}
             </p>
 
             {/* Store Hours Table */}
             <div className="border-t border-b border-white/10 py-4 mb-8 text-xs sm:text-sm space-y-2.5 font-mono">
               <div className="flex justify-between items-center">
-                <span className="text-[#C7C7C7]">Monday — Saturday</span>
-                <span className="font-semibold text-[#F5D900]">11:00 AM — 9:00 PM</span>
+                <span className="text-[#C7C7C7]">
+                  {brand.hoursWeekdayLabel}
+                </span>
+                <span className="font-semibold text-[#F5D900]">
+                  {brand.hoursWeekdayTime}
+                </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[#C7C7C7]">Sunday</span>
-                <span className="font-semibold text-[#F5D900]">Closed (Texas Law)</span>
+                <span className="text-[#C7C7C7]">{brand.hoursSundayLabel}</span>
+                <span className="font-semibold text-[#F5D900]">
+                  {brand.hoursSundayTime}
+                </span>
               </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-5">
               <a
-                href="https://www.google.com/maps/dir/?api=1&destination=15655+John+F+Kennedy+Blvd+Suite+D+Houston+TX+77032"
+                href={brand.directionsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-gold"
               >
-                <span>Get directions</span>
+                <span>{locationSection.directionsBtnText}</span>
                 <span className="text-xs">↗</span>
               </a>
 
               <a
-                href="tel:+12815903300"
+                href={`tel:${brand.phoneTel}`}
                 className="text-sm font-semibold text-[#F5D900] hover:underline font-mono"
               >
-                (281) 590-3300
+                {brand.phoneDisplay}
               </a>
             </div>
           </div>
@@ -67,15 +79,14 @@ export default function LocationSection() {
           <div className="lg:col-span-7">
             <div className="relative rounded overflow-hidden border border-white/10 shadow-2xl bg-[#141414] aspect-[16/11]">
               <iframe
-                title="Find JFK Liquors in Houston"
-                src="https://maps.google.com/maps?q=15655+John+F+Kennedy+Blvd+Suite+D+Houston+TX+77032&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                title={`Find ${brand.storeName} in Houston`}
+                src={brand.mapEmbedUrl}
                 className="w-full h-full border-0 filter grayscale-[0.6] contrast-[1.05]"
                 loading="lazy"
                 allowFullScreen
               />
             </div>
           </div>
-
         </div>
       </div>
     </section>

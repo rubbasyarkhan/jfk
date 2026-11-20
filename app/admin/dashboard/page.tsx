@@ -2,24 +2,35 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getAllProducts, getInstantProducts } from '@/lib/firestore';
-import { INITIAL_PRODUCTS } from '@/lib/initialData';
-import type { Product } from '@/types';
+import {
+  getAllProducts,
+  getCategories,
+  getInstantProducts,
+  getInstantCategories,
+  HAS_REAL_FIREBASE,
+} from '@/lib/firestore';
+import { useSiteContent } from '@/lib/useSiteContent';
+import { INITIAL_PRODUCTS, INITIAL_CATEGORIES } from '@/lib/initialData';
+import type { Product, Category } from '@/types';
 
 export default function AdminDashboardPage() {
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+  const [categories, setCategories] = useState<Category[]>(INITIAL_CATEGORIES);
   const [hydrated, setHydrated] = useState(false);
+  const { brand } = useSiteContent();
 
   useEffect(() => {
     setProducts(getInstantProducts());
+    setCategories(getInstantCategories());
     setHydrated(true);
 
     function syncDashboard() {
-      getAllProducts().then((latest) => {
-        if (Array.isArray(latest)) {
-          setProducts(latest);
+      Promise.all([getAllProducts(), getCategories()]).then(
+        ([latestProds, latestCats]) => {
+          if (Array.isArray(latestProds)) setProducts(latestProds);
+          if (Array.isArray(latestCats)) setCategories(latestCats);
         }
-      });
+      );
     }
     syncDashboard();
     window.addEventListener('jfk-catalog-updated', syncDashboard);
@@ -31,13 +42,19 @@ export default function AdminDashboardPage() {
   }, []);
 
   if (!hydrated) {
-    return <div className="py-16 text-center text-[#A0A0A0] text-sm">Loading dashboard...</div>;
+    return (
+      <div className="py-16 text-center text-[#A0A0A0] text-sm">
+        Loading dashboard...
+      </div>
+    );
   }
 
   const spiritsCount = products.filter((p) => p.category === 'spirits').length;
   const wineCount = products.filter((p) => p.category === 'wines').length;
   const beerCount = products.filter((p) => p.category === 'beer').length;
-  const agaveCount = products.filter((p) => p.category === 'agave-and-more').length;
+  const agaveCount = products.filter(
+    (p) => p.category === 'agave-and-more'
+  ).length;
 
   return (
     <div className="space-y-10 text-[#FFFFFF]">
@@ -50,8 +67,11 @@ export default function AdminDashboardPage() {
           </h1>
         </div>
 
-        <div className="flex gap-3">
-          <Link href="/admin/products/new" className="btn-gold !py-2.5">
+        <div className="flex flex-wrap gap-3">
+          <Link href="/admin/content" className="btn-gold !py-2.5">
+            Edit Website Content
+          </Link>
+          <Link href="/admin/products/new" className="btn-ghost !py-2.5">
             + Add New Bottle
           </Link>
           <Link href="/" target="_blank" className="btn-ghost !py-2.5">
@@ -70,7 +90,7 @@ export default function AdminDashboardPage() {
             {products.length}
           </p>
           <p className="text-xs text-[#C7C7C7] font-light">
-            Active products across all categories
+            Active across {categories.length} departments
           </p>
         </div>
 
@@ -111,6 +131,69 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
+      {/* Quick CMS Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Link
+          href="/admin/content"
+          className="group p-6 rounded-2xl bg-[#242424] border border-[#D4AF37]/40 hover:border-[#D4AF37] transition-all flex flex-col justify-between"
+        >
+          <div>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[#D4AF37] px-2.5 py-1 rounded bg-[#D4AF37]/10 border border-[#D4AF37]/30">
+              Full Website CMS
+            </span>
+            <h3 className="font-display text-xl text-white uppercase mt-3 mb-2 group-hover:text-[#D4AF37] transition-colors">
+              Website Content &amp; Sections
+            </h3>
+            <p className="text-xs text-[#C7C7C7] font-light leading-relaxed mb-4">
+              Edit Hero, Delivery, Promo Banner, Story, About Page, Contact Page, Store Hours, Phone, Logo &amp; Footer.
+            </p>
+          </div>
+          <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">
+            Open Content Manager &rarr;
+          </span>
+        </Link>
+
+        <Link
+          href="/admin/products"
+          className="group p-6 rounded-2xl bg-[#242424] border border-[#3A3A3A] hover:border-[#D4AF37] transition-all flex flex-col justify-between"
+        >
+          <div>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[#A0A0A0] px-2.5 py-1 rounded bg-white/5 border border-white/10">
+              Catalog ({products.length})
+            </span>
+            <h3 className="font-display text-xl text-white uppercase mt-3 mb-2 group-hover:text-[#D4AF37] transition-colors">
+              Products &amp; Bottle Cards
+            </h3>
+            <p className="text-xs text-[#C7C7C7] font-light leading-relaxed mb-4">
+              Add, edit, or delete bottles, upload multi-photo galleries to Cloudinary, and toggle stock or featured vault status.
+            </p>
+          </div>
+          <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">
+            Manage Bottles &rarr;
+          </span>
+        </Link>
+
+        <Link
+          href="/admin/categories"
+          className="group p-6 rounded-2xl bg-[#242424] border border-[#3A3A3A] hover:border-[#D4AF37] transition-all flex flex-col justify-between"
+        >
+          <div>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[#A0A0A0] px-2.5 py-1 rounded bg-white/5 border border-white/10">
+              Taxonomy ({categories.length})
+            </span>
+            <h3 className="font-display text-xl text-white uppercase mt-3 mb-2 group-hover:text-[#D4AF37] transition-colors">
+              Departments &amp; Categories
+            </h3>
+            <p className="text-xs text-[#C7C7C7] font-light leading-relaxed mb-4">
+              Manage homepage department cards, cover photography, banner quotes, descriptions, and sort order.
+            </p>
+          </div>
+          <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">
+            Manage Departments &rarr;
+          </span>
+        </Link>
+      </div>
+
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Recent Items Table in Charcoal */}
@@ -119,7 +202,10 @@ export default function AdminDashboardPage() {
             <h2 className="font-display text-xl text-[#FFFFFF] uppercase">
               Current Catalog Spotlight
             </h2>
-            <Link href="/admin/products" className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider hover:underline">
+            <Link
+              href="/admin/products"
+              className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider hover:underline"
+            >
               View All ({products.length}) &rarr;
             </Link>
           </div>
@@ -136,7 +222,10 @@ export default function AdminDashboardPage() {
               </thead>
               <tbody className="divide-y divide-[#3A3A3A]/60">
                 {products.slice(0, 6).map((item) => (
-                  <tr key={item.id} className="hover:bg-[#111111]/40 transition-colors">
+                  <tr
+                    key={item.id}
+                    className="hover:bg-[#111111]/40 transition-colors"
+                  >
                     <td className="py-4 font-bold text-[#FFFFFF] flex items-center gap-3">
                       {(item.images?.[0] || item.thumbnailUrl) && (
                         <img
@@ -147,10 +236,14 @@ export default function AdminDashboardPage() {
                       )}
                       <div>
                         <p className="line-clamp-1">{item.name}</p>
-                        <p className="text-xs text-[#A0A0A0] font-normal font-light">{item.volume || 'Standard'}</p>
+                        <p className="text-xs text-[#A0A0A0] font-normal font-light">
+                          {item.volume || 'Standard'}
+                        </p>
                       </div>
                     </td>
-                    <td className="py-4 text-[#C7C7C7] capitalize">{item.category.replace(/-/g, ' ')}</td>
+                    <td className="py-4 text-[#C7C7C7] capitalize">
+                      {item.category.replace(/-/g, ' ')}
+                    </td>
                     <td className="py-4">
                       {item.inStock ? (
                         <span className="inline-flex items-center gap-1.5 text-xs text-green-400 font-semibold">
@@ -182,31 +275,56 @@ export default function AdminDashboardPage() {
         {/* Sidebar Cards */}
         <div className="lg:col-span-4 space-y-6">
           <div className="p-6 rounded-2xl bg-[#242424] border border-[#3A3A3A]">
-            <h3 className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider mb-3">
-              Store Information
-            </h3>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">
+                Live Store Information
+              </h3>
+              <Link
+                href="/admin/content"
+                className="text-[11px] font-bold text-[#D4AF37] hover:underline"
+              >
+                Edit
+              </Link>
+            </div>
             <div className="space-y-3 text-xs text-[#C7C7C7]">
               <div>
-                <span className="text-[#A0A0A0] block font-bold">Storefront Location:</span>
-                <span className="text-[#FFFFFF]">15655 John F Kennedy Blvd Suite D, Houston</span>
+                <span className="text-[#A0A0A0] block font-bold">
+                  Storefront Location:
+                </span>
+                <span className="text-[#FFFFFF]">
+                  {brand.addressLine1}, {brand.addressLine2}
+                </span>
               </div>
               <div>
-                <span className="text-[#A0A0A0] block font-bold">Store Phone:</span>
-                <span className="text-[#D4AF37] font-bold">+1 281-590-3300</span>
+                <span className="text-[#A0A0A0] block font-bold">
+                  Store Phone:
+                </span>
+                <span className="text-[#D4AF37] font-bold">
+                  {brand.phoneFull}
+                </span>
               </div>
               <div>
-                <span className="text-[#A0A0A0] block font-bold">Courier Delivery:</span>
-                <span className="text-[#FFFFFF]">Uber Eats &bull; DoorDash</span>
+                <span className="text-[#A0A0A0] block font-bold">
+                  Store Hours:
+                </span>
+                <span className="text-[#FFFFFF]">
+                  {brand.hoursWeekdayLabel}: {brand.hoursWeekdayTime}
+                </span>
               </div>
             </div>
           </div>
 
-          <div className="p-6 rounded-2xl bg-[#5B1018] border border-[#D4AF37]/40 shadow-xl">
-            <h3 className="font-display text-lg text-[#D4AF37] mb-2 uppercase">
-              Cloudinary Cloud Pipeline
-            </h3>
+          <div className="p-6 rounded-2xl bg-[#5B1018] border border-[#D4AF37]/40 shadow-xl space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <h3 className="font-display text-lg text-[#D4AF37] uppercase">
+                Firebase + Cloudinary Active
+              </h3>
+            </div>
             <p className="text-xs text-[#F4F4F4] leading-relaxed font-light">
-              Every bottle image uploaded through the admin panel is directly signed and stored in your Cloudinary CDN bucket.
+              {HAS_REAL_FIREBASE
+                ? 'Connected to Firebase Firestore (jfk-liquors) & Cloudinary CDN (ovmougmy). All product, category, and content updates persist permanently across redeployments.'
+                : 'Cloud persistence active.'}
             </p>
           </div>
         </div>

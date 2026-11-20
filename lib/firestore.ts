@@ -4,33 +4,32 @@ import {
   getDocs,
   getDoc,
   setDoc,
-  updateDoc,
   deleteDoc,
-  serverTimestamp,
 } from 'firebase/firestore';
 import { db } from './firebase';
-import type { Product, Category, SiteSettings } from '@/types';
-import { INITIAL_PRODUCTS, INITIAL_CATEGORIES } from './initialData';
+import type { Product, Category, SiteContent, SiteSettings } from '@/types';
+import {
+  INITIAL_PRODUCTS,
+  INITIAL_CATEGORIES,
+  DEFAULT_SITE_CONTENT,
+} from './initialData';
 import {
   getLocalProducts,
   saveLocalProducts,
   getLocalCategories,
   saveLocalCategories,
-  getDeletedIds,
-  markIdDeleted,
+  getLocalSiteContent,
+  saveLocalSiteContent,
+  mergeWithDefaultSiteContent,
   notifyCatalogUpdated,
+  notifySiteContentUpdated,
 } from './localStore';
 
-export const HAS_REAL_FIREBASE = Boolean(
-  process.env.NEXT_PUBLIC_FIREBASE_API_KEY &&
-  process.env.NEXT_PUBLIC_FIREBASE_API_KEY !== 'mock-api-key-jfk-liquors' &&
-  !process.env.NEXT_PUBLIC_FIREBASE_API_KEY.includes('Placeholder') &&
-  db &&
-  db.app
-);
+export const HAS_REAL_FIREBASE = Boolean(db && db.app);
 
 export function invalidateCache() {
   notifyCatalogUpdated();
+  notifySiteContentUpdated();
 }
 
 function isLocalhost(): boolean {
@@ -49,7 +48,11 @@ function readServerJson<T>(fileName: string, fallback: T): T {
     if (fs.existsSync(filePath)) {
       const raw = fs.readFileSync(filePath, 'utf-8');
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) {
+      if (Array.isArray(fallback)) {
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed as T;
+        }
+      } else if (parsed && typeof parsed === 'object') {
         return parsed as T;
       }
     }
@@ -76,37 +79,22 @@ function sanitizeProductDoc(docSnap: any): Product {
   return {
     ...data,
     id: docSnap.id,
+    slug: data.slug || docSnap.id,
+    images: Array.isArray(data.images)
+      ? data.images
+      : data.thumbnailUrl
+        ? [data.thumbnailUrl]
+        : [],
+    thumbnailUrl:
+      data.thumbnailUrl ||
+      (Array.isArray(data.images) && data.images[0]) ||
+      '',
+    tags: Array.isArray(data.tags) ? data.tags : [],
+    inStock: data.inStock !== false,
+    featured: Boolean(data.featured),
     createdAt: String(createdAt),
     updatedAt: String(updatedAt),
   } as Product;
-}
-
-// Merge cloud products with local products so newer local edits are NEVER overwritten by stale cloud docs
-function mergeProducts(localList: Product[], cloudList: Product[]): Product[] {
-  const deleted = new Set(getDeletedIds());
-  const map = new Map<string, Product>();
-
-  for (const p of localList) {
-    if (!deleted.has(p.id) && !deleted.has(p.slug)) {
-      map.set(p.id, p);
-    }
-  }
-
-  for (const cp of cloudList) {
-    if (deleted.has(cp.id) || deleted.has(cp.slug)) continue;
-    const existing = map.get(cp.id);
-    if (!existing) {
-      map.set(cp.id, cp);
-    } else {
-      const localTime = existing.updatedAt ? new Date(existing.updatedAt).getTime() : 0;
-      const cloudTime = cp.updatedAt ? new Date(cp.updatedAt).getTime() : 0;
-      if (cloudTime > localTime) {
-        map.set(cp.id, cp);
-      }
-    }
-  }
-
-  return Array.from(map.values()).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
 }
 
 // ─── Instant Synchronous Getters (0ms on Client Reload — Zero Stale Flash) ───
@@ -115,59 +103,67 @@ export function getInstantProducts(): Product[] {
   if (typeof window === 'undefined') {
     return readServerJson<Product[]>('products.json', INITIAL_PRODUCTS);
   }
-  return getLocalProducts().sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+  return getLocalProducts().sort(
+    (a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)
+  );
 }
 
 export function getInstantCategories(): Category[] {
   if (typeof window === 'undefined') {
     return readServerJson<Category[]>('categories.json', INITIAL_CATEGORIES);
   }
-  return getLocalCategories().sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+  return getLocalCategories().sort(
+    (a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)
+  );
 }
 
-// ─── Products ──────────────────────────────────────────────────────────────
+export function getInstantSiteContent(): SiteContent {
+  if (typeof window === 'undefined') {
+    const raw = readServerJson<SiteContent>(
+      'siteContent.json',
+      DEFAULT_SITE_CONTENT
+    );
+    return mergeWithDefaultSiteContent(raw);
+  }
+  return getLocalSiteContent();
+}
+
+// ─── Products (Firebase Firestore is Primary Source of Truth) ──────────────
 
 export async function getAllProducts(): Promise<Product[]> {
-  if (typeof window === 'undefined') {
-    const serverProds = readServerJson<Product[]>('products.json', INITIAL_PRODUCTS);
-    return [...serverProds].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-  }
-
-  const localProds = getLocalProducts();
-
-  // 1. Only call /api/admin/products when running on localhost
-  if (isLocalhost()) {
-    try {
-      const res = await fetch('/api/admin/products', { cache: 'no-store' });
-      if (res.ok && (res.headers.get('content-type') || '').includes('application/json')) {
-        const data = await res.json();
-        if (Array.isArray(data.products) && data.products.length > 0) {
-          const merged = mergeProducts(localProds, data.products);
-          saveLocalProducts(merged, true);
-          return merged;
-        }
-      }
-    } catch {
-      // Fallback below
-    }
-  }
-
-  // 2. Sync with Firebase Firestore and merge by newest timestamp so local edits are never lost
+  // 1. Always fetch from Firebase Firestore first (works on both client and server build)
   if (HAS_REAL_FIREBASE && db && db.app) {
     try {
       const snap = await getDocs(collection(db, 'products'));
       if (!snap.empty) {
-        const cloudProds = snap.docs.map(sanitizeProductDoc);
-        const merged = mergeProducts(localProds, cloudProds);
-        saveLocalProducts(merged, true);
-        return merged;
+        const cloudProds = snap.docs
+          .map(sanitizeProductDoc)
+          .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+
+        if (typeof window !== 'undefined') {
+          saveLocalProducts(cloudProds, true);
+        }
+        return cloudProds;
       }
-    } catch {
-      // Fallback to localStorage
+    } catch (err) {
+      console.warn('Firestore getAllProducts fallback:', err);
     }
   }
 
-  return [...localProds].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+  // 2. Fallback if offline
+  if (typeof window === 'undefined') {
+    const serverProds = readServerJson<Product[]>(
+      'products.json',
+      INITIAL_PRODUCTS
+    );
+    return [...serverProds].sort(
+      (a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)
+    );
+  }
+
+  return getLocalProducts().sort(
+    (a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)
+  );
 }
 
 export async function getProducts(categorySlug?: string): Promise<Product[]> {
@@ -196,17 +192,28 @@ export async function getProductById(id: string): Promise<Product | null> {
 export async function createProduct(
   data: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>
 ): Promise<string> {
-  const newId = (data.slug || `prod-${Date.now()}`).toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  const newId = (data.slug || data.name || `prod-${Date.now()}`)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
   const now = new Date().toISOString();
 
   const newProduct: Product = {
     ...data,
     id: newId,
     slug: data.slug || newId,
+    images: Array.isArray(data.images) ? data.images : [],
+    thumbnailUrl: data.thumbnailUrl || data.images?.[0] || '',
     createdAt: now,
     updatedAt: now,
   };
 
+  // 1. Save to Firebase Firestore (Primary Persistent Database)
+  if (HAS_REAL_FIREBASE && db && db.app) {
+    await setDoc(doc(db, 'products', newId), newProduct, { merge: true });
+  }
+
+  // 2. Update local cache immediately
   const products = getLocalProducts();
   const existingIdx = products.findIndex((p) => p.id === newId);
   if (existingIdx !== -1) {
@@ -216,6 +223,7 @@ export async function createProduct(
   }
   saveLocalProducts(products);
 
+  // 3. Mirror to local JSON file when running on localhost
   if (isLocalhost()) {
     try {
       await fetch('/api/admin/products', {
@@ -224,15 +232,7 @@ export async function createProduct(
         body: JSON.stringify(newProduct),
       });
     } catch {
-      // Ignore
-    }
-  }
-
-  if (HAS_REAL_FIREBASE && db && db.app) {
-    try {
-      await setDoc(doc(db, 'products', newId), newProduct, { merge: true });
-    } catch (err) {
-      console.warn('Firestore create sync warning:', err);
+      // Ignore on static host
     }
   }
 
@@ -240,43 +240,64 @@ export async function createProduct(
   return newId;
 }
 
-export async function updateProduct(id: string, data: Partial<Product>): Promise<void> {
+export async function updateProduct(
+  id: string,
+  data: Partial<Product>
+): Promise<void> {
   const now = new Date().toISOString();
   const products = getLocalProducts();
   const idx = products.findIndex((p) => p.id === id || p.slug === id);
-  let updatedProduct: Product | null = null;
 
-  if (idx !== -1) {
-    const cleanData = Object.fromEntries(
-      Object.entries(data).filter(([, v]) => v !== undefined)
-    );
-    updatedProduct = {
-      ...products[idx],
-      ...cleanData,
-      id: products[idx].id,
-      updatedAt: now,
-    };
-    products[idx] = updatedProduct;
-    saveLocalProducts(products);
-  }
+  const cleanData = Object.fromEntries(
+    Object.entries(data).filter(([, v]) => v !== undefined)
+  );
 
-  if (isLocalhost()) {
+  let baseProduct: Product | null = idx !== -1 ? products[idx] : null;
+  if (!baseProduct && HAS_REAL_FIREBASE && db && db.app) {
     try {
-      await fetch(`/api/admin/products/${encodeURIComponent(id)}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
+      const snap = await getDoc(doc(db, 'products', id));
+      if (snap.exists()) {
+        baseProduct = sanitizeProductDoc(snap);
+      }
     } catch {
       // Ignore
     }
   }
 
-  if (HAS_REAL_FIREBASE && db && db.app && updatedProduct) {
+  const targetId = baseProduct?.id || id;
+  const updatedProduct: Product = {
+    ...(baseProduct || ({} as Product)),
+    ...cleanData,
+    id: targetId,
+    slug: (cleanData.slug as string) || baseProduct?.slug || targetId,
+    updatedAt: now,
+  };
+
+  // 1. Save to Firebase Firestore (Primary Persistent Database)
+  if (HAS_REAL_FIREBASE && db && db.app) {
+    await setDoc(doc(db, 'products', targetId), updatedProduct, {
+      merge: true,
+    });
+  }
+
+  // 2. Update local cache
+  if (idx !== -1) {
+    products[idx] = updatedProduct;
+  } else {
+    products.unshift(updatedProduct);
+  }
+  saveLocalProducts(products);
+
+  // 3. Mirror to local JSON when on localhost
+  if (isLocalhost()) {
     try {
-      await setDoc(doc(db, 'products', updatedProduct.id), updatedProduct, { merge: true });
-    } catch (err) {
-      console.warn('Firestore update sync warning:', err);
+      await fetch(`/api/admin/products/${encodeURIComponent(targetId)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedProduct),
+      });
+    } catch {
+      // Ignore on static host
     }
   }
 
@@ -284,13 +305,32 @@ export async function updateProduct(id: string, data: Partial<Product>): Promise
 }
 
 export async function deleteProduct(id: string): Promise<void> {
-  markIdDeleted(id);
-  const products = getLocalProducts().filter((p) => p.id !== id && p.slug !== id);
-  saveLocalProducts(products);
+  const products = getLocalProducts();
+  const target = products.find((p) => p.id === id || p.slug === id);
+  const docId = target?.id || id;
 
+  // 1. Delete from Firebase Firestore (Primary Persistent Database)
+  if (HAS_REAL_FIREBASE && db && db.app) {
+    await deleteDoc(doc(db, 'products', docId));
+    if (id !== docId) {
+      try {
+        await deleteDoc(doc(db, 'products', id));
+      } catch {
+        // Ignore
+      }
+    }
+  }
+
+  // 2. Remove from local cache
+  const remaining = products.filter(
+    (p) => p.id !== id && p.slug !== id && p.id !== docId
+  );
+  saveLocalProducts(remaining);
+
+  // 3. Mirror to local JSON when on localhost
   if (isLocalhost()) {
     try {
-      await fetch(`/api/admin/products/${encodeURIComponent(id)}`, {
+      await fetch(`/api/admin/products/${encodeURIComponent(docId)}`, {
         method: 'DELETE',
       });
     } catch {
@@ -298,82 +338,84 @@ export async function deleteProduct(id: string): Promise<void> {
     }
   }
 
-  if (HAS_REAL_FIREBASE && db && db.app) {
-    try {
-      await deleteDoc(doc(db, 'products', id));
-    } catch (err) {
-      console.warn('Firestore delete sync warning:', err);
-    }
-  }
-
   notifyCatalogUpdated();
 }
 
-// ─── Categories ────────────────────────────────────────────────────────────
+// ─── Categories (Firebase Firestore is Primary Source of Truth) ────────────
 
 export async function getCategories(): Promise<Category[]> {
-  if (typeof window === 'undefined') {
-    const serverCats = readServerJson<Category[]>('categories.json', INITIAL_CATEGORIES);
-    return [...serverCats].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-  }
-
-  const localCats = getLocalCategories();
-
-  if (isLocalhost()) {
-    try {
-      const res = await fetch('/api/admin/categories', { cache: 'no-store' });
-      if (res.ok && (res.headers.get('content-type') || '').includes('application/json')) {
-        const data = await res.json();
-        if (Array.isArray(data.categories) && data.categories.length > 0) {
-          saveLocalCategories(data.categories, true);
-          return [...data.categories].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-        }
-      }
-    } catch {
-      // Fallback
-    }
-  }
-
+  // 1. Always fetch from Firebase Firestore first
   if (HAS_REAL_FIREBASE && db && db.app) {
     try {
       const snap = await getDocs(collection(db, 'categories'));
       if (!snap.empty) {
-        const deleted = new Set(getDeletedIds());
         const cloudCats = snap.docs
-          .map((d) => ({ ...(d.data() as Category), id: d.id }))
-          .filter((c) => !deleted.has(c.id) && !deleted.has(c.slug));
+          .map((d) => ({
+            ...(d.data() as Category),
+            id: d.id,
+            slug: (d.data() as Category).slug || d.id,
+          }))
+          .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
 
-        // Keep local categories as source of truth and add any new cloud categories
-        const map = new Map<string, Category>();
-        for (const c of cloudCats) map.set(c.id, c);
-        for (const lc of localCats) map.set(lc.id, lc);
-        const merged = Array.from(map.values()).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-        saveLocalCategories(merged, true);
-        return merged;
+        if (typeof window !== 'undefined') {
+          saveLocalCategories(cloudCats, true);
+        }
+        return cloudCats;
       }
-    } catch {
-      // Fallback
+    } catch (err) {
+      console.warn('Firestore getCategories fallback:', err);
     }
   }
 
-  return [...localCats].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+  // 2. Fallback if offline
+  if (typeof window === 'undefined') {
+    const serverCats = readServerJson<Category[]>(
+      'categories.json',
+      INITIAL_CATEGORIES
+    );
+    return [...serverCats].sort(
+      (a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)
+    );
+  }
+
+  return getLocalCategories().sort(
+    (a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)
+  );
 }
 
-export async function getCategoryBySlug(slug: string): Promise<Category | null> {
+export async function getCategoryBySlug(
+  slug: string
+): Promise<Category | null> {
   const all = await getCategories();
   return all.find((c) => c.slug === slug || c.id === slug) || null;
 }
 
-export async function createCategory(data: Omit<Category, 'id'>): Promise<string> {
-  const newId = (data.slug || `cat-${Date.now()}`).toLowerCase().replace(/[^a-z0-9]+/g, '-');
+export async function createCategory(
+  data: Omit<Category, 'id'>
+): Promise<string> {
+  const newId = (data.slug || data.name || `cat-${Date.now()}`)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+  const now = new Date().toISOString();
+
   const newCat: Category = {
     ...data,
     id: newId,
     slug: data.slug || newId,
+    updatedAt: now,
   };
 
+  // 1. Save to Firebase Firestore
+  if (HAS_REAL_FIREBASE && db && db.app) {
+    await setDoc(doc(db, 'categories', newId), newCat, { merge: true });
+  }
+
+  // 2. Update local cache
   const categories = getLocalCategories();
-  const existingIdx = categories.findIndex((c) => c.id === newId || c.slug === newCat.slug);
+  const existingIdx = categories.findIndex(
+    (c) => c.id === newId || c.slug === newCat.slug
+  );
   if (existingIdx !== -1) {
     categories[existingIdx] = newCat;
   } else {
@@ -381,6 +423,7 @@ export async function createCategory(data: Omit<Category, 'id'>): Promise<string
   }
   saveLocalCategories(categories);
 
+  // 3. Mirror to local JSON on localhost
   if (isLocalhost()) {
     try {
       await fetch('/api/admin/categories', {
@@ -393,53 +436,55 @@ export async function createCategory(data: Omit<Category, 'id'>): Promise<string
     }
   }
 
-  if (HAS_REAL_FIREBASE && db && db.app) {
-    try {
-      await setDoc(doc(db, 'categories', newId), newCat, { merge: true });
-    } catch (err) {
-      console.warn('Firestore category create warning:', err);
-    }
-  }
-
   notifyCatalogUpdated();
   return newId;
 }
 
-export async function updateCategory(id: string, data: Partial<Category>): Promise<void> {
+export async function updateCategory(
+  id: string,
+  data: Partial<Category>
+): Promise<void> {
+  const now = new Date().toISOString();
   const categories = getLocalCategories();
   const idx = categories.findIndex((c) => c.id === id || c.slug === id);
-  let updatedCat: Category | null = null;
 
-  if (idx !== -1) {
-    const cleanData = Object.fromEntries(
-      Object.entries(data).filter(([, v]) => v !== undefined)
-    );
-    updatedCat = {
-      ...categories[idx],
-      ...cleanData,
-      id: categories[idx].id,
-    };
-    categories[idx] = updatedCat;
-    saveLocalCategories(categories);
+  const cleanData = Object.fromEntries(
+    Object.entries(data).filter(([, v]) => v !== undefined)
+  );
+
+  const baseCat = idx !== -1 ? categories[idx] : ({ id, slug: id } as Category);
+  const targetId = baseCat.id || id;
+
+  const updatedCat: Category = {
+    ...baseCat,
+    ...cleanData,
+    id: targetId,
+    updatedAt: now,
+  };
+
+  // 1. Save to Firebase Firestore
+  if (HAS_REAL_FIREBASE && db && db.app) {
+    await setDoc(doc(db, 'categories', targetId), updatedCat, { merge: true });
   }
 
+  // 2. Update local cache
+  if (idx !== -1) {
+    categories[idx] = updatedCat;
+  } else {
+    categories.push(updatedCat);
+  }
+  saveLocalCategories(categories);
+
+  // 3. Mirror to local JSON on localhost
   if (isLocalhost()) {
     try {
-      await fetch(`/api/admin/categories/${encodeURIComponent(id)}`, {
+      await fetch(`/api/admin/categories/${encodeURIComponent(targetId)}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify(updatedCat),
       });
     } catch {
       // Ignore
-    }
-  }
-
-  if (HAS_REAL_FIREBASE && db && db.app && updatedCat) {
-    try {
-      await setDoc(doc(db, 'categories', updatedCat.id), updatedCat, { merge: true });
-    } catch (err) {
-      console.warn('Firestore category update warning:', err);
     }
   }
 
@@ -447,13 +492,32 @@ export async function updateCategory(id: string, data: Partial<Category>): Promi
 }
 
 export async function deleteCategory(id: string): Promise<void> {
-  markIdDeleted(id);
-  const categories = getLocalCategories().filter((c) => c.id !== id && c.slug !== id);
-  saveLocalCategories(categories);
+  const categories = getLocalCategories();
+  const target = categories.find((c) => c.id === id || c.slug === id);
+  const docId = target?.id || id;
 
+  // 1. Delete from Firebase Firestore
+  if (HAS_REAL_FIREBASE && db && db.app) {
+    await deleteDoc(doc(db, 'categories', docId));
+    if (id !== docId) {
+      try {
+        await deleteDoc(doc(db, 'categories', id));
+      } catch {
+        // Ignore
+      }
+    }
+  }
+
+  // 2. Update local cache
+  const remaining = categories.filter(
+    (c) => c.id !== id && c.slug !== id && c.id !== docId
+  );
+  saveLocalCategories(remaining);
+
+  // 3. Mirror to local JSON on localhost
   if (isLocalhost()) {
     try {
-      await fetch(`/api/admin/categories/${encodeURIComponent(id)}`, {
+      await fetch(`/api/admin/categories/${encodeURIComponent(docId)}`, {
         method: 'DELETE',
       });
     } catch {
@@ -461,71 +525,159 @@ export async function deleteCategory(id: string): Promise<void> {
     }
   }
 
-  if (HAS_REAL_FIREBASE && db && db.app) {
-    try {
-      await deleteDoc(doc(db, 'categories', id));
-    } catch (err) {
-      console.warn('Firestore category delete warning:', err);
-    }
-  }
-
   notifyCatalogUpdated();
 }
 
-export async function getSiteSettings(): Promise<SiteSettings | null> {
+// ─── Full Website Content (Firestore doc: settings/siteContent) ────────────
+
+export async function getSiteContent(): Promise<SiteContent> {
   if (HAS_REAL_FIREBASE && db && db.app) {
     try {
-      const snap = await getDoc(doc(db, 'settings', 'main'));
+      const docRef = doc(db, 'settings', 'siteContent');
+      const snap = await getDoc(docRef);
       if (snap.exists()) {
-        return snap.data() as SiteSettings;
+        const merged = mergeWithDefaultSiteContent(
+          snap.data() as Partial<SiteContent>
+        );
+        if (typeof window !== 'undefined') {
+          saveLocalSiteContent(merged, true);
+        }
+        return merged;
+      } else {
+        // Seed initial siteContent document in Firestore if it does not exist yet
+        const initial = mergeWithDefaultSiteContent(DEFAULT_SITE_CONTENT);
+        try {
+          await setDoc(docRef, {
+            ...initial,
+            updatedAt: new Date().toISOString(),
+          });
+        } catch {
+          // Ignore if read-only context
+        }
+        if (typeof window !== 'undefined') {
+          saveLocalSiteContent(initial, true);
+        }
+        return initial;
       }
-    } catch {
-      // Fallback below
-    }
-  }
-
-  return {
-    heroTitle: 'The Art of Fine Spirits',
-    heroSubtitle: 'From allocated bourbon to rare single malts — your premier destination near IAH airport.',
-    announcementText: 'HOUSTON, TEXAS • NEAR GEORGE BUSH INTERCONTINENTAL AIRPORT (IAH)',
-    announcementEnabled: true,
-    phone: '+1 281-590-3300',
-    address: '15655 John F Kennedy Blvd, Suite D, Houston, TX 77032',
-    hoursWeekday: '11:00 AM – 9:00 PM',
-    hoursSunday: 'Closed',
-    uberEatsUrl: 'https://www.ubereats.com',
-    doorDashUrl: 'https://www.doordash.com/convenience/store/52760606?event_type=autocomplete&pickup=false',
-  };
-}
-
-export async function updateSiteSettings(data: Partial<SiteSettings>): Promise<void> {
-  if (HAS_REAL_FIREBASE && db && db.app) {
-    try {
-      await updateDoc(doc(db, 'settings', 'main'), data);
     } catch (err) {
-      console.warn('Firestore settings update failed:', err);
+      console.warn('Firestore getSiteContent fallback:', err);
     }
   }
+
+  return getInstantSiteContent();
 }
 
-export async function seedInitialDataToFirestore(): Promise<{ products: number; categories: number }> {
+export async function updateSiteContent(
+  data: Partial<SiteContent>
+): Promise<SiteContent> {
+  const current = getLocalSiteContent();
+  const merged = mergeWithDefaultSiteContent({
+    ...current,
+    ...data,
+    brand: { ...current.brand, ...(data.brand || {}) },
+    ageGate: { ...current.ageGate, ...(data.ageGate || {}) },
+    hero: { ...current.hero, ...(data.hero || {}) },
+    delivery: { ...current.delivery, ...(data.delivery || {}) },
+    departmentsSection: {
+      ...current.departmentsSection,
+      ...(data.departmentsSection || {}),
+    },
+    vaultSection: {
+      ...current.vaultSection,
+      ...(data.vaultSection || {}),
+    },
+    promoBanner: {
+      ...current.promoBanner,
+      ...(data.promoBanner || {}),
+    },
+    storySection: {
+      ...current.storySection,
+      ...(data.storySection || {}),
+    },
+    locationSection: {
+      ...current.locationSection,
+      ...(data.locationSection || {}),
+    },
+    aboutPage: {
+      ...current.aboutPage,
+      ...(data.aboutPage || {}),
+    },
+    contactPage: {
+      ...current.contactPage,
+      ...(data.contactPage || {}),
+    },
+    catalogPage: {
+      ...current.catalogPage,
+      ...(data.catalogPage || {}),
+    },
+    footer: { ...current.footer, ...(data.footer || {}) },
+    updatedAt: new Date().toISOString(),
+  });
+
+  // 1. Save to Firebase Firestore (Primary Persistent Database)
+  if (HAS_REAL_FIREBASE && db && db.app) {
+    await setDoc(doc(db, 'settings', 'siteContent'), merged, { merge: true });
+  }
+
+  // 2. Save to local cache
+  saveLocalSiteContent(merged);
+
+  // 3. Mirror to local JSON on localhost
+  if (isLocalhost()) {
+    try {
+      await fetch('/api/admin/site-content', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(merged),
+      });
+    } catch {
+      // Ignore
+    }
+  }
+
+  notifySiteContentUpdated();
+  return merged;
+}
+
+// Backwards-compatible aliases
+export const getSiteSettings = getSiteContent;
+export const updateSiteSettings = updateSiteContent;
+
+export async function seedInitialDataToFirestore(): Promise<{
+  products: number;
+  categories: number;
+  siteContent: boolean;
+}> {
   let catCount = 0;
   let prodCount = 0;
+  const now = new Date().toISOString();
 
   for (const cat of INITIAL_CATEGORIES) {
-    await setDoc(doc(db, 'categories', cat.id), cat);
+    await setDoc(doc(db, 'categories', cat.id), {
+      ...cat,
+      updatedAt: now,
+    });
     catCount++;
   }
 
   for (const prod of INITIAL_PRODUCTS) {
     await setDoc(doc(db, 'products', prod.id), {
       ...prod,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
+      createdAt: now,
+      updatedAt: now,
     });
     prodCount++;
   }
 
+  const contentSnap = await getDoc(doc(db, 'settings', 'siteContent'));
+  if (!contentSnap.exists()) {
+    await setDoc(doc(db, 'settings', 'siteContent'), {
+      ...DEFAULT_SITE_CONTENT,
+      updatedAt: now,
+    });
+  }
+
   notifyCatalogUpdated();
-  return { products: prodCount, categories: catCount };
+  notifySiteContentUpdated();
+  return { products: prodCount, categories: catCount, siteContent: true };
 }

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getCategories, getInstantCategories } from '@/lib/firestore';
+import { useSiteContent } from '@/lib/useSiteContent';
 import type { Category } from '@/types';
 
 const FALLBACK_CATEGORIES = [
@@ -13,7 +14,8 @@ const FALLBACK_CATEGORIES = [
     label: 'Spirits',
     subtitle: 'Bourbon & Single Malts',
     desc: 'Allocated Kentucky bourbon, peated Islay scotch & rare French cognac.',
-    image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981778/jfk-liquors/bourbon-jim-beam.jpg',
+    image:
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981778/jfk-liquors/bourbon-jim-beam.jpg',
   },
   {
     num: '02',
@@ -21,7 +23,8 @@ const FALLBACK_CATEGORIES = [
     label: 'Wines',
     subtitle: 'Red, White & Champagne',
     desc: 'Napa Valley Cabernet, Burgundy pinot noir & Grand Cru vintage champagne.',
-    image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981782/jfk-liquors/wine-silver-oak.jpg',
+    image:
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981782/jfk-liquors/wine-silver-oak.jpg',
   },
   {
     num: '03',
@@ -29,7 +32,8 @@ const FALLBACK_CATEGORIES = [
     label: 'Beer',
     subtitle: 'Texas Craft & Imports',
     desc: 'Chilled local IPAs, Belgian ales, crisp lagers & party-ready cold packs.',
-    image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981786/jfk-liquors/beer-dark-bottle.jpg',
+    image:
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981786/jfk-liquors/beer-dark-bottle.jpg',
   },
   {
     num: '04',
@@ -37,7 +41,8 @@ const FALLBACK_CATEGORIES = [
     label: 'Agave & More',
     subtitle: 'Tequila, Mezcal & Mixers',
     desc: '100% Blue Agave blanco to extra añejo, artisanal Oaxaca mezcal & crystal ice.',
-    image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981788/jfk-liquors/tequila-don-julio.jpg',
+    image:
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981788/jfk-liquors/tequila-don-julio.jpg',
   },
 ];
 
@@ -45,9 +50,14 @@ interface Props {
   categories?: Category[];
 }
 
-export default function CollectionGrid({ categories: initialCategories }: Props) {
-  const [categories, setCategories] = useState<Category[]>(initialCategories || []);
+export default function CollectionGrid({
+  categories: initialCategories,
+}: Props) {
+  const [categories, setCategories] = useState<Category[]>(
+    initialCategories || []
+  );
   const [hydrated, setHydrated] = useState(false);
+  const { departmentsSection } = useSiteContent();
 
   useEffect(() => {
     setCategories(getInstantCategories());
@@ -75,8 +85,12 @@ export default function CollectionGrid({ categories: initialCategories }: Props)
           num: String(idx + 1).padStart(2, '0'),
           slug: cat.slug,
           label: cat.name,
-          subtitle: cat.bannerText ? cat.bannerText.slice(0, 32) : 'Curated Selection',
-          desc: cat.description || 'Premium handpicked bottles, rare editions & everyday favorites.',
+          subtitle: cat.bannerText
+            ? cat.bannerText.slice(0, 32)
+            : 'Curated Selection',
+          desc:
+            cat.description ||
+            'Premium handpicked bottles, rare editions & everyday favorites.',
           image:
             cat.imageUrl ||
             FALLBACK_CATEGORIES[idx % FALLBACK_CATEGORIES.length]?.image ||
@@ -87,31 +101,31 @@ export default function CollectionGrid({ categories: initialCategories }: Props)
   return (
     <section id="collection" className="py-24 sm:py-32 relative bg-[#0A0A0A]">
       <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20">
-        
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
           <div>
-            <p className="meta-tag mb-3">
-              THE ARCHIVE
-            </p>
+            <p className="meta-tag mb-3">{departmentsSection.eyebrow}</p>
             <h2
               className="font-anton tracking-wide uppercase text-white"
-              style={{ fontSize: 'clamp(2.4rem, 4.8vw, 3.8rem)', lineHeight: 1.05 }}
+              style={{
+                fontSize: 'clamp(2.4rem, 4.8vw, 3.8rem)',
+                lineHeight: 1.05,
+              }}
             >
-              Find your{' '}
+              {departmentsSection.headingWhite}{' '}
               <span className="text-[#F5D900]">
-                next favorite.
+                {departmentsSection.headingGold}
               </span>
             </h2>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
             <Link
               href="/products"
               prefetch={true}
               className="inline-flex items-center gap-2 text-xs font-sans font-bold uppercase tracking-[0.18em] text-[#F5D900] hover:underline"
             >
-              <span>Browse All Products</span>
+              <span>{departmentsSection.browseAllText}</span>
               <span>↗</span>
             </Link>
           </div>
@@ -158,15 +172,15 @@ export default function CollectionGrid({ categories: initialCategories }: Props)
 
                 {/* Bottom CTA Link in Montserrat */}
                 <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs font-sans font-bold uppercase tracking-wider text-[#F5D900] group-hover:text-white transition-colors">
-                  <span>Explore Department</span>
-                  <span className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-0.5">↗</span>
+                  <span>{departmentsSection.cardCtaText}</span>
+                  <span className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-0.5">
+                    ↗
+                  </span>
                 </div>
               </div>
-
             </Link>
           ))}
         </div>
-
       </div>
     </section>
   );

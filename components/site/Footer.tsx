@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { getCategories } from '@/lib/firestore';
+import { useSiteContent } from '@/lib/useSiteContent';
 
 const DEFAULT_SHOP_LINKS = [
   { label: 'Spirits Selection', href: '/products/spirits' },
@@ -15,6 +16,7 @@ const DEFAULT_SHOP_LINKS = [
 export default function Footer() {
   const year = new Date().getFullYear();
   const [shopLinks, setShopLinks] = useState(DEFAULT_SHOP_LINKS);
+  const { brand, footer } = useSiteContent();
 
   useEffect(() => {
     async function syncFooterCats() {
@@ -44,73 +46,76 @@ export default function Footer() {
 
           {/* Col 1: Logo & Overview */}
           <div className="space-y-4">
-            <Link href="/" className="inline-block transition-opacity hover:opacity-90">
+            <Link href="/" prefetch={true} className="inline-block transition-opacity hover:opacity-90">
               <Image
-                src="https://res.cloudinary.com/ovmougmy/image/upload/v1793981764/jfk-liquors/logo.png"
-                alt="JFK Liquors"
+                src={brand.logoUrl || 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981764/jfk-liquors/logo.png'}
+                alt={brand.storeName || 'JFK Liquors'}
                 width={160}
                 height={55}
                 className="object-contain h-10 w-auto"
               />
             </Link>
             <p className="text-[#e0e0e0] text-xs leading-relaxed max-w-xs font-light">
-              Houston’s elevated bottle shop on JFK Boulevard adjacent to George Bush Intercontinental Airport (IAH).
+              {footer.tagline}
             </p>
-            <div className="pt-1">
-              <span className="text-[10px] font-mono uppercase tracking-widest text-[#F5D900] px-2.5 py-1 rounded-sm bg-[#161616] border border-white/10">
-                Licensed Houston Retailer
-              </span>
-            </div>
+            {footer.licenseBadge && (
+              <div className="pt-1">
+                <span className="text-[10px] font-mono uppercase tracking-widest text-[#F5D900] px-2.5 py-1 rounded-sm bg-[#161616] border border-white/10">
+                  {footer.licenseBadge}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Col 2: Find Us */}
           <div>
             <h4 className="text-[11px] font-mono font-bold text-[#F5D900] uppercase tracking-[0.2em] mb-4">
-              Find Us Near IAH
+              {footer.findUsHeading}
             </h4>
             <address className="not-italic text-sm text-[#A0A0A0] leading-relaxed space-y-1 mb-4 font-light">
-              <p className="font-semibold text-[#FFFFFF]">JFK Liquors Storefront</p>
-              <p>15655 John F Kennedy Blvd</p>
-              <p>Suite D &bull; Houston, TX 77032</p>
+              <p className="font-semibold text-[#FFFFFF]">{footer.storefrontTitle}</p>
+              <p>{brand.addressLine1}</p>
+              <p>{brand.addressLine2}</p>
             </address>
             <a
-              href="tel:+12815903300"
+              href={`tel:${brand.phoneTel}`}
               className="inline-flex items-center gap-2 text-xs font-mono font-bold text-[#F5D900] hover:underline transition-colors"
             >
-              +1 (281) 590-3300 ↗
+              {brand.phoneFull} ↗
             </a>
           </div>
 
           {/* Col 3: Hours */}
           <div>
             <h4 className="text-[11px] font-mono font-bold text-[#F5D900] uppercase tracking-[0.2em] mb-4">
-              Store Hours
+              {footer.hoursHeading}
             </h4>
             <div className="text-xs text-[#A0A0A0] space-y-2 font-mono">
               <div className="flex justify-between py-1 border-b border-white/[0.06]">
-                <span>Monday – Saturday:</span>
-                <span className="font-semibold text-[#FFFFFF]">11 AM – 9 PM</span>
+                <span>{brand.hoursWeekdayLabel}:</span>
+                <span className="font-semibold text-[#FFFFFF]">{brand.hoursWeekdayTime}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-white/[0.06]">
-                <span>Sunday:</span>
-                <span className="font-semibold text-[#F5D900]">Closed (TX Law)</span>
+                <span>{brand.hoursSundayLabel}:</span>
+                <span className="font-semibold text-[#F5D900]">{brand.hoursSundayTime}</span>
               </div>
             </div>
             <p className="text-[11px] text-[#F5D900] mt-3 font-mono">
-              Delivery via Uber Eats &amp; DoorDash.
+              {footer.deliveryNote}
             </p>
           </div>
 
           {/* Col 4: Shop Links */}
           <div>
             <h4 className="text-[11px] font-mono font-bold text-[#F5D900] uppercase tracking-[0.2em] mb-4">
-              Shop Departments
+              {footer.departmentsHeading}
             </h4>
             <ul className="space-y-2 text-xs">
               {shopLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
+                    prefetch={true}
                     className="text-[#A0A0A0] hover:text-[#F5D900] transition-colors inline-flex items-center gap-1.5"
                   >
                     <span className="text-[#F5D900]">&bull;</span>
@@ -126,10 +131,10 @@ export default function Footer() {
         {/* Legal Disclaimer */}
         <div className="mt-16 pt-8 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left text-xs text-[#F5D900] font-mono">
           <p>
-            &copy; {year} JFK Liquors, Houston, Texas. All rights reserved.
+            &copy; {year} {footer.copyrightText}
           </p>
           <p className="text-[#F5D900] tracking-wider text-[11px] uppercase font-bold">
-            Must be 21+ with valid government ID. Drink responsibly.
+            {footer.legalDisclaimer}
           </p>
         </div>
 

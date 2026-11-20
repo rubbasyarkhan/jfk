@@ -1,6 +1,10 @@
-import Link from 'next/link';
+'use client';
+
+import { useSiteContent } from '@/lib/useSiteContent';
 
 export default function PromotionalBanner() {
+  const { brand, promoBanner } = useSiteContent();
+
   return (
     <section className="relative overflow-hidden py-16 sm:py-20 bg-[#4A0A10] text-[#FFFFFF] border-y border-[#F5D900]/25 shadow-2xl">
       {/* Subtle gold radial lighting */}
@@ -14,48 +18,46 @@ export default function PromotionalBanner() {
 
       <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 relative z-10">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-          
           {/* Banner Copy */}
           <div className="max-w-2xl text-center lg:text-left">
             <div className="inline-flex items-center gap-2 mb-3">
               <span className="w-1.5 h-1.5 rounded-full bg-[#F5D900] animate-pulse" />
               <span className="text-[10.5px] font-mono font-bold text-[#F5D900] tracking-[0.22em] uppercase">
-                ALLOCATED WHISKEY DROPS &bull; IN STORE ONLY
+                {promoBanner.eyebrow}
               </span>
             </div>
 
             <h2
               className="font-anton tracking-wide uppercase text-[#FFFFFF] mb-3"
-              style={{ fontSize: 'clamp(2.1rem, 4.2vw, 3.4rem)', lineHeight: 1.06 }}
+              style={{
+                fontSize: 'clamp(2.1rem, 4.2vw, 3.4rem)',
+                lineHeight: 1.06,
+              }}
             >
-              Seeking Blanton&apos;s, Weller, or Eagle Rare?
+              {promoBanner.heading}
             </h2>
 
             <p className="text-sm sm:text-base text-[#FFFFFF]/90 font-light leading-relaxed">
-              We receive new shipments throughout the week. Visit our JFK Boulevard location or call our store directly to check today&apos;s bottle availability.
+              {promoBanner.description}
             </p>
           </div>
 
           {/* Banner Actions */}
           <div className="flex flex-wrap items-center gap-4 flex-shrink-0">
-            <a
-              href="tel:+12815903300"
-              className="btn-gold shadow-xl"
-            >
-              <span>Call (281) 590-3300</span>
+            <a href={`tel:${brand.phoneTel}`} className="btn-gold shadow-xl">
+              <span>{promoBanner.primaryCtaText}</span>
             </a>
 
             <a
-              href="https://www.google.com/maps/dir/?api=1&destination=15655+John+F+Kennedy+Blvd+Suite+D+Houston+TX+77032"
+              href={brand.directionsUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="btn-ghost border-white/30 hover:border-white hover:text-white"
             >
-              <span>Get Directions</span>
+              <span>{promoBanner.secondaryCtaText}</span>
               <span className="text-xs">↗</span>
             </a>
           </div>
-
         </div>
       </div>
     </section>

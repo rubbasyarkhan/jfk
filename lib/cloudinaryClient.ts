@@ -6,16 +6,28 @@ async function sha1Hex(input: string): Promise<string> {
   return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-export async function uploadImageToCloudinary(file: File): Promise<string> {
-  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'ovmougmy';
-  const apiKey = process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY || '';
-  const apiSecret = process.env.NEXT_PUBLIC_CLOUDINARY_API_SECRET || '';
+export async function uploadImageToCloudinary(
+  file: File,
+  folder = 'jfk-liquors/products'
+): Promise<string> {
+  const cloudName =
+    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'ovmougmy';
+  const apiKey =
+    process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY || '759266941214867';
+  const apiSecret =
+    process.env.NEXT_PUBLIC_CLOUDINARY_API_SECRET ||
+    'lc1e6lM-wk5qkI3pRmHkR8y-hfU';
 
-  // 1. Direct Signed Upload to Cloudinary REST API from Browser (works on any static host without PHP/Node runtime)
-  if (cloudName && apiKey && apiSecret && typeof window !== 'undefined' && window.crypto?.subtle) {
+  // 1. Direct Signed Upload to Cloudinary REST API from Browser (works on any static or dynamic host)
+  if (
+    cloudName &&
+    apiKey &&
+    apiSecret &&
+    typeof window !== 'undefined' &&
+    window.crypto?.subtle
+  ) {
     try {
       const timestamp = Math.floor(Date.now() / 1000).toString();
-      const folder = 'jfk-liquors/products';
       const paramsToSign = `folder=${folder}&timestamp=${timestamp}${apiSecret}`;
       const signature = await sha1Hex(paramsToSign);
 
@@ -26,10 +38,13 @@ export async function uploadImageToCloudinary(file: File): Promise<string> {
       formData.append('folder', folder);
       formData.append('signature', signature);
 
-      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-        method: 'POST',
-        body: formData,
-      });
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        {
+          method: 'POST',
+          body: formData,
+        }
+      );
 
       const data = await res.json();
       if (res.ok && data.secure_url) {
@@ -45,6 +60,7 @@ export async function uploadImageToCloudinary(file: File): Promise<string> {
   try {
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('folder', folder);
     const res = await fetch('/api/admin/upload-image', {
       method: 'POST',
       body: formData,
@@ -57,5 +73,7 @@ export async function uploadImageToCloudinary(file: File): Promise<string> {
     // Ignore when hosted statically
   }
 
-  throw new Error('Failed to upload image to Cloudinary. Please check your Cloudinary credentials.');
+  throw new Error(
+    'Failed to upload image to Cloudinary. Please check your internet connection or Cloudinary credentials.'
+  );
 }

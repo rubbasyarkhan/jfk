@@ -1,4 +1,176 @@
-import { Product, Category } from '@/types';
+import { Product, Category, SiteContent } from '@/types';
+
+const BASELINE_DATE = '2026-01-01T00:00:00.000Z';
+
+export const DEFAULT_SITE_CONTENT: SiteContent = {
+  brand: {
+    storeName: 'JFK Liquors',
+    logoUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981764/jfk-liquors/logo.png',
+    phoneDisplay: '(281) 590-3300',
+    phoneFull: '+1 281-590-3300',
+    phoneTel: '+12815903300',
+    addressLine1: '15655 John F Kennedy Blvd, Suite D',
+    addressLine2: 'Houston, TX 77032',
+    directionsUrl:
+      'https://www.google.com/maps/dir/?api=1&destination=15655+John+F+Kennedy+Blvd+Suite+D+Houston+TX+77032',
+    mapEmbedUrl:
+      'https://maps.google.com/maps?q=15655+John+F+Kennedy+Blvd+Suite+D+Houston+TX+77032&t=&z=15&ie=UTF8&iwloc=&output=embed',
+    hoursWeekdayLabel: 'Monday — Saturday',
+    hoursWeekdayTime: '11:00 AM — 9:00 PM',
+    hoursSundayLabel: 'Sunday',
+    hoursSundayTime: 'Closed (Texas Law)',
+    headerCtaText: 'Visit Us',
+    complianceNotice:
+      'Stock changes daily. Call +1 281-590-3300 to check availability. Must be 21+ with valid ID.',
+    airportNote: '3 min from IAH Airport',
+  },
+  ageGate: {
+    enabled: true,
+    eyebrow: 'LEGAL AGE VERIFICATION',
+    heading: 'Are you 21 or older?',
+    description:
+      'You must be of legal drinking age in the United States to explore and purchase from JFK Liquors.',
+    confirmText: 'Yes, I am 21+',
+    denyText: 'No, leave',
+    denyUrl: 'https://www.google.com',
+    footerText: '15655 John F Kennedy Blvd • Houston, TX',
+  },
+  hero: {
+    backgroundImageUrl:
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1794246857/jfk-liquors/hero-collection-bottles.jpg',
+    eyebrow: 'Neighborhood Liquor Store • Houston, Texas',
+    titleLine1: 'Your Neighborhood',
+    titleLine2Gold: 'Liquor Store',
+    titleLine3: 'Near IAH.',
+    description:
+      'Proudly serving local Houston residents and travelers along the IAH airport corridor with a wide selection of bourbon, whiskey, wine, chilled craft beer, and tequila. Stop in for friendly customer service and great bottles ready to take home.',
+    primaryCtaText: 'Explore Vault',
+    primaryCtaHref: '#vault',
+    secondaryCtaText: 'Get Directions',
+  },
+  delivery: {
+    eyebrow: 'YOUR FAVORITES, DELIVERED',
+    headingLine1: 'STAYING IN?',
+    headingLine2Gold: "WE'VE GOT OPTIONS.",
+    description:
+      "We're also available on Uber Eats and DoorDash. Open your preferred app and search for JFK Liquors, Houston.",
+    disclaimer:
+      'Availability, selection, fees and delivery area are shown in the app. 21+ with valid ID.',
+    uberEatsTitle: 'Uber Eats',
+    uberEatsDesc: 'Find JFK Liquors in the Uber Eats app.',
+    uberEatsCta: 'Open Uber Eats',
+    uberEatsUrl: 'https://www.ubereats.com',
+    doorDashTitle: 'DoorDash',
+    doorDashDesc: 'Find JFK Liquors in the DoorDash app.',
+    doorDashCta: 'Open DoorDash',
+    doorDashUrl:
+      'https://www.doordash.com/convenience/store/52760606?event_type=autocomplete&pickup=false',
+  },
+  departmentsSection: {
+    eyebrow: 'THE ARCHIVE',
+    headingWhite: 'Find your',
+    headingGold: 'next favorite.',
+    browseAllText: 'Browse All Products',
+    cardCtaText: 'Explore Department',
+  },
+  vaultSection: {
+    eyebrow: 'FEATURED STORE SELECTION',
+    headingWhite: 'Featured &',
+    headingGold: 'Allocated Vault.',
+    browseAllText: 'Browse Entire Collection',
+    maxItems: 6,
+  },
+  promoBanner: {
+    eyebrow: 'ALLOCATED WHISKEY DROPS • IN STORE ONLY',
+    heading: "Seeking Blanton's, Weller, or Eagle Rare?",
+    description:
+      "We receive new shipments throughout the week. Visit our JFK Boulevard location or call our store directly to check today's bottle availability.",
+    primaryCtaText: 'Call (281) 590-3300',
+    secondaryCtaText: 'Get Directions',
+  },
+  storySection: {
+    imageUrl:
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981770/jfk-liquors/collection-story.jpg',
+    imageBadgeText: 'A BOTTLE FOR EVERY OCCASION',
+    eyebrow: 'LOCAL STORE • PERSONAL TOUCH',
+    headingLine1: 'Your stop for',
+    headingLine2Gold: 'something good.',
+    paragraph1:
+      'Stocking up for a get-together? Picking a gift? Or simply finding your favorite bottle? Stop by JFK Liquors and explore at your own pace.',
+    paragraph2:
+      "You'll find us on John F Kennedy Boulevard, near George Bush Intercontinental Airport in Houston. Ask our team for help choosing what to take home.",
+    stat1Value: '500+',
+    stat1Label: 'Labels in Stock',
+    stat2Value: '6 Days',
+    stat2Label: '11 AM — 9 PM',
+    stat3Value: 'IAH',
+    stat3Label: '3 Min Away',
+    ctaText: 'Get to know our store',
+    ctaHref: '/about',
+  },
+  locationSection: {
+    eyebrow: 'VISIT THE BOTTLE SHOP',
+    headingLine1: 'Right on JFK.',
+    headingLine2Gold: 'Close to IAH.',
+    proximityNote: 'Conveniently located near George Bush Intercontinental Airport (IAH).',
+    directionsBtnText: 'Get directions',
+  },
+  aboutPage: {
+    eyebrow: 'ABOUT JFK LIQUORS',
+    headingWhite: 'Your Neighborhood',
+    headingGold: 'Bottle Shop.',
+    heroImageUrl:
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1793981770/jfk-liquors/collection-story.jpg',
+    leadParagraph:
+      'Conveniently located at 15655 John F Kennedy Boulevard, Suite D — just minutes from George Bush Intercontinental Airport (IAH) — JFK Liquors is a neighborhood retail liquor store serving local Houston residents, visitors, and travelers.',
+    paragraph2:
+      'Whether you are picking up a bottle on your way home, stocking up for a weekend gathering, or shopping for a gift, we provide a clean, welcoming store with a straightforward retail shopping experience.',
+    paragraph3:
+      'Our shelves are stocked with a broad selection of sealed spirits, wines, beers, and mixers — including bourbon and American whiskey, Scotch, tequila and mezcal, vodka, gin, rum, cognac, red and white wines, champagne, and cold craft and imported beer.',
+    card1Title: 'Quality Selection',
+    card1Text:
+      'We carry a wide variety of popular national brands, Texas favorites, and special-occasion bottles across spirits, wine, and cold beer.',
+    card2Title: 'Friendly Service',
+    card2Text:
+      'Our store team is always glad to help you find a specific bottle on our shelves or choose a great option for your occasion.',
+    card3Title: 'Convenient Location',
+    card3Text:
+      'Quick in-and-out access on JFK Boulevard near IAH airport terminals with free storefront parking right outside Suite D.',
+    primaryCtaText: 'Visit Our Store ↗',
+    primaryCtaHref: '/contact',
+    secondaryCtaText: 'View All Spirits',
+    secondaryCtaHref: '/products/spirits',
+  },
+  contactPage: {
+    eyebrow: 'HOUSTON STOREFRONT • NEAR IAH',
+    headingWhite: 'Visit',
+    headingGold: 'JFK Liquors.',
+    subtitle:
+      'Conveniently located on John F Kennedy Blvd, Suite D, minutes from IAH terminals. Free parking on-site.',
+  },
+  catalogPage: {
+    eyebrow: 'JFK LIQUORS • COMPLETE STORE CATALOG',
+    headingWhite: 'The Curated',
+    headingGold: 'Vault.',
+    description:
+      'Browse our wide retail selection of bourbon, Scotch, whiskey, red and white wine, champagne, chilled craft beer, and 100% Blue Agave tequila at our JFK Boulevard store near IAH airport.',
+    serviceBoxTitle: 'Store Customer Service',
+    serviceBoxBadge: 'In-Store Today',
+    serviceBoxCallLabel: 'Call Store for Availability',
+  },
+  footer: {
+    tagline:
+      'Houston’s elevated bottle shop on JFK Boulevard adjacent to George Bush Intercontinental Airport (IAH).',
+    licenseBadge: 'Licensed Houston Retailer',
+    findUsHeading: 'Find Us Near IAH',
+    storefrontTitle: 'JFK Liquors Storefront',
+    hoursHeading: 'Store Hours',
+    deliveryNote: 'Delivery via Uber Eats & DoorDash.',
+    departmentsHeading: 'Shop Departments',
+    copyrightText: 'JFK Liquors, Houston, Texas. All rights reserved.',
+    legalDisclaimer: 'Must be 21+ with valid government ID. Drink responsibly.',
+  },
+};
 
 export const INITIAL_CATEGORIES: Category[] = [
   {
@@ -40,7 +212,6 @@ export const INITIAL_CATEGORIES: Category[] = [
 ];
 
 export const INITIAL_PRODUCTS: Product[] = [
-  // Spirits (Pure Bottles Only — No Glasses, No Hands)
   {
     id: 'bourbon-american-whiskey',
     name: 'Bourbon & American Whiskey',
@@ -60,8 +231,8 @@ export const INITIAL_PRODUCTS: Product[] = [
     ],
     thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1794247348/jfk-liquors/bourbon-kentucky-reserve.jpg',
     sortOrder: 1,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: BASELINE_DATE,
+    updatedAt: BASELINE_DATE,
   },
   {
     id: 'scotch-whisky',
@@ -82,8 +253,8 @@ export const INITIAL_PRODUCTS: Product[] = [
     ],
     thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981780/jfk-liquors/scotch-single-malt.jpg',
     sortOrder: 2,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: BASELINE_DATE,
+    updatedAt: BASELINE_DATE,
   },
   {
     id: 'vodka-gin-rum',
@@ -103,8 +274,8 @@ export const INITIAL_PRODUCTS: Product[] = [
     ],
     thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1794247341/jfk-liquors/gin-botanical-artisanal.jpg',
     sortOrder: 3,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: BASELINE_DATE,
+    updatedAt: BASELINE_DATE,
   },
   {
     id: 'cognac-brandy',
@@ -125,11 +296,9 @@ export const INITIAL_PRODUCTS: Product[] = [
     ],
     thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793982975/jfk-liquors/cognac-hennessy-vsop.jpg',
     sortOrder: 4,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: BASELINE_DATE,
+    updatedAt: BASELINE_DATE,
   },
-
-  // Wines (Pure Bottles Only — No Glasses, No Hands)
   {
     id: 'red-wines',
     name: 'Red Wines',
@@ -148,8 +317,8 @@ export const INITIAL_PRODUCTS: Product[] = [
     ],
     thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981782/jfk-liquors/wine-silver-oak.jpg',
     sortOrder: 1,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: BASELINE_DATE,
+    updatedAt: BASELINE_DATE,
   },
   {
     id: 'white-wines-rose',
@@ -169,8 +338,8 @@ export const INITIAL_PRODUCTS: Product[] = [
     ],
     thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981784/jfk-liquors/wine-white-bottle.jpg',
     sortOrder: 2,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: BASELINE_DATE,
+    updatedAt: BASELINE_DATE,
   },
   {
     id: 'sparkling-champagne',
@@ -191,11 +360,9 @@ export const INITIAL_PRODUCTS: Product[] = [
     ],
     thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981785/jfk-liquors/wine-champagne.jpg',
     sortOrder: 3,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: BASELINE_DATE,
+    updatedAt: BASELINE_DATE,
   },
-
-  // Beer (Pure Bottles Only — No Glasses, No Hands)
   {
     id: 'craft-beer',
     name: 'Craft Beer',
@@ -215,8 +382,8 @@ export const INITIAL_PRODUCTS: Product[] = [
     ],
     thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981786/jfk-liquors/beer-dark-bottle.jpg',
     sortOrder: 1,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: BASELINE_DATE,
+    updatedAt: BASELINE_DATE,
   },
   {
     id: 'domestic-imported-beer',
@@ -236,8 +403,8 @@ export const INITIAL_PRODUCTS: Product[] = [
     ],
     thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981787/jfk-liquors/beer-craft-bottles.jpg',
     sortOrder: 2,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: BASELINE_DATE,
+    updatedAt: BASELINE_DATE,
   },
   {
     id: 'hard-seltzers-ciders',
@@ -257,11 +424,9 @@ export const INITIAL_PRODUCTS: Product[] = [
     ],
     thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1794247355/jfk-liquors/cider-craft-orchard.jpg',
     sortOrder: 3,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: BASELINE_DATE,
+    updatedAt: BASELINE_DATE,
   },
-
-  // Agave & More (Pure Bottles Only — No Glasses, No Hands)
   {
     id: 'tequila-blanco-reposado-anejo',
     name: 'Tequila (Blanco, Reposado & Añejo)',
@@ -281,8 +446,8 @@ export const INITIAL_PRODUCTS: Product[] = [
     ],
     thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981788/jfk-liquors/tequila-don-julio.jpg',
     sortOrder: 1,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: BASELINE_DATE,
+    updatedAt: BASELINE_DATE,
   },
   {
     id: 'artisan-mezcal',
@@ -303,8 +468,8 @@ export const INITIAL_PRODUCTS: Product[] = [
     ],
     thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1794247325/jfk-liquors/mezcal-artisan-oaxaca.jpg',
     sortOrder: 2,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: BASELINE_DATE,
+    updatedAt: BASELINE_DATE,
   },
   {
     id: 'liqueurs-mixers-accessories',
@@ -323,7 +488,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     ],
     thumbnailUrl: 'https://res.cloudinary.com/ovmougmy/image/upload/v1794247369/jfk-liquors/amaro-botanico-liqueur.jpg',
     sortOrder: 3,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: BASELINE_DATE,
+    updatedAt: BASELINE_DATE,
   },
 ];

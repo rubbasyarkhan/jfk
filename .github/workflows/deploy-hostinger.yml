@@ -24,15 +24,15 @@ jobs:
 
       - name: Build Next.js application
         env:
-          NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
-          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
-          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
-          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
-          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
-          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
-          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
-          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
-          NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
+          NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'ovmougmy' }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY || '759266941214867' }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET || 'lc1e6lM-wk5qkI3pRmHkR8y-hfU' }}
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY || 'AIzaSyAZAHzLz7YT7JKQDcTPQ1UUa_EsG5M6KTM' }}
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'jfk-liquors.firebaseapp.com' }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'jfk-liquors' }}
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'jfk-liquors.firebasestorage.app' }}
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '149865678473' }}
+          NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID || '1:149865678473:web:91b693619e68db5087a858' }}
         run: npm run build
 
       - name: Assemble Hostinger static bundle
@@ -56,18 +56,33 @@ jobs:
           cd ../../..
 
           [ -f hostinger_dist/_not-found.html ] && cp hostinger_dist/_not-found.html hostinger_dist/404.html
+          [ -f hostinger_dist/admin/login.html ] && cp hostinger_dist/admin/login.html hostinger_dist/admin/index.html
 
           cat << 'EOF' > hostinger_dist/.htaccess
           Options -MultiViews
           RewriteEngine On
           DirectoryIndex index.html
 
+          # Never rewrite static assets inside _next
+          RewriteRule ^_next/ - [L]
+
           RewriteCond %{REQUEST_FILENAME}.html -f
           RewriteRule ^(.+?)/?$ $1.html [L]
 
+          # Dynamic fallback for newly created product IDs in Admin
           RewriteCond %{REQUEST_FILENAME} !-f
           RewriteCond %{REQUEST_FILENAME} !-d
-          RewriteRule ^admin/products/([^/]+)/?$ /admin/products/prod-1.html [L]
+          RewriteRule ^admin/products/([^/]+)/?$ /admin/products/bourbon-american-whiskey.html [L]
+
+          # Dynamic fallback for newly created products on storefront
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteCond %{REQUEST_FILENAME} !-d
+          RewriteRule ^products/([^/]+)/([^/]+)/?$ /products/spirits/bourbon-american-whiskey.html [L]
+
+          # Dynamic fallback for newly created categories/departments on storefront
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteCond %{REQUEST_FILENAME} !-d
+          RewriteRule ^products/([^/]+)/?$ /products/spirits.html [L]
 
           ErrorDocument 404 /404.html
           EOF

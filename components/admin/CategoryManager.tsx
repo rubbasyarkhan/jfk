@@ -3,7 +3,13 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getCategories, getInstantCategories, createCategory, updateCategory, deleteCategory } from '@/lib/firestore';
+import {
+  getCategories,
+  getInstantCategories,
+  createCategory,
+  updateCategory,
+  deleteCategory,
+} from '@/lib/firestore';
 import { uploadImageToCloudinary } from '@/lib/cloudinaryClient';
 import type { Category } from '@/types';
 
@@ -16,6 +22,10 @@ export default function CategoryManager({ initialCategories }: Props) {
   const [hydrated, setHydrated] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [feedback, setFeedback] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
 
   useEffect(() => {
     setCategories(getInstantCategories());
@@ -89,7 +99,10 @@ export default function CategoryManager({ initialCategories }: Props) {
     setError('');
 
     try {
-      const uploadedUrl = await uploadImageToCloudinary(file);
+      const uploadedUrl = await uploadImageToCloudinary(
+        file,
+        'jfk-liquors/categories'
+      );
       setImageUrl(uploadedUrl);
     } catch (err: any) {
       setError(err?.message || 'Error uploading image');
@@ -111,7 +124,12 @@ export default function CategoryManager({ initialCategories }: Props) {
     try {
       const payload = {
         name: name.trim(),
-        slug: slug.trim() || name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        slug:
+          slug.trim() ||
+          name
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-|-$/g, ''),
         description: description.trim(),
         bannerText: bannerText.trim(),
         imageUrl: imageUrl.trim(),
@@ -121,19 +139,34 @@ export default function CategoryManager({ initialCategories }: Props) {
       if (editingCategory) {
         await updateCategory(editingCategory.id, payload);
         setCategories((prev) =>
-          prev.map((c) =>
-            c.id === editingCategory.id ? { ...c, ...payload } : c
-          )
+          prev
+            .map((c) =>
+              c.id === editingCategory.id ? { ...c, ...payload } : c
+            )
+            .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
         );
+        setFeedback({
+          type: 'success',
+          message: `Department "${payload.name}" updated and saved to Firebase Firestore!`,
+        });
       } else {
         const newId = await createCategory(payload);
         const newCat: Category = {
           id: newId || payload.slug,
           ...payload,
         };
-        setCategories((prev) => [...prev, newCat]);
+        setCategories((prev) =>
+          [...prev, newCat].sort(
+            (a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)
+          )
+        );
+        setFeedback({
+          type: 'success',
+          message: `Department "${payload.name}" created and saved to Firebase Firestore!`,
+        });
       }
 
+      setTimeout(() => setFeedback(null), 4000);
       setIsModalOpen(false);
     } catch (err: any) {
       setError(err?.message || 'Failed to save category');
@@ -150,6 +183,11 @@ export default function CategoryManager({ initialCategories }: Props) {
     try {
       await deleteCategory(catId);
       setCategories((prev) => prev.filter((c) => c.id !== catId));
+      setFeedback({
+        type: 'success',
+        message: `Department "${catName}" deleted from Firebase Firestore.`,
+      });
+      setTimeout(() => setFeedback(null), 4000);
     } catch (err: any) {
       alert(`Error deleting category: ${err.message}`);
     }
@@ -160,7 +198,7 @@ export default function CategoryManager({ initialCategories }: Props) {
       {/* Header with Add Button */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <p className="eyebrow mb-1">Catalog Taxonomy</p>
+          <p className="eyebrow mb-1">Catalog Taxonomy &bull; Firebase + Cloudinary</p>
           <h1 className="font-anton text-3xl sm:text-4xl text-[#FFFFFF] uppercase tracking-wide">
             Departments &amp; Categories
           </h1>
@@ -174,6 +212,18 @@ export default function CategoryManager({ initialCategories }: Props) {
           <span>+ Add New Department</span>
         </button>
       </div>
+
+      {feedback && (
+        <div
+          className={`p-4 rounded-xl border text-sm ${
+            feedback.type === 'success'
+              ? 'bg-emerald-950/80 border-emerald-500/60 text-emerald-200'
+              : 'bg-red-950/80 border-red-500/60 text-red-200'
+          }`}
+        >
+          {feedback.message}
+        </div>
+      )}
 
       {/* Categories Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -260,7 +310,9 @@ export default function CategoryManager({ initialCategories }: Props) {
           <div className="relative w-full max-w-xl rounded-sm bg-[#16171C] border border-white/[0.12] p-6 sm:p-8 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/[0.08]">
               <h2 className="font-anton text-2xl text-white uppercase tracking-wide">
-                {editingCategory ? `Edit: ${editingCategory.name}` : 'Create New Department'}
+                {editingCategory
+                  ? `Edit: ${editingCategory.name}`
+                  : 'Create New Department'}
               </h2>
               <button
                 type="button"
@@ -321,7 +373,7 @@ export default function CategoryManager({ initialCategories }: Props) {
 
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-neutral-300 mb-1.5">
-                  Hero Header Banner Narrative
+                  Hero Header Banner Narrative / Card Subtitle
                 </label>
                 <textarea
                   rows={2}
@@ -334,7 +386,7 @@ export default function CategoryManager({ initialCategories }: Props) {
 
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-neutral-300 mb-1.5">
-                  Category Image (Cloudinary)
+                  Category Image (Cloudinary CDN)
                 </label>
                 <div className="flex gap-2 mb-2">
                   <input
@@ -358,7 +410,12 @@ export default function CategoryManager({ initialCategories }: Props) {
                 )}
                 {imageUrl && (
                   <div className="relative aspect-[16/9] w-36 rounded-sm overflow-hidden border border-white/10 mt-2 bg-[#0A0A0A]">
-                    <Image src={imageUrl} alt="" fill className="object-cover" />
+                    <Image
+                      src={imageUrl}
+                      alt=""
+                      fill
+                      className="object-cover"
+                    />
                   </div>
                 )}
               </div>
@@ -388,7 +445,11 @@ export default function CategoryManager({ initialCategories }: Props) {
                   disabled={submitting}
                   className="px-6 py-2.5 rounded-sm bg-[#F5D900] hover:bg-[#FFE524] text-[#050505] text-xs font-bold uppercase tracking-wider shadow-lg disabled:opacity-50 cursor-pointer"
                 >
-                  {submitting ? 'Saving...' : editingCategory ? 'Update Department' : 'Create Department'}
+                  {submitting
+                    ? 'Saving to Firebase...'
+                    : editingCategory
+                      ? 'Update Department'
+                      : 'Create Department'}
                 </button>
               </div>
             </form>

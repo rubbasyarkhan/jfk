@@ -21,12 +21,18 @@ const DEFAULT_CATEGORIES: { label: string; value: string }[] = [
 
 const BADGES = ['', 'Allocated', 'Featured', 'Limited', 'New', 'Sale'];
 
-export default function ProductForm({ initialData, productId, availableCategories }: Props) {
+export default function ProductForm({
+  initialData,
+  productId,
+  availableCategories,
+}: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const [categoriesList, setCategoriesList] = useState<{ label: string; value: string }[]>(
+  const [categoriesList, setCategoriesList] = useState<
+    { label: string; value: string }[]
+  >(
     availableCategories && availableCategories.length > 0
       ? availableCategories.map((c) => ({ label: c.name, value: c.slug }))
       : DEFAULT_CATEGORIES
@@ -41,8 +47,15 @@ export default function ProductForm({ initialData, productId, availableCategorie
   const [tags, setTags] = useState(initialData?.tags?.join(', ') || '');
   const [brand, setBrand] = useState(initialData?.brand || '');
   const [origin, setOrigin] = useState(initialData?.origin || '');
-  const [shortDescription, setShortDescription] = useState(initialData?.shortDescription || '');
-  const [description, setDescription] = useState(initialData?.description || '');
+  const [sortOrder, setSortOrder] = useState(
+    (initialData?.sortOrder || 1).toString()
+  );
+  const [shortDescription, setShortDescription] = useState(
+    initialData?.shortDescription || ''
+  );
+  const [description, setDescription] = useState(
+    initialData?.description || ''
+  );
   const [featured, setFeatured] = useState(initialData?.featured ?? true);
   const [inStock, setInStock] = useState(initialData?.inStock ?? true);
   const [images, setImages] = useState<string[]>(initialData?.images || []);
@@ -52,7 +65,9 @@ export default function ProductForm({ initialData, productId, availableCategorie
       try {
         const cats = await getCategories();
         if (Array.isArray(cats) && cats.length > 0) {
-          setCategoriesList(cats.map((c: Category) => ({ label: c.name, value: c.slug })));
+          setCategoriesList(
+            cats.map((c: Category) => ({ label: c.name, value: c.slug }))
+          );
         }
       } catch (err) {
         console.error('Failed to fetch categories:', err);
@@ -81,21 +96,29 @@ export default function ProductForm({ initialData, productId, availableCategorie
     try {
       const productPayload = {
         name: name.trim(),
-        slug: (slug || name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
+        slug: (slug || name)
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, ''),
         category,
         volume: volume.trim(),
         abv: abv ? parseFloat(abv) : 0,
         badge: (badge || '') as Product['badge'],
         brand: brand.trim(),
         origin: origin.trim(),
-        tags: tags ? tags.split(',').map((t) => t.trim()).filter(Boolean) : [],
+        tags: tags
+          ? tags
+              .split(',')
+              .map((t) => t.trim())
+              .filter(Boolean)
+          : [],
         shortDescription: shortDescription.trim(),
         description: description.trim(),
         featured,
         inStock,
         images,
         thumbnailUrl: images[0] || '',
-        sortOrder: initialData?.sortOrder || 1,
+        sortOrder: Number(sortOrder) || 1,
       };
 
       if (productId) {
@@ -108,14 +131,17 @@ export default function ProductForm({ initialData, productId, availableCategorie
       router.refresh();
     } catch (err: any) {
       console.error('Error saving product:', err);
-      setError(err?.message || 'Failed to save product to database');
+      setError(err?.message || 'Failed to save product to Firebase Firestore');
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 max-w-4xl text-[#FFFFFF]">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-8 max-w-4xl text-[#FFFFFF]"
+    >
       {error && (
         <div className="p-4 rounded-xl bg-[#5B1018]/60 border border-[#5B1018] text-red-200 text-sm">
           {error}
@@ -129,10 +155,15 @@ export default function ProductForm({ initialData, productId, availableCategorie
             Bottle Imagery (Cloudinary Media)
           </h3>
           <p className="text-xs text-[#A0A0A0] font-light">
-            Upload bottle photos directly. Images are hosted on Cloudinary and optimized for crisp, high-speed delivery.
+            Upload bottle photos directly. Images are hosted on Cloudinary CDN
+            and saved permanently in Firebase Firestore.
           </p>
         </div>
-        <ImageUploader value={images} onChange={setImages} productId={productId} />
+        <ImageUploader
+          value={images}
+          onChange={setImages}
+          productId={productId}
+        />
       </div>
 
       {/* Primary Details in Charcoal */}
@@ -199,7 +230,9 @@ export default function ProductForm({ initialData, productId, availableCategorie
 
         {/* Short & Full Description */}
         <div>
-          <label className="admin-label">Short Card Description (1-2 sentences)</label>
+          <label className="admin-label">
+            Short Card Description (1-2 sentences)
+          </label>
           <input
             type="text"
             value={shortDescription}
@@ -224,10 +257,10 @@ export default function ProductForm({ initialData, productId, availableCategorie
       {/* Specifications */}
       <div className="p-6 sm:p-8 rounded-2xl bg-[#242424] border border-[#3A3A3A] space-y-6">
         <h3 className="text-xs font-bold text-[#F5D900] uppercase tracking-wider">
-          Bottle Specifications
+          Bottle Specifications &amp; Display Order
         </h3>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
           <div>
             <label className="admin-label">Volume</label>
             <input
@@ -258,6 +291,17 @@ export default function ProductForm({ initialData, productId, availableCategorie
               value={origin}
               onChange={(e) => setOrigin(e.target.value)}
               placeholder="e.g. Kentucky, USA"
+              className="admin-input"
+            />
+          </div>
+
+          <div>
+            <label className="admin-label">Display Sort Order</label>
+            <input
+              type="number"
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+              placeholder="1"
               className="admin-input"
             />
           </div>
@@ -296,7 +340,9 @@ export default function ProductForm({ initialData, productId, availableCategorie
               onChange={(e) => setInStock(e.target.checked)}
               className="w-5 h-5 rounded border-[#3A3A3A] bg-[#111111] accent-[#F5D900] cursor-pointer"
             />
-            <span className="text-sm font-bold text-[#FFFFFF]">Active in Stock</span>
+            <span className="text-sm font-bold text-[#FFFFFF]">
+              Active in Stock
+            </span>
           </label>
 
           <label className="flex items-center gap-3 cursor-pointer">
@@ -306,25 +352,28 @@ export default function ProductForm({ initialData, productId, availableCategorie
               onChange={(e) => setFeatured(e.target.checked)}
               className="w-5 h-5 rounded border-[#3A3A3A] bg-[#111111] accent-[#F5D900] cursor-pointer"
             />
-            <span className="text-sm font-bold text-[#FFFFFF]">Highlight in Homepage Allocated Vault</span>
+            <span className="text-sm font-bold text-[#FFFFFF]">
+              Highlight in Homepage Allocated Vault
+            </span>
           </label>
         </div>
       </div>
 
       {/* Submit Actions */}
       <div className="flex items-center gap-4">
-        <button
-          type="submit"
-          disabled={loading}
-          className="btn-gold !py-3.5"
-        >
+        <button type="submit" disabled={loading} className="btn-gold !py-3.5">
           {loading ? (
             <span className="flex items-center gap-2">
               <span className="w-4 h-4 rounded-full border-2 border-[#111111] border-t-transparent animate-spin" />
-              Saving Product...
+              Saving to Firebase...
             </span>
           ) : (
-            <span>{productId ? 'Update Product' : 'Publish Product to Store'} &rarr;</span>
+            <span>
+              {productId
+                ? 'Update Product in Firebase'
+                : 'Publish Product to Store'}{' '}
+              &rarr;
+            </span>
           )}
         </button>
 

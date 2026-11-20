@@ -5,6 +5,7 @@ export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
     const file = formData.get('file') as File | null;
+    const folder = (formData.get('folder') as string) || 'jfk-liquors/products';
 
     if (!file) {
       return NextResponse.json({ error: 'No image file provided' }, { status: 400 });
@@ -17,13 +18,13 @@ export async function POST(req: NextRequest) {
     const result = await new Promise<any>((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
-          folder: 'jfk-liquors/products',
+          folder,
           resource_type: 'image',
           format: 'webp',
           transformation: [
             { quality: 'auto:best' },
-            { fetch_format: 'auto' }
-          ]
+            { fetch_format: 'auto' },
+          ],
         },
         (error, result) => {
           if (error) reject(error);

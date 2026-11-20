@@ -1,11 +1,14 @@
-import { notFound } from 'next/navigation';
 import { getProducts, getCategoryBySlug, getCategories } from '@/lib/firestore';
+import { INITIAL_CATEGORIES } from '@/lib/initialData';
 import CategoryPageClient from '@/components/site/CategoryPageClient';
 import type { Metadata } from 'next';
 
 export async function generateStaticParams() {
   const categories = await getCategories();
-  return categories.map((c) => ({ category: c.slug }));
+  const slugs = new Set<string>();
+  for (const c of INITIAL_CATEGORIES) slugs.add(c.slug);
+  for (const c of categories) slugs.add(c.slug);
+  return Array.from(slugs).map((category) => ({ category }));
 }
 
 interface Props {
@@ -18,7 +21,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const capitalized = catName.charAt(0).toUpperCase() + catName.slice(1);
   return {
     title: `${capitalized} Department | JFK Liquors Houston`,
-    description: category?.bannerText || category?.description || `Explore our ${capitalized} collection at JFK Liquors Houston near IAH.`,
+    description:
+      category?.bannerText ||
+      category?.description ||
+      `Explore our ${capitalized} collection at JFK Liquors Houston near IAH.`,
   };
 }
 
@@ -28,10 +34,6 @@ export default async function CategoryPage({ params }: Props) {
     getCategoryBySlug(params.category),
     getCategories(),
   ]);
-
-  if (!category && products.length === 0) {
-    notFound();
-  }
 
   return (
     <CategoryPageClient

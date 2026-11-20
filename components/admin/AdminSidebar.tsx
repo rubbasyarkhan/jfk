@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import { useSiteContent } from '@/lib/useSiteContent';
 
 const NAV = [
   {
@@ -13,6 +14,15 @@ const NAV = [
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Website Content',
+    href: '/admin/content',
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
       </svg>
     ),
   },
@@ -39,6 +49,7 @@ const NAV = [
 export default function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const { brand } = useSiteContent();
 
   async function handleSignOut() {
     try {
@@ -51,12 +62,14 @@ export default function AdminSidebar() {
 
   return (
     <aside className="fixed inset-y-0 left-0 w-64 bg-[#1B1B1B] border-r border-[#2A2A2A] flex flex-col z-40 text-[#FFFFFF]">
-      
       {/* Brand Header */}
       <div className="p-6 border-b border-[#2A2A2A] flex flex-col items-center text-center">
         <Link href="/admin/dashboard" className="mb-3 block">
           <Image
-            src="https://res.cloudinary.com/ovmougmy/image/upload/v1793981764/jfk-liquors/logo.png"
+            src={
+              brand.logoUrl ||
+              'https://res.cloudinary.com/ovmougmy/image/upload/v1793981764/jfk-liquors/logo.png'
+            }
             alt="JFK Liquors Admin"
             width={140}
             height={50}
@@ -71,7 +84,9 @@ export default function AdminSidebar() {
       {/* Navigation */}
       <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
         {NAV.map((item) => {
-          const active = pathname === item.href || (item.href !== '/admin/dashboard' && pathname.startsWith(item.href));
+          const active =
+            pathname === item.href ||
+            (item.href !== '/admin/dashboard' && pathname.startsWith(item.href));
           return (
             <Link
               key={item.href}
@@ -112,7 +127,6 @@ export default function AdminSidebar() {
           Sign Out
         </button>
       </div>
-
     </aside>
   );
 }

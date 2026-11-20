@@ -4,13 +4,24 @@ import { getStorage, type FirebaseStorage } from 'firebase/storage';
 import { getAuth, type Auth } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+  apiKey:
+    process.env.NEXT_PUBLIC_FIREBASE_API_KEY ||
+    'AIzaSyAZAHzLz7YT7JKQDcTPQ1UUa_EsG5M6KTM',
+  authDomain:
+    process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ||
+    'jfk-liquors.firebaseapp.com',
+  projectId:
+    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'jfk-liquors',
+  storageBucket:
+    process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET ||
+    'jfk-liquors.firebasestorage.app',
+  messagingSenderId:
+    process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '149865678473',
+  appId:
+    process.env.NEXT_PUBLIC_FIREBASE_APP_ID ||
+    '1:149865678473:web:91b693619e68db5087a858',
+  measurementId:
+    process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || 'G-5XS4ZW036T',
 };
 
 let app: FirebaseApp | undefined;
@@ -25,7 +36,7 @@ if (firebaseConfig.apiKey && firebaseConfig.projectId) {
     storage = getStorage(app);
     auth = getAuth(app);
   } catch (err) {
-    console.warn('Firebase initialized in fallback mode');
+    console.warn('Firebase initialized in fallback mode:', err);
   }
 }
 

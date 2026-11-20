@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { getCategories } from '@/lib/firestore';
+import { useSiteContent } from '@/lib/useSiteContent';
 
 const DEPARTMENTS = [
   { label: 'Spirits & Bourbon', href: '/products/spirits', desc: 'Bourbon, Scotch, vodka, gin, rum & cognac' },
@@ -22,6 +23,7 @@ export default function Header() {
   const [departments, setDepartments] = useState(cachedClientDepts || DEPARTMENTS);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const { brand } = useSiteContent();
 
   useEffect(() => {
     async function loadDepts() {
@@ -78,10 +80,10 @@ export default function Header() {
 
           {/* Left: Brand Identity (Clean, Pure, No Clutter) */}
           <div className="flex items-center flex-shrink-0">
-            <Link href="/" className="flex items-center transition-opacity hover:opacity-90">
+            <Link href="/" prefetch={true} className="flex items-center transition-opacity hover:opacity-90">
               <Image
-                src="https://res.cloudinary.com/ovmougmy/image/upload/v1793981764/jfk-liquors/logo.png"
-                alt="JFK Liquors Houston"
+                src={brand.logoUrl || 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981764/jfk-liquors/logo.png'}
+                alt={brand.storeName || 'JFK Liquors Houston'}
                 width={140}
                 height={44}
                 className="h-8 sm:h-9 w-auto object-contain"
@@ -161,6 +163,7 @@ export default function Header() {
 
             <Link
               href="/#collection"
+              prefetch={true}
               className="text-[11px] font-medium uppercase tracking-[0.2em] text-neutral-300 hover:text-white transition-colors whitespace-nowrap"
             >
               Departments
@@ -168,6 +171,7 @@ export default function Header() {
 
             <Link
               href="/#delivery"
+              prefetch={true}
               className="text-[11px] font-medium uppercase tracking-[0.2em] text-neutral-300 hover:text-white transition-colors whitespace-nowrap"
             >
               Delivery
@@ -197,19 +201,19 @@ export default function Header() {
           {/* Right: Phone & Action Button (Never wrap, strictly aligned) */}
           <div className="hidden sm:flex items-center gap-6 flex-shrink-0">
             <a
-              href="tel:+12815903300"
+              href={`tel:${brand.phoneTel}`}
               className="text-xs font-mono font-medium text-neutral-300 hover:text-[#F5D900] transition-colors tracking-widest whitespace-nowrap"
             >
-              (281) 590-3300
+              {brand.phoneDisplay}
             </a>
 
             <a
-              href="https://www.google.com/maps/dir/?api=1&destination=15655+John+F+Kennedy+Blvd+Suite+D+Houston+TX+77032"
+              href={brand.directionsUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="btn-primary !px-4 !py-2.5 text-[11px] tracking-wider whitespace-nowrap"
             >
-              <span>Visit Us</span>
+              <span>{brand.headerCtaText || 'Visit Us'}</span>
               <span className="text-[9px]">↗</span>
             </a>
           </div>
@@ -296,13 +300,13 @@ export default function Header() {
 
           <div className="pt-4 border-t border-white/10 flex flex-col gap-2.5">
             <a
-              href="tel:+12815903300"
+              href={`tel:${brand.phoneTel}`}
               className="text-center py-3 px-4 bg-[#121316] text-[#F5D900] font-mono text-xs uppercase tracking-wider border border-white/10"
             >
-              Call: (281) 590-3300
+              Call: {brand.phoneDisplay}
             </a>
             <a
-              href="https://www.google.com/maps/dir/?api=1&destination=15655+John+F+Kennedy+Blvd+Suite+D+Houston+TX+77032"
+              href={brand.directionsUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="btn-primary text-center py-3 px-4 text-xs font-bold uppercase tracking-wider justify-center"
