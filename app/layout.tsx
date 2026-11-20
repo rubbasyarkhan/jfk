@@ -35,11 +35,10 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/jfk-icon.png", type: "image/png" },
-      { url: "/favicon.ico" },
+      { url: "/jfk-logo-favicon.png?v=3", type: "image/png", sizes: "64x64" },
     ],
-    shortcut: "/jfk-icon.png",
-    apple: "/jfk-icon.png",
+    shortcut: "/jfk-logo-favicon.png?v=3",
+    apple: "/jfk-logo-favicon.png?v=3",
   },
   title: "JFK Liquors — Houston, TX | Your Neighborhood Liquor Store Near IAH",
   description:
