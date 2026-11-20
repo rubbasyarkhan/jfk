@@ -56,7 +56,7 @@ export default function DeliverySection() {
 
             {/* DoorDash Card */}
             <a
-              href="https://www.doordash.com"
+              href="https://www.doordash.com/convenience/store/52760606?event_type=autocomplete&pickup=false"
               target="_blank"
               rel="noopener noreferrer"
               className="group block p-7 sm:p-8 rounded-sm border border-[#333333] bg-[#161616] transition-all duration-300 hover:border-[#F5D900] hover:bg-[#1C1C1C]"

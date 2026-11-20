@@ -33,6 +33,14 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://jfkliquoriah.com",
   },
+  icons: {
+    icon: [
+      { url: "/jfk-icon.png", type: "image/png" },
+      { url: "/favicon.ico" },
+    ],
+    shortcut: "/jfk-icon.png",
+    apple: "/jfk-icon.png",
+  },
   title: "JFK Liquors — Houston, TX | Your Neighborhood Liquor Store Near IAH",
   description:
     "Your neighborhood retail liquor store on JFK Boulevard in Houston, just 3 minutes from George Bush Intercontinental Airport (IAH). Spirits, bourbon, wine, cold beer, and tequila.",

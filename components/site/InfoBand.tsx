@@ -27,7 +27,7 @@ export default function InfoBand() {
               </a>
               <span className="text-[#e0e0e0] mx-1"> + </span>
               <a
-                href="https://www.doordash.com"
+                href="https://www.doordash.com/convenience/store/52760606?event_type=autocomplete&pickup=false"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[#ff6451] font-bold hover:underline"

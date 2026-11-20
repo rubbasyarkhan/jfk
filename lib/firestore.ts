@@ -494,7 +494,7 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
     hoursWeekday: '11:00 AM – 9:00 PM',
     hoursSunday: 'Closed',
     uberEatsUrl: 'https://www.ubereats.com',
-    doorDashUrl: 'https://www.doordash.com',
+    doorDashUrl: 'https://www.doordash.com/convenience/store/52760606?event_type=autocomplete&pickup=false',
   };
 }
 
