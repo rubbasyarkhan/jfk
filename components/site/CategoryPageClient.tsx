@@ -76,7 +76,7 @@ export default function CategoryPageClient({
               <div className="flex items-center gap-3 mb-4">
                 <span className="w-2 h-2 rounded-full bg-[#F5D900] animate-pulse" />
                 <p className="text-[11px] font-sans font-bold uppercase tracking-[0.22em] text-[#F5D900]">
-                  THE PRIVATE ARCHIVE &bull; {catName.toUpperCase()}
+                  JFK LIQUORS &bull; {catName.toUpperCase()}
                 </p>
               </div>
 
@@ -110,7 +110,7 @@ export default function CategoryPageClient({
 
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-[10px] font-sans font-bold uppercase tracking-[0.2em] text-neutral-400">
-                    Cellar Concierge Service
+                    Store Customer Service
                   </span>
                   <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm text-[10px] font-sans font-semibold uppercase tracking-wider bg-[#F5D900]/10 text-[#F5D900] border border-[#F5D900]/30">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#F5D900]" />
@@ -120,7 +120,7 @@ export default function CategoryPageClient({
 
                 <div className="mb-4">
                   <span className="text-[11px] font-sans uppercase tracking-wider text-neutral-400 block mb-1">
-                    Direct Bottle Inquiry &amp; Holding
+                    Call Store for Availability
                   </span>
                   <a
                     href="tel:+12815903300"
@@ -162,7 +162,7 @@ export default function CategoryPageClient({
             href="tel:+12815903300"
             className="text-xs font-sans text-[#F5D900] font-semibold hover:underline"
           >
-            Direct Store Reserve: (281) 590-3300
+            Call Store: (281) 590-3300
           </a>
         </div>
 

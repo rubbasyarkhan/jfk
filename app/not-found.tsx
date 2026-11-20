@@ -3,15 +3,15 @@ import Header from '@/components/site/Header';
 import Footer from '@/components/site/Footer';
 
 export const metadata = {
-  title: '404 — Cellar Vintage Not Found | JFK Liquors Houston',
-  description: 'The requested bottle, category, or page could not be located in our Houston vault.',
+  title: '404 — Page Not Found | JFK Liquors Houston',
+  description: 'The requested bottle, category, or page could not be located at JFK Liquors Houston.',
 };
 
 const POPULAR_DEPARTMENTS = [
-  { label: 'Allocated Bourbon & Spirits', href: '/products/spirits', tag: '01' },
-  { label: 'Cellar Vintages & Champagne', href: '/products/wines', tag: '02' },
+  { label: 'Bourbon & Spirits', href: '/products/spirits', tag: '01' },
+  { label: 'Wines & Champagne', href: '/products/wines', tag: '02' },
   { label: 'Chilled Texas Craft Beer', href: '/products/beer', tag: '03' },
-  { label: 'Artisanal Agave & Mezcal', href: '/products/agave-and-more', tag: '04' },
+  { label: 'Tequila, Agave & Mixers', href: '/products/agave-and-more', tag: '04' },
 ];
 
 export default function NotFound() {
@@ -55,7 +55,7 @@ export default function NotFound() {
 
           {/* Narrative in Montserrat */}
           <p className="font-sans font-normal text-neutral-300 text-sm sm:text-base leading-relaxed max-w-xl mx-auto mb-10">
-            The vintage, shelf, or private cellar collection you are looking for is no longer accessible at this address. Our allocated bottles rotate daily along Houston’s IAH airport corridor.
+            The bottle, shelf, or page you are looking for is not available at this address. Browse our departments below or visit our store on JFK Boulevard near IAH airport.
           </p>
 
           {/* Primary Action Buttons */}

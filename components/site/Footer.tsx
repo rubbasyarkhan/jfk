@@ -118,14 +118,6 @@ export default function Footer() {
                   </Link>
                 </li>
               ))}
-              <li className="pt-3">
-                <Link
-                  href="/admin/login"
-                  className="text-[11px] font-mono text-[#F5D900] hover:text-[#F5D900] uppercase tracking-wider transition-colors"
-                >
-                  Admin Management Portal ↗
-                </Link>
-              </li>
             </ul>
           </div>
 

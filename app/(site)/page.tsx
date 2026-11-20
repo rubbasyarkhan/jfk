@@ -8,9 +8,9 @@ import LocationSection from '@/components/site/LocationSection';
 import { getFeaturedProducts, getCategories } from '@/lib/firestore';
 
 export const metadata = {
-  title: 'JFK Liquors — Houston, TX | Luxury Spirits, Fine Wine & Allocated Vault Near IAH',
+  title: 'JFK Liquors — Houston, TX | Your Neighborhood Liquor Store Near IAH',
   description:
-    'Houston’s premier private spirits and cellar destination along the IAH airport corridor. Allocated bourbons, rare single malts, fine wines & on-demand delivery.',
+    'Your neighborhood retail liquor store on JFK Boulevard in Houston near IAH airport. Wide selection of bourbon, whiskey, wine, chilled craft beer, tequila & on-demand delivery.',
 };
 
 export default async function HomePage() {

@@ -33,9 +33,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://jfkliquoriah.com",
   },
-  title: "JFK Liquors — Houston, TX | Luxury Spirits, Fine Wine & Allocated Vault Near IAH",
+  title: "JFK Liquors — Houston, TX | Your Neighborhood Liquor Store Near IAH",
   description:
-    "Discover allocated bourbon, rare single malts, cellar wines, and cold craft beer on JFK Boulevard, Houston. 3 minutes from George Bush Intercontinental Airport (IAH).",
+    "Your neighborhood retail liquor store on JFK Boulevard in Houston, just 3 minutes from George Bush Intercontinental Airport (IAH). Spirits, bourbon, wine, cold beer, and tequila.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

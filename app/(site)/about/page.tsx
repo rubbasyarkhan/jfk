@@ -2,8 +2,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Our Store & Heritage | JFK Liquors Houston',
-  description: 'Learn about JFK Liquors, Houston’s premier spirits destination located near George Bush Intercontinental Airport (IAH).',
+  title: 'About Our Store | JFK Liquors Houston Near IAH',
+  description: 'Learn about JFK Liquors, your neighborhood retail liquor store on John F Kennedy Boulevard near George Bush Intercontinental Airport (IAH) in Houston.',
 };
 
 export default function AboutPage() {
@@ -18,7 +18,7 @@ export default function AboutPage() {
             className="font-serif tracking-tight text-[#FFFFFF]"
             style={{ fontSize: 'clamp(3rem, 6vw, 4.8rem)', lineHeight: 1.05 }}
           >
-            A Passion for <span className="italic text-[#F5D900] font-serif">Fine Craft.</span>
+            Your Neighborhood <span className="italic text-[#F5D900] font-serif">Bottle Shop.</span>
           </h1>
         </div>
 
@@ -26,7 +26,7 @@ export default function AboutPage() {
         <div className="relative aspect-[21/9] rounded overflow-hidden border border-white/10 mb-16 shadow-2xl bg-[#141414]">
           <Image
             src="https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1600&q=80"
-            alt="JFK Liquors Houston Selection"
+            alt="JFK Liquors Houston Retail Selection"
             fill
             className="object-cover opacity-85"
             priority
@@ -37,34 +37,34 @@ export default function AboutPage() {
         {/* Story Prose */}
         <div className="space-y-6 text-[#C7C7C7] font-light text-base sm:text-lg leading-relaxed">
           <p className="text-xl text-[#FFFFFF] font-normal leading-relaxed">
-            Conveniently situated along John F Kennedy Boulevard just moments away from George Bush Intercontinental Airport (IAH), JFK Liquors was founded to deliver an elevated, curated bottle shop experience to North Houston.
+            Conveniently located at 15655 John F Kennedy Boulevard, Suite D — just minutes from George Bush Intercontinental Airport (IAH) — JFK Liquors is a neighborhood retail liquor store serving local Houston residents, visitors, and travelers.
           </p>
           <p>
-            Whether stepping off an international flight seeking a rare Texas Bourbon, stocking up for an executive dinner, or picking up celebratory champagne for an evening at home, we believe shopping for spirits should be an inspiring and hospitable experience.
+            Whether you are picking up a bottle on your way home, stocking up for a weekend gathering, or shopping for a gift, we provide a clean, welcoming store with a straightforward retail shopping experience.
           </p>
           <p>
-            Our spirits wall is meticulously curated from small-batch Kentucky and Texas craft distilleries to high-elevation Islay single malts, Japanese whiskies, additive-free artisan tequilas, and century-old French Cognac houses.
+            Our shelves are stocked with a broad selection of sealed spirits, wines, beers, and mixers — including bourbon and American whiskey, Scotch, tequila and mezcal, vodka, gin, rum, cognac, red and white wines, champagne, and cold craft and imported beer.
           </p>
         </div>
 
-        {/* 3 Architectural Value Cards */}
+        {/* 3 Value Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-16">
           <div className="p-8 rounded bg-[#161616] border border-white/10">
-            <h3 className="font-serif text-2xl text-[#F5D900] mb-3">Allocated &amp; Rare</h3>
+            <h3 className="font-serif text-2xl text-[#F5D900] mb-3">Quality Selection</h3>
             <p className="text-sm text-[#A0A0A0] leading-relaxed font-light">
-              We continually work with leading distributors to secure allocated barrel releases, rare proofs, and limited vintages.
+              We carry a wide variety of popular national brands, Texas favorites, and special-occasion bottles across spirits, wine, and cold beer.
             </p>
           </div>
           <div className="p-8 rounded bg-[#161616] border border-white/10">
-            <h3 className="font-serif text-2xl text-[#FFFFFF] mb-3">Expert Guidance</h3>
+            <h3 className="font-serif text-2xl text-[#FFFFFF] mb-3">Friendly Service</h3>
             <p className="text-sm text-[#A0A0A0] leading-relaxed font-light">
-              Our staff loves great drinks. Ask us for tasting notes, pairing guidance, or host cocktail batch recommendations.
+              Our store team is always glad to help you find a specific bottle on our shelves or choose a great option for your occasion.
             </p>
           </div>
           <div className="p-8 rounded bg-[#161616] border border-white/10">
-            <h3 className="font-serif text-2xl text-[#F5D900] mb-3">Airport Proximity</h3>
+            <h3 className="font-serif text-2xl text-[#F5D900] mb-3">Convenient Location</h3>
             <p className="text-sm text-[#A0A0A0] leading-relaxed font-light">
-              Quick in-and-out access near IAH terminals with free storefront parking right at Suite D.
+              Quick in-and-out access on JFK Boulevard near IAH airport terminals with free storefront parking right outside Suite D.
             </p>
           </div>
         </div>

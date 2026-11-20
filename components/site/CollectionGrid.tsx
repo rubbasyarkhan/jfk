@@ -19,7 +19,7 @@ const FALLBACK_CATEGORIES = [
     num: '02',
     slug: 'wines',
     label: 'Wines',
-    subtitle: 'Cellar & Champagne',
+    subtitle: 'Red, White & Champagne',
     desc: 'Napa Valley Cabernet, Burgundy pinot noir & Grand Cru vintage champagne.',
     image: 'https://res.cloudinary.com/ovmougmy/image/upload/v1793981782/jfk-liquors/wine-silver-oak.jpg',
   },

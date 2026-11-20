@@ -32,7 +32,7 @@ export default function PromotionalBanner() {
             </h2>
 
             <p className="text-sm sm:text-base text-[#FFFFFF]/90 font-light leading-relaxed">
-              We receive limited releases throughout the week. Visit our JFK Boulevard location or call our cellar counter directly to verify today&apos;s bottle availability.
+              We receive new shipments throughout the week. Visit our JFK Boulevard location or call our store directly to check today&apos;s bottle availability.
             </p>
           </div>
 

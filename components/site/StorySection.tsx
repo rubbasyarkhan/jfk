@@ -12,7 +12,7 @@ export default function StorySection() {
             <div className="relative rounded overflow-hidden border border-white/10 bg-[#141414] aspect-[4/3] sm:aspect-[16/11] shadow-2xl group">
               <Image
                 src="https://res.cloudinary.com/ovmougmy/image/upload/v1793981770/jfk-liquors/collection-story.jpg"
-                alt="Curated spirits and tasting at JFK Liquors"
+                alt="Spirits, wine, and beer selection at JFK Liquors Houston"
                 fill
                 className="object-cover transition-transform duration-700 ease-out group-hover:scale-104"
                 sizes="(max-width: 1024px) 100vw, 50vw"

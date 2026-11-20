@@ -40,7 +40,7 @@ export default function FeaturedVaultSection({ initialProducts }: Props) {
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-16 gap-6">
           <div>
             <p className="meta-tag mb-3">
-              PRIVATE CELLAR ALLOCATIONS
+              FEATURED STORE SELECTION
             </p>
             <h2
               className="font-anton tracking-wide uppercase text-white"

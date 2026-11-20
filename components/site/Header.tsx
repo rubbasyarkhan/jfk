@@ -7,10 +7,10 @@ import { usePathname } from 'next/navigation';
 import { getCategories } from '@/lib/firestore';
 
 const DEPARTMENTS = [
-  { label: 'Spirits & Allocated Bourbon', href: '/products/spirits', desc: 'Single barrel bourbons, peated Islays & French cognacs' },
-  { label: 'Cellar Vintages & Champagne', href: '/products/wines', desc: 'Grand Cru releases, Napa Cabernet & vintage sparkling' },
-  { label: 'Independent Craft & Imports', href: '/products/beer', desc: 'Cold Texas micro-brews & celebrated European imports' },
-  { label: 'Artisanal Agave & Mixers', href: '/products/agave-and-more', desc: '100% Blue agave extra añejos & Oaxaca mezcals' },
+  { label: 'Spirits & Bourbon', href: '/products/spirits', desc: 'Bourbon, Scotch, vodka, gin, rum & cognac' },
+  { label: 'Wines & Champagne', href: '/products/wines', desc: 'Red and white wines, rosé & celebratory sparkling' },
+  { label: 'Beer & Craft Imports', href: '/products/beer', desc: 'Cold Texas craft beers, domestics & imports' },
+  { label: 'Agave, Tequila & Mixers', href: '/products/agave-and-more', desc: '100% Blue agave tequila, mezcal, liqueurs & mixers' },
 ];
 
 let cachedClientDepts: any[] | null = null;
@@ -134,7 +134,7 @@ export default function Header() {
                         Browse All Bottles ↗
                       </p>
                       <p className="text-[10px] text-neutral-400 font-light mt-0.5">
-                        Complete cellar &amp; allocated spirits inventory
+                        Complete spirits, wine, beer &amp; agave inventory
                       </p>
                     </Link>
 
