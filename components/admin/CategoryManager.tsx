@@ -33,7 +33,6 @@ export default function CategoryManager({ initialCategories }: Props) {
   const [prodSubcategory, setProdSubcategory] = useState('');
   const [prodVolume, setProdVolume] = useState('750ml');
   const [prodAbv, setProdAbv] = useState('');
-  const [prodPrice, setProdPrice] = useState('');
   const [prodBadge, setProdBadge] = useState<Product['badge']>('');
   const [prodIsOffer, setProdIsOffer] = useState(false);
   const [prodOfferText, setProdOfferText] = useState('');
@@ -246,7 +245,6 @@ export default function CategoryManager({ initialCategories }: Props) {
     setProdSubcategory(cat.subcategories?.[0]?.slug || '');
     setProdVolume('750ml');
     setProdAbv('');
-    setProdPrice('');
     setProdBadge('');
     setProdIsOffer(false);
     setProdOfferText('');
@@ -289,7 +287,6 @@ export default function CategoryManager({ initialCategories }: Props) {
         subcategory: prodSubcategory,
         volume: prodVolume.trim(),
         abv: prodAbv ? parseFloat(prodAbv) : 0,
-        price: prodPrice ? parseFloat(prodPrice) : undefined,
         badge: prodBadge,
         isOffer: prodIsOffer,
         offerText: prodOfferText.trim(),
@@ -954,7 +951,7 @@ export default function CategoryManager({ initialCategories }: Props) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="admin-label">Volume</label>
                   <input
@@ -973,17 +970,6 @@ export default function CategoryManager({ initialCategories }: Props) {
                     value={prodAbv}
                     onChange={(e) => setProdAbv(e.target.value)}
                     placeholder="45.0"
-                    className="admin-input"
-                  />
-                </div>
-                <div>
-                  <label className="admin-label">Price ($ Optional)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={prodPrice}
-                    onChange={(e) => setProdPrice(e.target.value)}
-                    placeholder="49.99"
                     className="admin-input"
                   />
                 </div>

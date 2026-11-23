@@ -55,15 +55,18 @@ export default function CategoryPageClient({
     }
     setResolvedSlug(activeSlug);
 
-    const instCats = getInstantCategories();
-    const instCat =
-      instCats.find((c) => c.slug === activeSlug || c.id === activeSlug) ||
-      null;
-    setAllCategories(instCats);
-    if (instCat) setCategory(instCat);
-    setProducts(
-      getInstantProducts().filter((p) => p.category === activeSlug)
-    );
+    function handleMemoryUpdate() {
+      const instCats = getInstantCategories();
+      const instCat =
+        instCats.find((c) => c.slug === activeSlug || c.id === activeSlug) ||
+        null;
+      setAllCategories(instCats);
+      if (instCat) setCategory(instCat);
+      setProducts(
+        getInstantProducts().filter((p) => p.category === activeSlug)
+      );
+    }
+    handleMemoryUpdate();
     setHydrated(true);
 
     async function syncCatPage() {
@@ -77,11 +80,11 @@ export default function CategoryPageClient({
       setAllCategories(latestCats);
     }
     syncCatPage();
-    window.addEventListener('jfk-catalog-updated', syncCatPage);
-    window.addEventListener('storage', syncCatPage);
+    window.addEventListener('jfk-catalog-updated', handleMemoryUpdate);
+    window.addEventListener('focus', syncCatPage);
     return () => {
-      window.removeEventListener('jfk-catalog-updated', syncCatPage);
-      window.removeEventListener('storage', syncCatPage);
+      window.removeEventListener('jfk-catalog-updated', handleMemoryUpdate);
+      window.removeEventListener('focus', syncCatPage);
     };
   }, [propCategorySlug]);
 

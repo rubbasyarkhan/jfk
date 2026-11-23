@@ -63,8 +63,6 @@ const SAMPLE_PREVIEW_PRODUCT: Product = {
   origin: 'Kentucky, USA',
   volume: '750ml',
   abv: 53.5,
-  price: 64.99,
-  comparePrice: 79.99,
   badge: 'Allocated',
   isOffer: true,
   offerText: 'In-Store Offer',
@@ -350,10 +348,6 @@ export default function SiteContentManager() {
                   {
                     key: 'showTags',
                     label: 'Tags Above Bottle Title',
-                  },
-                  {
-                    key: 'showPrice',
-                    label: 'Price & Regular/Compare Price',
                   },
                   {
                     key: 'showDescription',

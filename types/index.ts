@@ -13,8 +13,6 @@ export interface Product {
   slug: string;
   description: string;
   shortDescription: string;
-  price?: number;
-  comparePrice?: number;
   category: string;
   subcategory?: string;
   brand?: string;
@@ -71,7 +69,6 @@ export interface ProductCardConfig {
   showBrand: boolean;
   showOrigin: boolean;
   showAbv: boolean;
-  showPrice: boolean;
   showOfferText: boolean;
   showDescription: boolean;
   descriptionLines: 1 | 2 | 3 | 4;

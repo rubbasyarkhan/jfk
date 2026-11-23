@@ -28,8 +28,11 @@ export default function AllProductsClient({
   const { brand, catalogPage } = useSiteContent();
 
   useEffect(() => {
-    setProducts(getInstantProducts());
-    setCategories(getInstantCategories());
+    function handleMemoryUpdate() {
+      setProducts(getInstantProducts());
+      setCategories(getInstantCategories());
+    }
+    handleMemoryUpdate();
     setHydrated(true);
 
     async function syncAll() {
@@ -41,11 +44,11 @@ export default function AllProductsClient({
       setCategories(latestCats);
     }
     syncAll();
-    window.addEventListener('jfk-catalog-updated', syncAll);
-    window.addEventListener('storage', syncAll);
+    window.addEventListener('jfk-catalog-updated', handleMemoryUpdate);
+    window.addEventListener('focus', syncAll);
     return () => {
-      window.removeEventListener('jfk-catalog-updated', syncAll);
-      window.removeEventListener('storage', syncAll);
+      window.removeEventListener('jfk-catalog-updated', handleMemoryUpdate);
+      window.removeEventListener('focus', syncAll);
     };
   }, []);
 

@@ -19,11 +19,14 @@ export default function FeaturedVaultSection({ initialProducts }: Props) {
   const maxItems = Number(vaultSection.maxItems) || 6;
 
   useEffect(() => {
-    setFeaturedProducts(
-      getInstantProducts()
-        .filter((p) => p.featured)
-        .slice(0, maxItems)
-    );
+    function handleMemoryUpdate() {
+      setFeaturedProducts(
+        getInstantProducts()
+          .filter((p) => p.featured)
+          .slice(0, maxItems)
+      );
+    }
+    handleMemoryUpdate();
     setHydrated(true);
 
     async function syncFeatured() {
@@ -31,11 +34,11 @@ export default function FeaturedVaultSection({ initialProducts }: Props) {
       setFeaturedProducts(latest);
     }
     syncFeatured();
-    window.addEventListener('jfk-catalog-updated', syncFeatured);
-    window.addEventListener('storage', syncFeatured);
+    window.addEventListener('jfk-catalog-updated', handleMemoryUpdate);
+    window.addEventListener('focus', syncFeatured);
     return () => {
-      window.removeEventListener('jfk-catalog-updated', syncFeatured);
-      window.removeEventListener('storage', syncFeatured);
+      window.removeEventListener('jfk-catalog-updated', handleMemoryUpdate);
+      window.removeEventListener('focus', syncFeatured);
     };
   }, [maxItems]);
 

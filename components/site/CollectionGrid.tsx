@@ -63,6 +63,10 @@ export default function CollectionGrid({
     setCategories(getInstantCategories());
     setHydrated(true);
 
+    function handleMemoryUpdate() {
+      setCategories(getInstantCategories());
+    }
+
     async function syncCategories() {
       const latest = await getCategories();
       if (Array.isArray(latest) && latest.length > 0) {
@@ -70,11 +74,11 @@ export default function CollectionGrid({
       }
     }
     syncCategories();
-    window.addEventListener('jfk-catalog-updated', syncCategories);
-    window.addEventListener('storage', syncCategories);
+    window.addEventListener('jfk-catalog-updated', handleMemoryUpdate);
+    window.addEventListener('focus', syncCategories);
     return () => {
-      window.removeEventListener('jfk-catalog-updated', syncCategories);
-      window.removeEventListener('storage', syncCategories);
+      window.removeEventListener('jfk-catalog-updated', handleMemoryUpdate);
+      window.removeEventListener('focus', syncCategories);
     };
   }, []);
 

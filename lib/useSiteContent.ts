@@ -3,7 +3,11 @@
 import { useState, useEffect } from 'react';
 import type { SiteContent } from '@/types';
 import { DEFAULT_SITE_CONTENT } from './initialData';
-import { getSiteContent, getInstantSiteContent } from './firestore';
+import {
+  getSiteContent,
+  getInstantSiteContent,
+  ensureRealtimeSync,
+} from './firestore';
 
 export function useSiteContent(initialContent?: SiteContent): SiteContent {
   const [content, setContent] = useState<SiteContent>(
@@ -11,30 +15,49 @@ export function useSiteContent(initialContent?: SiteContent): SiteContent {
   );
 
   useEffect(() => {
-    // 1. Synchronous instant load from localStorage
+    ensureRealtimeSync();
     setContent(getInstantSiteContent());
 
-    // 2. Async load from Firebase Firestore
     let active = true;
-    async function syncFromFirestore() {
+
+    // Immediate update when onSnapshot or admin save updates memorySiteContent
+    function handleLiveMemoryUpdate() {
+      if (active) {
+        setContent(getInstantSiteContent());
+      }
+    }
+
+    // Direct server fetch bypassing all caches on mount and tab focus
+    async function fetchFromServer() {
       try {
         const latest = await getSiteContent();
         if (active && latest) {
           setContent(latest);
         }
       } catch {
-        // Fallback already set
+        // Ignore
       }
     }
 
-    syncFromFirestore();
+    fetchFromServer();
 
-    window.addEventListener('jfk-site-content-updated', syncFromFirestore);
-    window.addEventListener('storage', syncFromFirestore);
+    function handleVisibility() {
+      if (document.visibilityState === 'visible') {
+        fetchFromServer();
+      }
+    }
+
+    window.addEventListener('jfk-site-content-updated', handleLiveMemoryUpdate);
+    window.addEventListener('focus', fetchFromServer);
+    document.addEventListener('visibilitychange', handleVisibility);
     return () => {
       active = false;
-      window.removeEventListener('jfk-site-content-updated', syncFromFirestore);
-      window.removeEventListener('storage', syncFromFirestore);
+      window.removeEventListener(
+        'jfk-site-content-updated',
+        handleLiveMemoryUpdate
+      );
+      window.removeEventListener('focus', fetchFromServer);
+      document.removeEventListener('visibilitychange', handleVisibility);
     };
   }, []);
 

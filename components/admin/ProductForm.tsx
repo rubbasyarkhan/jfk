@@ -25,7 +25,6 @@ const CARD_FIELD_OPTIONS: { key: string; label: string }[] = [
   { key: 'offerText', label: 'Top-Right Offer Pill' },
   { key: 'volumeOverlay', label: 'Photo Volume Pill' },
   { key: 'tags', label: 'Top Tags Line' },
-  { key: 'price', label: 'Price / Compare Price' },
   { key: 'description', label: 'Short Description' },
   { key: 'category', label: 'Department Name' },
   { key: 'subcategory', label: 'Subcategory' },
@@ -60,10 +59,6 @@ export default function ProductForm({
   const [newSubcategoryInput, setNewSubcategoryInput] = useState('');
   const [volume, setVolume] = useState(initialData?.volume || '');
   const [abv, setAbv] = useState(initialData?.abv?.toString() || '');
-  const [price, setPrice] = useState(initialData?.price?.toString() || '');
-  const [comparePrice, setComparePrice] = useState(
-    initialData?.comparePrice?.toString() || ''
-  );
   const [badge, setBadge] = useState(initialData?.badge || '');
   const [isOffer, setIsOffer] = useState(Boolean(initialData?.isOffer));
   const [offerText, setOfferText] = useState(initialData?.offerText || '');
@@ -225,8 +220,6 @@ export default function ProductForm({
         subcategory: subcategory.trim(),
         volume: volume.trim(),
         abv: abv ? parseFloat(abv) : 0,
-        price: price ? parseFloat(price) : undefined,
-        comparePrice: comparePrice ? parseFloat(comparePrice) : undefined,
         badge: (badge || '') as Product['badge'],
         isOffer,
         offerText: offerText.trim(),
@@ -274,8 +267,6 @@ export default function ProductForm({
     subcategory: subcategory || '',
     volume: volume || '750ml',
     abv: abv ? parseFloat(abv) : 0,
-    price: price ? parseFloat(price) : undefined,
-    comparePrice: comparePrice ? parseFloat(comparePrice) : undefined,
     badge: (badge || '') as Product['badge'],
     isOffer,
     offerText,
@@ -442,15 +433,15 @@ export default function ProductForm({
           </div>
         </div>
 
-        {/* Offers, Pricing & Promotional Badges */}
+        {/* Offers & Promotional Badges */}
         <div className="p-6 sm:p-8 rounded-2xl bg-[#242424] border border-[#3A3A3A] space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
               <h3 className="text-xs font-bold text-[#F5D900] uppercase tracking-wider">
-                Offers Page, Pricing &amp; Badges
+                Offers Page &amp; Promotional Badges
               </h3>
               <p className="text-xs text-[#A0A0A0]">
-                Feature this bottle on the /offers page or display promotional pricing and badges.
+                Feature this bottle on the /offers page or display promotional badges.
               </p>
             </div>
             <label className="flex items-center gap-2.5 cursor-pointer px-3.5 py-2 rounded-lg bg-[#161616] border border-[#F5D900]/40">
@@ -466,7 +457,7 @@ export default function ProductForm({
             </label>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="admin-label">Promotional Badge</label>
               <select
@@ -488,31 +479,7 @@ export default function ProductForm({
                 type="text"
                 value={offerText}
                 onChange={(e) => setOfferText(e.target.value)}
-                placeholder="e.g. 15% Off / Special Offer"
-                className="admin-input"
-              />
-            </div>
-
-            <div>
-              <label className="admin-label">Price ($ Optional)</label>
-              <input
-                type="number"
-                step="0.01"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                placeholder="e.g. 49.99"
-                className="admin-input"
-              />
-            </div>
-
-            <div>
-              <label className="admin-label">Regular / Was Price ($)</label>
-              <input
-                type="number"
-                step="0.01"
-                value={comparePrice}
-                onChange={(e) => setComparePrice(e.target.value)}
-                placeholder="e.g. 59.99"
+                placeholder="e.g. Special Store Offer / Limited Drop"
                 className="admin-input"
               />
             </div>

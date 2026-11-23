@@ -41,23 +41,26 @@ export default function ProductDetailClient({
       }
     }
 
-    const allInst = getInstantProducts();
-    const instProd = allInst.find(
-      (p) => p.slug === activeSlug || p.id === activeSlug
-    );
-    if (instProd) {
-      setProduct(instProd);
-      setRelatedProducts(
-        allInst
-          .filter(
-            (p) =>
-              p.category === instProd.category &&
-              p.slug !== instProd.slug &&
-              p.id !== instProd.id
-          )
-          .slice(0, 3)
+    function handleMemoryUpdate() {
+      const allInst = getInstantProducts();
+      const instProd = allInst.find(
+        (p) => p.slug === activeSlug || p.id === activeSlug
       );
+      if (instProd) {
+        setProduct(instProd);
+        setRelatedProducts(
+          allInst
+            .filter(
+              (p) =>
+                p.category === instProd.category &&
+                p.slug !== instProd.slug &&
+                p.id !== instProd.id
+            )
+            .slice(0, 3)
+        );
+      }
     }
+    handleMemoryUpdate();
     setHydrated(true);
 
     async function syncDetail() {
@@ -75,11 +78,11 @@ export default function ProductDetailClient({
       }
     }
     syncDetail();
-    window.addEventListener('jfk-catalog-updated', syncDetail);
-    window.addEventListener('storage', syncDetail);
+    window.addEventListener('jfk-catalog-updated', handleMemoryUpdate);
+    window.addEventListener('focus', syncDetail);
     return () => {
-      window.removeEventListener('jfk-catalog-updated', syncDetail);
-      window.removeEventListener('storage', syncDetail);
+      window.removeEventListener('jfk-catalog-updated', handleMemoryUpdate);
+      window.removeEventListener('focus', syncDetail);
     };
   }, [propSlug]);
 
@@ -170,27 +173,11 @@ export default function ProductDetailClient({
             )}
 
             <h1
-              className="font-anton tracking-wide uppercase text-white mb-4 leading-[1.05]"
+              className="font-anton tracking-wide uppercase text-white mb-5 leading-[1.05]"
               style={{ fontSize: 'clamp(2.4rem, 4.5vw, 3.8rem)' }}
             >
               {product.name}
             </h1>
-
-            {product.price !== undefined &&
-              product.price !== null &&
-              Number(product.price) > 0 && (
-                <div className="flex items-baseline gap-3 mb-5 font-sans">
-                  <span className="text-2xl sm:text-3xl font-extrabold text-[#F5D900]">
-                    ${Number(product.price).toFixed(2)}
-                  </span>
-                  {product.comparePrice &&
-                    Number(product.comparePrice) > Number(product.price) && (
-                      <span className="text-base text-neutral-500 line-through">
-                        ${Number(product.comparePrice).toFixed(2)}
-                      </span>
-                    )}
-                </div>
-              )}
 
             <div className="flex flex-wrap items-center gap-3 mb-6 pb-6 border-b border-white/10">
               {product.inStock !== false ? (

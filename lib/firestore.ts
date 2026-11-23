@@ -3,6 +3,9 @@ import {
   doc,
   getDocs,
   getDoc,
+  getDocsFromServer,
+  getDocFromServer,
+  onSnapshot,
   setDoc,
   deleteDoc,
 } from 'firebase/firestore';
@@ -23,11 +26,18 @@ import {
   mergeWithDefaultSiteContent,
   notifyCatalogUpdated,
   notifySiteContentUpdated,
+  clearLegacyLocalStorageCache,
 } from './localStore';
 
 export const HAS_REAL_FIREBASE = Boolean(db && db.app);
 
+// Strip all undefined fields recursively so Firestore setDoc NEVER throws "Unsupported field value: undefined"
+function cleanForFirestore<T>(data: T): T {
+  return JSON.parse(JSON.stringify(data));
+}
+
 export function invalidateCache() {
+  clearLegacyLocalStorageCache();
   notifyCatalogUpdated();
   notifySiteContentUpdated();
 }
@@ -36,30 +46,6 @@ function isLocalhost(): boolean {
   if (typeof window === 'undefined') return false;
   const h = window.location.hostname;
   return h === 'localhost' || h === '127.0.0.1';
-}
-
-function readServerJson<T>(fileName: string, fallback: T): T {
-  if (typeof window !== 'undefined') return fallback;
-  try {
-    const req = eval('require');
-    const fs = req('fs');
-    const path = req('path');
-    const filePath = path.join(process.cwd(), 'data', fileName);
-    if (fs.existsSync(filePath)) {
-      const raw = fs.readFileSync(filePath, 'utf-8');
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(fallback)) {
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed as T;
-        }
-      } else if (parsed && typeof parsed === 'object') {
-        return parsed as T;
-      }
-    }
-  } catch {
-    // Ignore on browser
-  }
-  return fallback;
 }
 
 function sanitizeProductDoc(docSnap: any): Product {
@@ -99,6 +85,9 @@ function sanitizeProductDoc(docSnap: any): Product {
         ? data.offerText
         : initialMatch?.offerText || '',
     customFields: Array.isArray(data.customFields) ? data.customFields : [],
+    cardFieldsOverride: Array.isArray(data.cardFieldsOverride)
+      ? data.cardFieldsOverride
+      : [],
     images: Array.isArray(data.images)
       ? data.images
       : data.thumbnailUrl
@@ -135,43 +124,109 @@ function sanitizeCategoryDoc(docSnap: any): Category {
   };
 }
 
-// ─── Instant Synchronous Getters (0ms on Client Reload — Zero Stale Flash) ───
+// ─── Real-Time Firestore Listeners (Zero Cache, Live Instant Updates) ─────
+
+let realtimeListenersStarted = false;
+
+export function ensureRealtimeSync() {
+  if (
+    typeof window === 'undefined' ||
+    realtimeListenersStarted ||
+    !HAS_REAL_FIREBASE ||
+    !db
+  ) {
+    return;
+  }
+  realtimeListenersStarted = true;
+  clearLegacyLocalStorageCache();
+
+  try {
+    // 1. Live Products listener
+    onSnapshot(
+      collection(db, 'products'),
+      (snap) => {
+        if (!snap.empty) {
+          const prods = snap.docs
+            .map(sanitizeProductDoc)
+            .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+          saveLocalProducts(prods, false);
+        }
+      },
+      (err) => console.warn('Realtime products listener notice:', err)
+    );
+
+    // 2. Live Categories listener
+    onSnapshot(
+      collection(db, 'categories'),
+      (snap) => {
+        if (!snap.empty) {
+          const cats = snap.docs
+            .map(sanitizeCategoryDoc)
+            .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+          saveLocalCategories(cats, false);
+        }
+      },
+      (err) => console.warn('Realtime categories listener notice:', err)
+    );
+
+    // 3. Live SiteContent listener
+    onSnapshot(
+      doc(db, 'settings', 'siteContent'),
+      (snap) => {
+        if (snap.exists()) {
+          const merged = mergeWithDefaultSiteContent(
+            snap.data() as Partial<SiteContent>
+          );
+          saveLocalSiteContent(merged, false);
+        }
+      },
+      (err) => console.warn('Realtime siteContent listener notice:', err)
+    );
+  } catch (err) {
+    console.warn('Could not attach realtime listeners:', err);
+  }
+}
+
+// ─── Instant Synchronous Getters ───────────────────────────────────────────
 
 export function getInstantProducts(): Product[] {
-  if (typeof window === 'undefined') {
-    return readServerJson<Product[]>('products.json', INITIAL_PRODUCTS);
-  }
+  ensureRealtimeSync();
   return getLocalProducts().sort(
     (a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)
   );
 }
 
 export function getInstantCategories(): Category[] {
-  if (typeof window === 'undefined') {
-    return readServerJson<Category[]>('categories.json', INITIAL_CATEGORIES);
-  }
+  ensureRealtimeSync();
   return getLocalCategories().sort(
     (a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)
   );
 }
 
 export function getInstantSiteContent(): SiteContent {
-  if (typeof window === 'undefined') {
-    const raw = readServerJson<SiteContent>(
-      'siteContent.json',
-      DEFAULT_SITE_CONTENT
-    );
-    return mergeWithDefaultSiteContent(raw);
-  }
+  ensureRealtimeSync();
   return getLocalSiteContent();
 }
 
-// ─── Products (Firebase Firestore is Primary Source of Truth) ──────────────
+// ─── Products (Direct Server Fetch — Zero Cache) ───────────────────────────
 
 export async function getAllProducts(): Promise<Product[]> {
+  ensureRealtimeSync();
+
   if (HAS_REAL_FIREBASE && db && db.app) {
     try {
-      const snap = await getDocs(collection(db, 'products'));
+      // Force direct server fetch bypassing browser cache
+      let snap;
+      if (typeof window !== 'undefined') {
+        try {
+          snap = await getDocsFromServer(collection(db, 'products'));
+        } catch {
+          snap = await getDocs(collection(db, 'products'));
+        }
+      } else {
+        snap = await getDocs(collection(db, 'products'));
+      }
+
       if (!snap.empty) {
         const cloudProds = snap.docs
           .map(sanitizeProductDoc)
@@ -185,16 +240,6 @@ export async function getAllProducts(): Promise<Product[]> {
     } catch (err) {
       console.warn('Firestore getAllProducts fallback:', err);
     }
-  }
-
-  if (typeof window === 'undefined') {
-    const serverProds = readServerJson<Product[]>(
-      'products.json',
-      INITIAL_PRODUCTS
-    );
-    return [...serverProds].sort(
-      (a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)
-    );
   }
 
   return getLocalProducts().sort(
@@ -241,16 +286,19 @@ export async function createProduct(
     .replace(/^-|-$/g, '');
   const now = new Date().toISOString();
 
-  const newProduct: Product = {
+  const newProduct: Product = cleanForFirestore({
     ...data,
     id: newId,
     slug: data.slug || newId,
     images: Array.isArray(data.images) ? data.images : [],
     thumbnailUrl: data.thumbnailUrl || data.images?.[0] || '',
     customFields: Array.isArray(data.customFields) ? data.customFields : [],
+    cardFieldsOverride: Array.isArray(data.cardFieldsOverride)
+      ? data.cardFieldsOverride
+      : [],
     createdAt: now,
     updatedAt: now,
-  };
+  });
 
   if (HAS_REAL_FIREBASE && db && db.app) {
     await setDoc(doc(db, 'products', newId), newProduct, { merge: true });
@@ -289,15 +337,13 @@ export async function updateProduct(
   const products = getLocalProducts();
   const idx = products.findIndex((p) => p.id === id || p.slug === id);
 
-  const cleanData = Object.fromEntries(
-    Object.entries(data).filter(([, v]) => v !== undefined)
-  );
-
   let baseProduct: Product | null = idx !== -1 ? products[idx] : null;
-  if (!baseProduct && HAS_REAL_FIREBASE && db && db.app) {
+  if (HAS_REAL_FIREBASE && db && db.app) {
     try {
-      const snap = await getDoc(doc(db, 'products', id));
-      if (snap.exists()) {
+      const snap = await getDocFromServer(doc(db, 'products', id)).catch(() =>
+        getDoc(doc(db, 'products', id))
+      );
+      if (snap && snap.exists()) {
         baseProduct = sanitizeProductDoc(snap);
       }
     } catch {
@@ -306,13 +352,13 @@ export async function updateProduct(
   }
 
   const targetId = baseProduct?.id || id;
-  const updatedProduct: Product = {
+  const updatedProduct: Product = cleanForFirestore({
     ...(baseProduct || ({} as Product)),
-    ...cleanData,
+    ...data,
     id: targetId,
-    slug: (cleanData.slug as string) || baseProduct?.slug || targetId,
+    slug: (data.slug as string) || baseProduct?.slug || targetId,
     updatedAt: now,
-  };
+  });
 
   if (HAS_REAL_FIREBASE && db && db.app) {
     await setDoc(doc(db, 'products', targetId), updatedProduct, {
@@ -376,12 +422,24 @@ export async function deleteProduct(id: string): Promise<void> {
   notifyCatalogUpdated();
 }
 
-// ─── Categories (Firebase Firestore is Primary Source of Truth) ────────────
+// ─── Categories (Direct Server Fetch — Zero Cache) ─────────────────────────
 
 export async function getCategories(): Promise<Category[]> {
+  ensureRealtimeSync();
+
   if (HAS_REAL_FIREBASE && db && db.app) {
     try {
-      const snap = await getDocs(collection(db, 'categories'));
+      let snap;
+      if (typeof window !== 'undefined') {
+        try {
+          snap = await getDocsFromServer(collection(db, 'categories'));
+        } catch {
+          snap = await getDocs(collection(db, 'categories'));
+        }
+      } else {
+        snap = await getDocs(collection(db, 'categories'));
+      }
+
       if (!snap.empty) {
         const cloudCats = snap.docs
           .map(sanitizeCategoryDoc)
@@ -395,16 +453,6 @@ export async function getCategories(): Promise<Category[]> {
     } catch (err) {
       console.warn('Firestore getCategories fallback:', err);
     }
-  }
-
-  if (typeof window === 'undefined') {
-    const serverCats = readServerJson<Category[]>(
-      'categories.json',
-      INITIAL_CATEGORIES
-    );
-    return [...serverCats].sort(
-      (a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)
-    );
   }
 
   return getLocalCategories().sort(
@@ -428,14 +476,14 @@ export async function createCategory(
     .replace(/^-|-$/g, '');
   const now = new Date().toISOString();
 
-  const newCat: Category = {
+  const newCat: Category = cleanForFirestore({
     ...data,
     id: newId,
     slug: data.slug || newId,
     showInNavbar: data.showInNavbar !== false,
     subcategories: Array.isArray(data.subcategories) ? data.subcategories : [],
     updatedAt: now,
-  };
+  });
 
   if (HAS_REAL_FIREBASE && db && db.app) {
     await setDoc(doc(db, 'categories', newId), newCat, { merge: true });
@@ -476,19 +524,27 @@ export async function updateCategory(
   const categories = getLocalCategories();
   const idx = categories.findIndex((c) => c.id === id || c.slug === id);
 
-  const cleanData = Object.fromEntries(
-    Object.entries(data).filter(([, v]) => v !== undefined)
-  );
+  let baseCat: Category | null = idx !== -1 ? categories[idx] : null;
+  if (HAS_REAL_FIREBASE && db && db.app) {
+    try {
+      const snap = await getDocFromServer(doc(db, 'categories', id)).catch(() =>
+        getDoc(doc(db, 'categories', id))
+      );
+      if (snap && snap.exists()) {
+        baseCat = sanitizeCategoryDoc(snap);
+      }
+    } catch {
+      // Ignore
+    }
+  }
 
-  const baseCat = idx !== -1 ? categories[idx] : ({ id, slug: id } as Category);
-  const targetId = baseCat.id || id;
-
-  const updatedCat: Category = {
-    ...baseCat,
-    ...cleanData,
+  const targetId = baseCat?.id || id;
+  const updatedCat: Category = cleanForFirestore({
+    ...(baseCat || ({ id: targetId, slug: targetId } as Category)),
+    ...data,
     id: targetId,
     updatedAt: now,
-  };
+  });
 
   if (HAS_REAL_FIREBASE && db && db.app) {
     await setDoc(doc(db, 'categories', targetId), updatedCat, { merge: true });
@@ -550,13 +606,25 @@ export async function deleteCategory(id: string): Promise<void> {
   notifyCatalogUpdated();
 }
 
-// ─── Full Website Content (Firestore doc: settings/siteContent) ────────────
+// ─── Full Website Content (Direct Server Fetch — Zero Cache) ───────────────
 
 export async function getSiteContent(): Promise<SiteContent> {
+  ensureRealtimeSync();
+
   if (HAS_REAL_FIREBASE && db && db.app) {
     try {
       const docRef = doc(db, 'settings', 'siteContent');
-      const snap = await getDoc(docRef);
+      let snap;
+      if (typeof window !== 'undefined') {
+        try {
+          snap = await getDocFromServer(docRef);
+        } catch {
+          snap = await getDoc(docRef);
+        }
+      } else {
+        snap = await getDoc(docRef);
+      }
+
       if (snap.exists()) {
         const merged = mergeWithDefaultSiteContent(
           snap.data() as Partial<SiteContent>
@@ -566,7 +634,9 @@ export async function getSiteContent(): Promise<SiteContent> {
         }
         return merged;
       } else {
-        const initial = mergeWithDefaultSiteContent(DEFAULT_SITE_CONTENT);
+        const initial = cleanForFirestore(
+          mergeWithDefaultSiteContent(DEFAULT_SITE_CONTENT)
+        );
         try {
           await setDoc(docRef, {
             ...initial,
@@ -591,57 +661,75 @@ export async function getSiteContent(): Promise<SiteContent> {
 export async function updateSiteContent(
   data: Partial<SiteContent>
 ): Promise<SiteContent> {
-  const current = getLocalSiteContent();
-  const merged = mergeWithDefaultSiteContent({
-    ...current,
-    ...data,
-    brand: { ...current.brand, ...(data.brand || {}) },
-    ageGate: { ...current.ageGate, ...(data.ageGate || {}) },
-    hero: { ...current.hero, ...(data.hero || {}) },
-    delivery: { ...current.delivery, ...(data.delivery || {}) },
-    departmentsSection: {
-      ...current.departmentsSection,
-      ...(data.departmentsSection || {}),
-    },
-    vaultSection: {
-      ...current.vaultSection,
-      ...(data.vaultSection || {}),
-    },
-    promoBanner: {
-      ...current.promoBanner,
-      ...(data.promoBanner || {}),
-    },
-    storySection: {
-      ...current.storySection,
-      ...(data.storySection || {}),
-    },
-    locationSection: {
-      ...current.locationSection,
-      ...(data.locationSection || {}),
-    },
-    aboutPage: {
-      ...current.aboutPage,
-      ...(data.aboutPage || {}),
-    },
-    contactPage: {
-      ...current.contactPage,
-      ...(data.contactPage || {}),
-    },
-    catalogPage: {
-      ...current.catalogPage,
-      ...(data.catalogPage || {}),
-    },
-    offersPage: {
-      ...current.offersPage,
-      ...(data.offersPage || {}),
-    },
-    cardConfig: {
-      ...current.cardConfig,
-      ...(data.cardConfig || {}),
-    },
-    footer: { ...current.footer, ...(data.footer || {}) },
-    updatedAt: new Date().toISOString(),
-  });
+  // Always read latest from Firestore first before merging so no section is lost
+  let current = getLocalSiteContent();
+  if (HAS_REAL_FIREBASE && db && db.app) {
+    try {
+      const snap = await getDocFromServer(
+        doc(db, 'settings', 'siteContent')
+      ).catch(() => getDoc(doc(db, 'settings', 'siteContent')));
+      if (snap && snap.exists()) {
+        current = mergeWithDefaultSiteContent(
+          snap.data() as Partial<SiteContent>
+        );
+      }
+    } catch {
+      // Use in-memory current
+    }
+  }
+
+  const merged = cleanForFirestore(
+    mergeWithDefaultSiteContent({
+      ...current,
+      ...data,
+      brand: { ...current.brand, ...(data.brand || {}) },
+      ageGate: { ...current.ageGate, ...(data.ageGate || {}) },
+      hero: { ...current.hero, ...(data.hero || {}) },
+      delivery: { ...current.delivery, ...(data.delivery || {}) },
+      departmentsSection: {
+        ...current.departmentsSection,
+        ...(data.departmentsSection || {}),
+      },
+      vaultSection: {
+        ...current.vaultSection,
+        ...(data.vaultSection || {}),
+      },
+      promoBanner: {
+        ...current.promoBanner,
+        ...(data.promoBanner || {}),
+      },
+      storySection: {
+        ...current.storySection,
+        ...(data.storySection || {}),
+      },
+      locationSection: {
+        ...current.locationSection,
+        ...(data.locationSection || {}),
+      },
+      aboutPage: {
+        ...current.aboutPage,
+        ...(data.aboutPage || {}),
+      },
+      contactPage: {
+        ...current.contactPage,
+        ...(data.contactPage || {}),
+      },
+      catalogPage: {
+        ...current.catalogPage,
+        ...(data.catalogPage || {}),
+      },
+      offersPage: {
+        ...current.offersPage,
+        ...(data.offersPage || {}),
+      },
+      cardConfig: {
+        ...current.cardConfig,
+        ...(data.cardConfig || {}),
+      },
+      footer: { ...current.footer, ...(data.footer || {}) },
+      updatedAt: new Date().toISOString(),
+    })
+  );
 
   if (HAS_REAL_FIREBASE && db && db.app) {
     await setDoc(doc(db, 'settings', 'siteContent'), merged, { merge: true });
@@ -678,28 +766,37 @@ export async function seedInitialDataToFirestore(): Promise<{
   const now = new Date().toISOString();
 
   for (const cat of INITIAL_CATEGORIES) {
-    await setDoc(doc(db, 'categories', cat.id), {
-      ...cat,
-      updatedAt: now,
-    });
+    await setDoc(
+      doc(db, 'categories', cat.id),
+      cleanForFirestore({
+        ...cat,
+        updatedAt: now,
+      })
+    );
     catCount++;
   }
 
   for (const prod of INITIAL_PRODUCTS) {
-    await setDoc(doc(db, 'products', prod.id), {
-      ...prod,
-      createdAt: now,
-      updatedAt: now,
-    });
+    await setDoc(
+      doc(db, 'products', prod.id),
+      cleanForFirestore({
+        ...prod,
+        createdAt: now,
+        updatedAt: now,
+      })
+    );
     prodCount++;
   }
 
   const contentSnap = await getDoc(doc(db, 'settings', 'siteContent'));
   if (!contentSnap.exists()) {
-    await setDoc(doc(db, 'settings', 'siteContent'), {
-      ...DEFAULT_SITE_CONTENT,
-      updatedAt: now,
-    });
+    await setDoc(
+      doc(db, 'settings', 'siteContent'),
+      cleanForFirestore({
+        ...DEFAULT_SITE_CONTENT,
+        updatedAt: now,
+      })
+    );
   }
 
   notifyCatalogUpdated();

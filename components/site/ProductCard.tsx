@@ -123,12 +123,6 @@ export default function ProductCard({ product, configOverride }: Props) {
     ...cardCustomFields.map((f) => ({ label: f.label, value: f.value })),
   ];
 
-  const showPriceBlock =
-    isFieldEnabled('price', cfg.showPrice) &&
-    product.price !== undefined &&
-    product.price !== null &&
-    Number(product.price) > 0;
-
   return (
     <article className="group flex flex-col justify-between rounded-sm overflow-hidden bg-[#121316] border border-white/[0.08] transition-all duration-300 hover:border-[#F5D900]/70 hover:shadow-2xl">
       <div>
@@ -202,25 +196,6 @@ export default function ProductCard({ product, configOverride }: Props) {
               {product.name}
             </Link>
           </h3>
-
-          {/* Optional Price / Offer Price Display */}
-          {showPriceBlock && (
-            <div
-              className={`flex items-baseline gap-2.5 mb-3 font-sans ${
-                cfg.textAlign === 'center' ? 'justify-center' : ''
-              }`}
-            >
-              <span className="text-lg font-extrabold text-[#F5D900]">
-                ${Number(product.price).toFixed(2)}
-              </span>
-              {product.comparePrice &&
-                Number(product.comparePrice) > Number(product.price) && (
-                  <span className="text-xs text-neutral-500 line-through">
-                    ${Number(product.comparePrice).toFixed(2)}
-                  </span>
-                )}
-            </div>
-          )}
 
           {/* Description in Clean Montserrat */}
           {isFieldEnabled('description', cfg.showDescription) &&

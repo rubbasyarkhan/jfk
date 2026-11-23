@@ -184,7 +184,6 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
     showBrand: true,
     showOrigin: true,
     showAbv: true,
-    showPrice: true,
     showOfferText: true,
     showDescription: true,
     descriptionLines: 2,

@@ -20,8 +20,11 @@ export default function OffersPageClient() {
   const { brand, offersPage, catalogPage } = useSiteContent();
 
   useEffect(() => {
-    setProducts(getInstantProducts());
-    setCategories(getInstantCategories());
+    function handleMemoryUpdate() {
+      setProducts(getInstantProducts());
+      setCategories(getInstantCategories());
+    }
+    handleMemoryUpdate();
     setHydrated(true);
 
     async function syncOffers() {
@@ -33,11 +36,11 @@ export default function OffersPageClient() {
       setCategories(latestCats);
     }
     syncOffers();
-    window.addEventListener('jfk-catalog-updated', syncOffers);
-    window.addEventListener('storage', syncOffers);
+    window.addEventListener('jfk-catalog-updated', handleMemoryUpdate);
+    window.addEventListener('focus', syncOffers);
     return () => {
-      window.removeEventListener('jfk-catalog-updated', syncOffers);
-      window.removeEventListener('storage', syncOffers);
+      window.removeEventListener('jfk-catalog-updated', handleMemoryUpdate);
+      window.removeEventListener('focus', syncOffers);
     };
   }, []);
 

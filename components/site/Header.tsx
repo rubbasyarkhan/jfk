@@ -19,6 +19,10 @@ export default function Header() {
   useEffect(() => {
     setCategories(getInstantCategories());
 
+    function handleMemoryUpdate() {
+      setCategories(getInstantCategories());
+    }
+
     async function loadCats() {
       try {
         const cats = await getCategories();
@@ -30,11 +34,11 @@ export default function Header() {
       }
     }
     loadCats();
-    window.addEventListener('jfk-catalog-updated', loadCats);
-    window.addEventListener('storage', loadCats);
+    window.addEventListener('jfk-catalog-updated', handleMemoryUpdate);
+    window.addEventListener('focus', loadCats);
     return () => {
-      window.removeEventListener('jfk-catalog-updated', loadCats);
-      window.removeEventListener('storage', loadCats);
+      window.removeEventListener('jfk-catalog-updated', handleMemoryUpdate);
+      window.removeEventListener('focus', loadCats);
     };
   }, []);
 

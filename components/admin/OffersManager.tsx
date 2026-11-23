@@ -106,19 +106,13 @@ export default function OffersManager() {
 
   async function handleUpdateOfferDetails(
     product: Product,
-    offerText: string,
-    priceStr: string,
-    comparePriceStr: string
+    offerText: string
   ) {
     setSavingId(product.id);
-    const price = priceStr ? parseFloat(priceStr) : 0;
-    const comparePrice = comparePriceStr ? parseFloat(comparePriceStr) : 0;
     try {
       await updateProduct(product.id, {
         isOffer: true,
         offerText: offerText.trim(),
-        price,
-        comparePrice,
       });
       setProducts((prev) =>
         prev.map((p) =>
@@ -127,8 +121,6 @@ export default function OffersManager() {
                 ...p,
                 isOffer: true,
                 offerText: offerText.trim(),
-                price,
-                comparePrice,
               }
             : p
         )
@@ -386,13 +378,8 @@ export default function OffersManager() {
               product={product}
               saving={savingId === product.id}
               onToggle={() => handleToggleOffer(product)}
-              onSaveDetails={(offerText, price, comparePrice) =>
-                handleUpdateOfferDetails(
-                  product,
-                  offerText,
-                  price,
-                  comparePrice
-                )
+              onSaveDetails={(offerText) =>
+                handleUpdateOfferDetails(product, offerText)
               }
             />
           ))}
@@ -411,19 +398,9 @@ function OfferProductRow({
   product: Product;
   saving: boolean;
   onToggle: () => void;
-  onSaveDetails: (
-    offerText: string,
-    price: string,
-    comparePrice: string
-  ) => void;
+  onSaveDetails: (offerText: string) => void;
 }) {
   const [offerText, setOfferText] = useState(product.offerText || '');
-  const [price, setPrice] = useState(
-    product.price ? product.price.toString() : ''
-  );
-  const [comparePrice, setComparePrice] = useState(
-    product.comparePrice ? product.comparePrice.toString() : ''
-  );
 
   const imageSrc =
     product.images?.[0] ||
@@ -471,32 +448,16 @@ function OfferProductRow({
       <div className="flex flex-wrap items-center gap-3">
         <input
           type="text"
-          placeholder="Offer Label (e.g. 15% Off / Special Offer)"
+          placeholder="Offer Label (e.g. Special Store Offer / Limited Drop)"
           value={offerText}
           onChange={(e) => setOfferText(e.target.value)}
-          className="w-56 bg-[#111111] border border-white/15 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#F5D900]"
-        />
-        <input
-          type="number"
-          step="0.01"
-          placeholder="Offer Price ($)"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-          className="w-28 bg-[#111111] border border-white/15 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#F5D900]"
-        />
-        <input
-          type="number"
-          step="0.01"
-          placeholder="Was Price ($)"
-          value={comparePrice}
-          onChange={(e) => setComparePrice(e.target.value)}
-          className="w-28 bg-[#111111] border border-white/15 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#F5D900]"
+          className="w-64 bg-[#111111] border border-white/15 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#F5D900]"
         />
 
         <button
           type="button"
           disabled={saving}
-          onClick={() => onSaveDetails(offerText, price, comparePrice)}
+          onClick={() => onSaveDetails(offerText)}
           className="px-3.5 py-2 rounded-lg bg-[#F5D900] hover:bg-[#FFE524] text-[#050505] text-xs font-bold uppercase tracking-wider cursor-pointer"
         >
           Save Offer

@@ -5,9 +5,10 @@ import {
   DEFAULT_SITE_CONTENT,
 } from './initialData';
 
-const PRODUCTS_STORAGE_KEY = 'jfk_liquors_products_v3';
-const CATEGORIES_STORAGE_KEY = 'jfk_liquors_categories_v3';
-const SITE_CONTENT_STORAGE_KEY = 'jfk_liquors_site_content_v3';
+// In-memory live state synced directly with Firebase Firestore (Zero stale localStorage cache)
+let memoryProducts: Product[] | null = null;
+let memoryCategories: Category[] | null = null;
+let memorySiteContent: SiteContent | null = null;
 
 export function notifyCatalogUpdated() {
   if (typeof window !== 'undefined') {
@@ -26,11 +27,9 @@ export function mergeWithDefaultSiteContent(
   raw?: Partial<SiteContent> | null
 ): SiteContent {
   if (!raw || typeof raw !== 'object') {
-    return structuredClone
-      ? structuredClone(DEFAULT_SITE_CONTENT)
-      : JSON.parse(JSON.stringify(DEFAULT_SITE_CONTENT));
+    return JSON.parse(JSON.stringify(DEFAULT_SITE_CONTENT));
   }
-  return {
+  const merged: SiteContent = {
     brand: { ...DEFAULT_SITE_CONTENT.brand, ...(raw.brand || {}) },
     ageGate: { ...DEFAULT_SITE_CONTENT.ageGate, ...(raw.ageGate || {}) },
     hero: { ...DEFAULT_SITE_CONTENT.hero, ...(raw.hero || {}) },
@@ -76,58 +75,50 @@ export function mergeWithDefaultSiteContent(
       ...(raw.cardConfig || {}),
     },
     footer: { ...DEFAULT_SITE_CONTENT.footer, ...(raw.footer || {}) },
-    updatedAt: raw.updatedAt,
+    updatedAt: raw.updatedAt || new Date().toISOString(),
   };
+  return JSON.parse(JSON.stringify(merged));
+}
+
+export function clearLegacyLocalStorageCache() {
+  if (typeof window !== 'undefined') {
+    try {
+      const keysToRemove = [
+        'jfk_liquors_products_v2',
+        'jfk_liquors_categories_v2',
+        'jfk_liquors_deleted_ids_v2',
+        'jfk_liquors_products_v3',
+        'jfk_liquors_categories_v3',
+        'jfk_liquors_site_content_v3',
+        'jfk_liquors_products_v4',
+        'jfk_liquors_categories_v4',
+        'jfk_liquors_site_content_v4',
+      ];
+      for (const k of keysToRemove) {
+        window.localStorage.removeItem(k);
+      }
+    } catch {
+      // Ignore
+    }
+  }
 }
 
 export function getLocalProducts(): Product[] {
-  if (typeof window !== 'undefined') {
-    try {
-      const raw =
-        window.localStorage.getItem(PRODUCTS_STORAGE_KEY) ||
-        window.localStorage.getItem('jfk_liquors_products_v2');
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
-        }
-      }
-    } catch (err) {
-      console.warn('Error reading products from localStorage:', err);
-    }
+  if (memoryProducts && memoryProducts.length > 0) {
+    return [...memoryProducts];
   }
   return [...INITIAL_PRODUCTS];
 }
 
 export function saveLocalProducts(products: Product[], silent = false): void {
-  if (typeof window !== 'undefined') {
-    try {
-      window.localStorage.setItem(
-        PRODUCTS_STORAGE_KEY,
-        JSON.stringify(products)
-      );
-      if (!silent) notifyCatalogUpdated();
-    } catch (err) {
-      console.error('Error saving products to localStorage:', err);
-    }
-  }
+  memoryProducts = [...products];
+  clearLegacyLocalStorageCache();
+  if (!silent) notifyCatalogUpdated();
 }
 
 export function getLocalCategories(): Category[] {
-  if (typeof window !== 'undefined') {
-    try {
-      const raw =
-        window.localStorage.getItem(CATEGORIES_STORAGE_KEY) ||
-        window.localStorage.getItem('jfk_liquors_categories_v2');
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
-        }
-      }
-    } catch (err) {
-      console.warn('Error reading categories from localStorage:', err);
-    }
+  if (memoryCategories && memoryCategories.length > 0) {
+    return [...memoryCategories];
   }
   return [...INITIAL_CATEGORIES];
 }
@@ -136,30 +127,14 @@ export function saveLocalCategories(
   categories: Category[],
   silent = false
 ): void {
-  if (typeof window !== 'undefined') {
-    try {
-      window.localStorage.setItem(
-        CATEGORIES_STORAGE_KEY,
-        JSON.stringify(categories)
-      );
-      if (!silent) notifyCatalogUpdated();
-    } catch (err) {
-      console.error('Error saving categories to localStorage:', err);
-    }
-  }
+  memoryCategories = [...categories];
+  clearLegacyLocalStorageCache();
+  if (!silent) notifyCatalogUpdated();
 }
 
 export function getLocalSiteContent(): SiteContent {
-  if (typeof window !== 'undefined') {
-    try {
-      const raw = window.localStorage.getItem(SITE_CONTENT_STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        return mergeWithDefaultSiteContent(parsed);
-      }
-    } catch (err) {
-      console.warn('Error reading site content from localStorage:', err);
-    }
+  if (memorySiteContent) {
+    return memorySiteContent;
   }
   return mergeWithDefaultSiteContent(null);
 }
@@ -168,16 +143,7 @@ export function saveLocalSiteContent(
   content: SiteContent,
   silent = false
 ): void {
-  if (typeof window !== 'undefined') {
-    try {
-      const merged = mergeWithDefaultSiteContent(content);
-      window.localStorage.setItem(
-        SITE_CONTENT_STORAGE_KEY,
-        JSON.stringify(merged)
-      );
-      if (!silent) notifySiteContentUpdated();
-    } catch (err) {
-      console.error('Error saving site content to localStorage:', err);
-    }
-  }
+  memorySiteContent = mergeWithDefaultSiteContent(content);
+  clearLegacyLocalStorageCache();
+  if (!silent) notifySiteContentUpdated();
 }
