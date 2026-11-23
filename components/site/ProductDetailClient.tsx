@@ -36,7 +36,6 @@ export default function ProductDetailClient({
         .replace(/\/+$/, '')
         .split('/')
         .filter(Boolean);
-      // URL format: /products/[category]/[slug]
       if (parts[0] === 'products' && parts.length >= 3) {
         activeSlug = decodeURIComponent(parts[parts.length - 1]);
       }
@@ -109,7 +108,7 @@ export default function ProductDetailClient({
     <div className="bg-[#050505] text-[#FFFFFF] min-h-screen py-20 sm:py-28">
       <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20">
         {/* Minimal Breadcrumb */}
-        <nav className="flex items-center gap-2 text-xs text-neutral-400 mb-10 uppercase tracking-widest font-sans">
+        <nav className="flex flex-wrap items-center gap-2 text-xs text-neutral-400 mb-10 uppercase tracking-widest font-sans">
           <Link href="/" className="hover:text-[#F5D900] transition-colors">
             Home
           </Link>
@@ -127,6 +126,17 @@ export default function ProductDetailClient({
           >
             {product.category.replace(/-/g, ' ')}
           </Link>
+          {product.subcategory && (
+            <>
+              <span>/</span>
+              <Link
+                href={`/products/${product.category}?sub=${encodeURIComponent(product.subcategory)}`}
+                className="hover:text-[#F5D900] transition-colors capitalize"
+              >
+                {product.subcategory.replace(/-/g, ' ')}
+              </Link>
+            </>
+          )}
           <span>/</span>
           <span className="text-white truncate max-w-[220px] font-medium">
             {product.name}
@@ -153,12 +163,34 @@ export default function ProductDetailClient({
               </p>
             )}
 
+            {(product.isOffer || product.offerText) && (
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm bg-[#F5D900] text-[#050505] text-xs font-sans font-extrabold uppercase tracking-wider mb-3">
+                <span>{product.offerText || 'Special In-Store Offer'}</span>
+              </div>
+            )}
+
             <h1
-              className="font-anton tracking-wide uppercase text-white mb-5 leading-[1.05]"
+              className="font-anton tracking-wide uppercase text-white mb-4 leading-[1.05]"
               style={{ fontSize: 'clamp(2.4rem, 4.5vw, 3.8rem)' }}
             >
               {product.name}
             </h1>
+
+            {product.price !== undefined &&
+              product.price !== null &&
+              Number(product.price) > 0 && (
+                <div className="flex items-baseline gap-3 mb-5 font-sans">
+                  <span className="text-2xl sm:text-3xl font-extrabold text-[#F5D900]">
+                    ${Number(product.price).toFixed(2)}
+                  </span>
+                  {product.comparePrice &&
+                    Number(product.comparePrice) > Number(product.price) && (
+                      <span className="text-base text-neutral-500 line-through">
+                        ${Number(product.comparePrice).toFixed(2)}
+                      </span>
+                    )}
+                </div>
+              )}
 
             <div className="flex flex-wrap items-center gap-3 mb-6 pb-6 border-b border-white/10">
               {product.inStock !== false ? (
@@ -193,12 +225,40 @@ export default function ProductDetailClient({
                   {product.brand}
                 </span>
               )}
+              {product.subcategory && (
+                <span className="px-3 py-1 rounded-sm text-xs font-sans font-medium text-[#F5D900] bg-[#161616] border border-[#F5D900]/30 capitalize">
+                  {product.subcategory.replace(/-/g, ' ')}
+                </span>
+              )}
               {product.category && (
                 <span className="px-3 py-1 rounded-sm text-xs font-sans font-medium text-neutral-300 bg-[#161616] border border-white/10 capitalize">
                   {product.category.replace(/-/g, ' ')}
                 </span>
               )}
             </div>
+
+            {/* Custom Fields Table if present */}
+            {Array.isArray(product.customFields) &&
+              product.customFields.filter((f) => f.label && f.value).length >
+                0 && (
+                <div className="mb-6 rounded-sm bg-[#121316] border border-white/10 divide-y divide-white/[0.06]">
+                  {product.customFields
+                    .filter((f) => f.label && f.value)
+                    .map((field, idx) => (
+                      <div
+                        key={idx}
+                        className="px-4 py-2.5 flex items-center justify-between text-xs font-sans"
+                      >
+                        <span className="font-bold uppercase tracking-wider text-neutral-400">
+                          {field.label}
+                        </span>
+                        <span className="font-semibold text-white">
+                          {field.value}
+                        </span>
+                      </div>
+                    ))}
+                </div>
+              )}
 
             <div className="text-neutral-300 font-sans text-sm sm:text-base leading-relaxed font-normal mb-8">
               <p>{product.description || product.shortDescription}</p>

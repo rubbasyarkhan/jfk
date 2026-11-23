@@ -24,23 +24,23 @@ export default async function HomePage() {
       {/* 1. Primary Viewport Hero: High-Impact Editorial Canvas */}
       <HeroSection />
 
-      {/* 2. Delivery Concierge (DoorDash & Uber Eats — Moved Up for Immediate Access) */}
+      {/* 2. Delivery Concierge (DoorDash & Uber Eats) */}
       <DeliverySection />
 
-      {/* 3. Curated Department Gallery (THE ARCHIVE) */}
+      {/* 3. Storefront Presence & Dark Map (Directly below DoorDash section) */}
+      <LocationSection />
+
+      {/* 4. Curated Department Gallery (THE ARCHIVE) */}
       <CollectionGrid categories={categories} />
 
-      {/* 4. The Allocated Vault / Featured Bottles — 3 Cards in a Row */}
+      {/* 5. The Allocated Vault / Featured Bottles — 3 Cards in a Row */}
       <FeaturedVaultSection initialProducts={featuredProducts} />
 
-      {/* 5. Deep Burgundy Allocation Drop Banner */}
+      {/* 6. Deep Burgundy Allocation Drop Banner */}
       <PromotionalBanner />
 
-      {/* 6. Editorial Store Heritage & Bottle Photo Spread */}
+      {/* 7. Editorial Store Heritage & Bottle Photo Spread */}
       <StorySection />
-
-      {/* 7. Storefront Presence & Dark Map */}
-      <LocationSection />
     </div>
   );
 }

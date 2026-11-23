@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import ProductCard from '@/components/site/ProductCard';
 import {
   getSiteContent,
   getInstantSiteContent,
@@ -9,15 +10,26 @@ import {
 } from '@/lib/firestore';
 import { DEFAULT_SITE_CONTENT } from '@/lib/initialData';
 import { uploadImageToCloudinary } from '@/lib/cloudinaryClient';
-import type { SiteContent } from '@/types';
+import type { SiteContent, Product } from '@/types';
 
-type TabKey = 'brand' | 'hero' | 'homepage' | 'pages' | 'footer_age';
+type TabKey =
+  | 'brand'
+  | 'card_designer'
+  | 'hero'
+  | 'homepage'
+  | 'pages'
+  | 'footer_age';
 
 const TABS: { key: TabKey; label: string; desc: string }[] = [
   {
     key: 'brand',
     label: 'Brand, Contact & Hours',
     desc: 'Logo, store phone, address, hours, maps & compliance',
+  },
+  {
+    key: 'card_designer',
+    label: 'Product Card Designer',
+    desc: 'Choose which fields, how many & how they display on bottle cards',
   },
   {
     key: 'hero',
@@ -31,8 +43,8 @@ const TABS: { key: TabKey; label: string; desc: string }[] = [
   },
   {
     key: 'pages',
-    label: 'About & Contact Pages',
-    desc: 'Our Story (/about) page, value cards & Contact (/contact) header',
+    label: 'About, Contact & Offers',
+    desc: 'Our Story (/about), Contact (/contact) & Offers (/offers) copy',
   },
   {
     key: 'footer_age',
@@ -40,6 +52,42 @@ const TABS: { key: TabKey; label: string; desc: string }[] = [
     desc: 'All Products hero, global footer & 21+ verification popup',
   },
 ];
+
+const SAMPLE_PREVIEW_PRODUCT: Product = {
+  id: 'sample-preview',
+  name: 'Kentucky Single Barrel Reserve 12 Year',
+  slug: 'bourbon-american-whiskey',
+  category: 'spirits',
+  subcategory: 'bourbon-whiskey',
+  brand: 'Buffalo Trace Distillery',
+  origin: 'Kentucky, USA',
+  volume: '750ml',
+  abv: 53.5,
+  price: 64.99,
+  comparePrice: 79.99,
+  badge: 'Allocated',
+  isOffer: true,
+  offerText: 'In-Store Offer',
+  inStock: true,
+  featured: true,
+  tags: ['Single Barrel', 'Kentucky', 'Cask Strength', 'Small Batch'],
+  shortDescription:
+    'Hand-selected charred oak single barrel with rich notes of dark caramel, Madagascar vanilla, toasted pecans, and warm baking spice.',
+  description: '',
+  images: [
+    'https://res.cloudinary.com/ovmougmy/image/upload/v1794247348/jfk-liquors/bourbon-kentucky-reserve.jpg',
+  ],
+  thumbnailUrl:
+    'https://res.cloudinary.com/ovmougmy/image/upload/v1794247348/jfk-liquors/bourbon-kentucky-reserve.jpg',
+  customFields: [
+    { id: '1', label: 'Age', value: '12 Years', showOnCard: true },
+    { id: '2', label: 'Proof', value: '107 Proof', showOnCard: true },
+    { id: '3', label: 'Barrel', value: 'Char #4 Oak', showOnCard: true },
+    { id: '4', label: 'Rating', value: '96 Points', showOnCard: true },
+  ],
+  createdAt: '',
+  updatedAt: '',
+};
 
 export default function SiteContentManager() {
   const [content, setContent] = useState<SiteContent>(DEFAULT_SITE_CONTENT);
@@ -54,6 +102,14 @@ export default function SiteContentManager() {
 
   useEffect(() => {
     setContent(getInstantSiteContent());
+    if (typeof window !== 'undefined') {
+      const tabParam = new URLSearchParams(window.location.search).get(
+        'tab'
+      ) as TabKey | null;
+      if (tabParam && TABS.some((t) => t.key === tabParam)) {
+        setActiveTab(tabParam);
+      }
+    }
     setHydrated(true);
 
     async function loadFromFirestore() {
@@ -121,7 +177,7 @@ export default function SiteContentManager() {
       setFeedback({
         type: 'success',
         message:
-          'All website content changes saved permanently to Firebase Firestore!',
+          'All website content & card layout settings saved permanently to Firebase Firestore!',
       });
       setTimeout(() => setFeedback(null), 5000);
     } catch (err: any) {
@@ -139,7 +195,7 @@ export default function SiteContentManager() {
   async function handleResetDefaults() {
     if (
       !confirm(
-        'Reset all website text and images back to the original JFK Liquors default content?'
+        'Reset all website text, card layout, and images back to the original JFK Liquors default content?'
       )
     ) {
       return;
@@ -151,7 +207,8 @@ export default function SiteContentManager() {
       setContent(saved);
       setFeedback({
         type: 'success',
-        message: 'Website content reset to defaults and synced to Firebase Firestore.',
+        message:
+          'Website content reset to defaults and synced to Firebase Firestore.',
       });
     } catch (err: any) {
       setFeedback({
@@ -176,12 +233,14 @@ export default function SiteContentManager() {
       {/* Top Action Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-6 border-b border-[#2E2E2E]">
         <div>
-          <p className="eyebrow mb-1">Full Website CMS &bull; Firebase + Cloudinary</p>
+          <p className="eyebrow mb-1">
+            Full Website CMS &bull; Firebase + Cloudinary
+          </p>
           <h1 className="font-anton text-3xl sm:text-4xl text-[#FFFFFF] uppercase tracking-wide">
-            Website Content Manager
+            Website Content &amp; Card Designer
           </h1>
           <p className="text-xs text-[#A0A0A0] mt-1">
-            Edit every heading, paragraph, button, hours, delivery link, and photo across the entire website. Changes persist in Firebase Firestore across all redeployments.
+            Edit every heading, paragraph, product card layout, hours, delivery link, and photo across the entire website.
           </p>
         </div>
 
@@ -226,7 +285,7 @@ export default function SiteContentManager() {
       )}
 
       {/* Section Navigation Tabs */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
         {TABS.map((tab) => {
           const isActive = activeTab === tab.key;
           return (
@@ -234,21 +293,21 @@ export default function SiteContentManager() {
               key={tab.key}
               type="button"
               onClick={() => setActiveTab(tab.key)}
-              className={`text-left p-4 rounded-xl border transition-all cursor-pointer ${
+              className={`text-left p-3.5 rounded-xl border transition-all cursor-pointer ${
                 isActive
                   ? 'bg-[#D4AF37] text-[#111111] border-[#D4AF37] shadow-lg shadow-[#D4AF37]/20'
                   : 'bg-[#1E1F23] text-[#FFFFFF] border-white/10 hover:border-[#D4AF37]/50'
               }`}
             >
               <p
-                className={`text-xs font-extrabold uppercase tracking-wider mb-1 ${
+                className={`text-[11px] font-extrabold uppercase tracking-wider mb-1 ${
                   isActive ? 'text-[#111111]' : 'text-[#D4AF37]'
                 }`}
               >
                 {tab.label}
               </p>
               <p
-                className={`text-[11px] leading-snug line-clamp-2 ${
+                className={`text-[10.5px] leading-snug line-clamp-2 ${
                   isActive ? 'text-[#111111]/80 font-medium' : 'text-[#A0A0A0]'
                 }`}
               >
@@ -258,6 +317,312 @@ export default function SiteContentManager() {
           );
         })}
       </div>
+
+      {/* TAB: PRODUCT CARD DESIGNER */}
+      {activeTab === 'card_designer' && (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Controls Column */}
+          <div className="lg:col-span-7 space-y-6">
+            <div className="p-6 sm:p-8 rounded-2xl bg-[#242424] border border-[#3A3A3A] space-y-6">
+              <div>
+                <h2 className="font-anton text-2xl text-white uppercase tracking-wide">
+                  1. Choose Which Fields Appear on Cards
+                </h2>
+                <p className="text-xs text-[#A0A0A0] mt-1">
+                  Toggle on or off any field across all product cards on the Homepage, Department pages, Catalog, and Offers page.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {[
+                  {
+                    key: 'showBadge',
+                    label: 'Top-Left Badge (Allocated, Featured, etc.)',
+                  },
+                  {
+                    key: 'showOfferText',
+                    label: 'Top-Right Offer Highlight Pill',
+                  },
+                  {
+                    key: 'showVolumeOverlay',
+                    label: 'Photo Corner Volume Pill (e.g. 750ml)',
+                  },
+                  {
+                    key: 'showTags',
+                    label: 'Tags Above Bottle Title',
+                  },
+                  {
+                    key: 'showPrice',
+                    label: 'Price & Regular/Compare Price',
+                  },
+                  {
+                    key: 'showDescription',
+                    label: 'Short Tasting Description',
+                  },
+                  {
+                    key: 'showCategory',
+                    label: 'Department / Category Name',
+                  },
+                  {
+                    key: 'showSubcategory',
+                    label: 'Subcategory Label',
+                  },
+                  {
+                    key: 'showBrand',
+                    label: 'Brand / Producer Field',
+                  },
+                  {
+                    key: 'showOrigin',
+                    label: 'Region / Origin Field',
+                  },
+                  {
+                    key: 'showAbv',
+                    label: 'Alcohol Percentage (% ABV)',
+                  },
+                  {
+                    key: 'showCustomFields',
+                    label: 'Admin Custom Fields (Age, Proof, etc.)',
+                  },
+                  {
+                    key: 'showFooterVolume',
+                    label: 'Footer Volume Text',
+                  },
+                  {
+                    key: 'showStockStatus',
+                    label: 'In-Stock / Call Store Indicator',
+                  },
+                  {
+                    key: 'showCtaButton',
+                    label: 'Bottom Action Button',
+                  },
+                ].map((item) => {
+                  const checked = Boolean(
+                    (content.cardConfig as any)[item.key]
+                  );
+                  return (
+                    <label
+                      key={item.key}
+                      className={`flex items-center gap-3 p-3 rounded-xl border text-xs cursor-pointer transition-all ${
+                        checked
+                          ? 'bg-[#1A1B20] border-[#F5D900]/50 text-white font-semibold'
+                          : 'bg-[#141518] border-white/5 text-neutral-400'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={(e) =>
+                          updateSection(
+                            'cardConfig',
+                            item.key as any,
+                            e.target.checked
+                          )
+                        }
+                        className="w-4 h-4 rounded accent-[#F5D900] cursor-pointer"
+                      />
+                      <span>{item.label}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* How Many & How to Display */}
+            <div className="p-6 sm:p-8 rounded-2xl bg-[#242424] border border-[#3A3A3A] space-y-6">
+              <div>
+                <h2 className="font-anton text-2xl text-white uppercase tracking-wide">
+                  2. How Many Fields &amp; How They Show on the Card
+                </h2>
+                <p className="text-xs text-[#A0A0A0] mt-1">
+                  Control how many tags, custom fields, and description lines appear, and choose their visual layout style.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                <div>
+                  <label className="admin-label">
+                    How Many Tags to Show
+                  </label>
+                  <select
+                    value={content.cardConfig.maxTagsCount}
+                    onChange={(e) =>
+                      updateSection(
+                        'cardConfig',
+                        'maxTagsCount',
+                        Number(e.target.value)
+                      )
+                    }
+                    className="admin-input"
+                  >
+                    <option value={1}>1 Tag</option>
+                    <option value={2}>2 Tags</option>
+                    <option value={3}>3 Tags</option>
+                    <option value={4}>4 Tags</option>
+                    <option value={6}>Up to 6 Tags</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="admin-label">
+                    How Many Custom Fields
+                  </label>
+                  <select
+                    value={content.cardConfig.maxCustomFieldsCount}
+                    onChange={(e) =>
+                      updateSection(
+                        'cardConfig',
+                        'maxCustomFieldsCount',
+                        Number(e.target.value)
+                      )
+                    }
+                    className="admin-input"
+                  >
+                    <option value={1}>1 Custom Field</option>
+                    <option value={2}>2 Custom Fields</option>
+                    <option value={3}>3 Custom Fields</option>
+                    <option value={4}>4 Custom Fields</option>
+                    <option value={6}>Up to 6 Custom Fields</option>
+                    <option value={10}>All Custom Fields</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="admin-label">
+                    Description Max Lines
+                  </label>
+                  <select
+                    value={content.cardConfig.descriptionLines}
+                    onChange={(e) =>
+                      updateSection(
+                        'cardConfig',
+                        'descriptionLines',
+                        Number(e.target.value) as any
+                      )
+                    }
+                    className="admin-input"
+                  >
+                    <option value={1}>1 Line (Compact)</option>
+                    <option value={2}>2 Lines (Balanced)</option>
+                    <option value={3}>3 Lines (Detailed)</option>
+                    <option value={4}>4 Lines (Expanded)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                <div>
+                  <label className="admin-label">
+                    Fields Display Style
+                  </label>
+                  <select
+                    value={content.cardConfig.customFieldsDisplayStyle}
+                    onChange={(e) =>
+                      updateSection(
+                        'cardConfig',
+                        'customFieldsDisplayStyle',
+                        e.target.value as any
+                      )
+                    }
+                    className="admin-input"
+                  >
+                    <option value="pills">Pill Badges (Gold &amp; Charcoal)</option>
+                    <option value="rows">Key-Value Table Rows</option>
+                    <option value="inline">Inline Dot-Separated Line</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="admin-label">
+                    Photo Frame Aspect Ratio
+                  </label>
+                  <select
+                    value={content.cardConfig.imageAspect}
+                    onChange={(e) =>
+                      updateSection(
+                        'cardConfig',
+                        'imageAspect',
+                        e.target.value as any
+                      )
+                    }
+                    className="admin-input"
+                  >
+                    <option value="4/3">4:3 Editorial Landscape</option>
+                    <option value="1/1">1:1 Square Frame</option>
+                    <option value="4/5">4:5 Tall Bottle Portrait</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="admin-label">
+                    Card Content Alignment
+                  </label>
+                  <select
+                    value={content.cardConfig.textAlign}
+                    onChange={(e) =>
+                      updateSection(
+                        'cardConfig',
+                        'textAlign',
+                        e.target.value as any
+                      )
+                    }
+                    className="admin-input"
+                  >
+                    <option value="left">Left Aligned</option>
+                    <option value="center">Centered</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="admin-label">
+                  Card Action Button Label
+                </label>
+                <input
+                  type="text"
+                  value={content.cardConfig.ctaButtonText}
+                  onChange={(e) =>
+                    updateSection(
+                      'cardConfig',
+                      'ctaButtonText',
+                      e.target.value
+                    )
+                  }
+                  placeholder="View Details & Availability"
+                  className="admin-input"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Live Interactive Preview Column */}
+          <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-4">
+            <div className="p-6 rounded-2xl bg-[#18191C] border border-[#F5D900]/40 space-y-4 shadow-2xl">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#F5D900]">
+                    Interactive Live Preview
+                  </p>
+                  <h3 className="font-anton text-xl text-white uppercase">
+                    Storefront Product Card
+                  </h3>
+                </div>
+                <span className="px-2.5 py-1 rounded text-[10px] font-mono uppercase bg-[#F5D900]/10 text-[#F5D900] border border-[#F5D900]/30">
+                  Real-Time
+                </span>
+              </div>
+
+              <ProductCard
+                product={SAMPLE_PREVIEW_PRODUCT}
+                configOverride={content.cardConfig}
+              />
+
+              <p className="text-[11px] text-neutral-400 leading-relaxed">
+                Click <strong className="text-[#F5D900]">Save All Changes to Firebase</strong> to apply this card layout across the entire store. You can also add custom fields or override fields on any individual bottle when editing a product.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* TAB 1: BRAND, CONTACT & HOURS */}
       {activeTab === 'brand' && (
@@ -542,7 +907,6 @@ export default function SiteContentManager() {
             </p>
           </div>
 
-          {/* Hero Background Image */}
           <div className="p-5 rounded-xl bg-[#1A1A1A] border border-white/10 space-y-4">
             <label className="admin-label">
               Hero Background Image (Cloudinary CDN)
@@ -763,7 +1127,6 @@ export default function SiteContentManager() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-[#3A3A3A]">
-              {/* Uber Eats */}
               <div className="p-5 rounded-xl bg-[#1A1A1A] border border-white/10 space-y-4">
                 <h3 className="text-xs font-bold text-[#67cb89] uppercase tracking-wider">
                   Uber Eats Card
@@ -814,7 +1177,6 @@ export default function SiteContentManager() {
                 </div>
               </div>
 
-              {/* DoorDash */}
               <div className="p-5 rounded-xl bg-[#1A1A1A] border border-white/10 space-y-4">
                 <h3 className="text-xs font-bold text-[#ff6451] uppercase tracking-wider">
                   DoorDash Card
@@ -1243,7 +1605,6 @@ export default function SiteContentManager() {
               </div>
             </div>
 
-            {/* 3 Micro Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
               <div className="p-4 rounded-xl bg-[#1A1A1A] border border-white/10 space-y-2">
                 <label className="admin-label">Stat 1 Value &amp; Label</label>
@@ -1253,7 +1614,6 @@ export default function SiteContentManager() {
                   onChange={(e) =>
                     updateSection('storySection', 'stat1Value', e.target.value)
                   }
-                  placeholder="500+"
                   className="admin-input"
                 />
                 <input
@@ -1262,7 +1622,6 @@ export default function SiteContentManager() {
                   onChange={(e) =>
                     updateSection('storySection', 'stat1Label', e.target.value)
                   }
-                  placeholder="Labels in Stock"
                   className="admin-input"
                 />
               </div>
@@ -1275,7 +1634,6 @@ export default function SiteContentManager() {
                   onChange={(e) =>
                     updateSection('storySection', 'stat2Value', e.target.value)
                   }
-                  placeholder="6 Days"
                   className="admin-input"
                 />
                 <input
@@ -1284,7 +1642,6 @@ export default function SiteContentManager() {
                   onChange={(e) =>
                     updateSection('storySection', 'stat2Label', e.target.value)
                   }
-                  placeholder="11 AM — 9 PM"
                   className="admin-input"
                 />
               </div>
@@ -1297,7 +1654,6 @@ export default function SiteContentManager() {
                   onChange={(e) =>
                     updateSection('storySection', 'stat3Value', e.target.value)
                   }
-                  placeholder="IAH"
                   className="admin-input"
                 />
                 <input
@@ -1306,7 +1662,6 @@ export default function SiteContentManager() {
                   onChange={(e) =>
                     updateSection('storySection', 'stat3Label', e.target.value)
                   }
-                  placeholder="3 Min Away"
                   className="admin-input"
                 />
               </div>
@@ -1341,7 +1696,7 @@ export default function SiteContentManager() {
           {/* 6. Location Section Headings */}
           <div className="p-6 sm:p-8 rounded-2xl bg-[#242424] border border-[#3A3A3A] space-y-6">
             <h2 className="font-anton text-2xl text-white uppercase tracking-wide">
-              6. Storefront Location Section Headings
+              6. Storefront Location &amp; Map Section Headings
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
@@ -1423,13 +1778,134 @@ export default function SiteContentManager() {
         </div>
       )}
 
-      {/* TAB 4: ABOUT & CONTACT PAGES */}
+      {/* TAB 4: ABOUT, CONTACT & OFFERS PAGES */}
       {activeTab === 'pages' && (
         <div className="space-y-8">
+          {/* Offers Page */}
+          <div className="p-6 sm:p-8 rounded-2xl bg-[#242424] border border-[#3A3A3A] space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="font-anton text-2xl text-white uppercase tracking-wide">
+                1. Offers Page (/offers) &amp; Navbar Tab
+              </h2>
+              <label className="flex items-center gap-2.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={content.offersPage.showInNavbar !== false}
+                  onChange={(e) =>
+                    updateSection(
+                      'offersPage',
+                      'showInNavbar',
+                      e.target.checked
+                    )
+                  }
+                  className="w-4 h-4 rounded accent-[#F5D900]"
+                />
+                <span className="text-xs font-bold uppercase text-[#F5D900]">
+                  Show Offers Tab in Navbar
+                </span>
+              </label>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div>
+                <label className="admin-label">Navbar Tab Label</label>
+                <input
+                  type="text"
+                  value={content.offersPage.navbarLabel}
+                  onChange={(e) =>
+                    updateSection('offersPage', 'navbarLabel', e.target.value)
+                  }
+                  className="admin-input"
+                />
+              </div>
+              <div>
+                <label className="admin-label">Eyebrow Tag</label>
+                <input
+                  type="text"
+                  value={content.offersPage.eyebrow}
+                  onChange={(e) =>
+                    updateSection('offersPage', 'eyebrow', e.target.value)
+                  }
+                  className="admin-input"
+                />
+              </div>
+              <div>
+                <label className="admin-label">Heading (White)</label>
+                <input
+                  type="text"
+                  value={content.offersPage.headingWhite}
+                  onChange={(e) =>
+                    updateSection('offersPage', 'headingWhite', e.target.value)
+                  }
+                  className="admin-input"
+                />
+              </div>
+              <div>
+                <label className="admin-label">Heading Highlight (Gold)</label>
+                <input
+                  type="text"
+                  value={content.offersPage.headingGold}
+                  onChange={(e) =>
+                    updateSection('offersPage', 'headingGold', e.target.value)
+                  }
+                  className="admin-input"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="admin-label">Offers Page Description</label>
+              <textarea
+                rows={2}
+                value={content.offersPage.description}
+                onChange={(e) =>
+                  updateSection('offersPage', 'description', e.target.value)
+                }
+                className="admin-input"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="admin-label">Bottom Banner Tag</label>
+                <input
+                  type="text"
+                  value={content.offersPage.bannerTag}
+                  onChange={(e) =>
+                    updateSection('offersPage', 'bannerTag', e.target.value)
+                  }
+                  className="admin-input"
+                />
+              </div>
+              <div>
+                <label className="admin-label">Bottom Banner Title</label>
+                <input
+                  type="text"
+                  value={content.offersPage.bannerTitle}
+                  onChange={(e) =>
+                    updateSection('offersPage', 'bannerTitle', e.target.value)
+                  }
+                  className="admin-input"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="admin-label">Bottom Banner Text</label>
+              <textarea
+                rows={2}
+                value={content.offersPage.bannerText}
+                onChange={(e) =>
+                  updateSection('offersPage', 'bannerText', e.target.value)
+                }
+                className="admin-input"
+              />
+            </div>
+          </div>
+
           {/* About Us Page */}
           <div className="p-6 sm:p-8 rounded-2xl bg-[#242424] border border-[#3A3A3A] space-y-6">
             <h2 className="font-anton text-2xl text-white uppercase tracking-wide">
-              1. Our Story / About Us Page (/about)
+              2. Our Story / About Us Page (/about)
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -1470,7 +1946,6 @@ export default function SiteContentManager() {
               </div>
             </div>
 
-            {/* About Banner Photo */}
             <div className="p-5 rounded-xl bg-[#1A1A1A] border border-white/10 space-y-4">
               <label className="admin-label">
                 About Page Banner Photo (Cloudinary CDN)
@@ -1551,7 +2026,6 @@ export default function SiteContentManager() {
               </div>
             </div>
 
-            {/* 3 Value Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
               <div className="p-4 rounded-xl bg-[#1A1A1A] border border-white/10 space-y-3">
                 <label className="admin-label">Value Card 1</label>
@@ -1673,7 +2147,7 @@ export default function SiteContentManager() {
           {/* Contact Page Header */}
           <div className="p-6 sm:p-8 rounded-2xl bg-[#242424] border border-[#3A3A3A] space-y-6">
             <h2 className="font-anton text-2xl text-white uppercase tracking-wide">
-              2. Contact Page Header (/contact)
+              3. Contact Page Header (/contact)
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
@@ -2069,7 +2543,7 @@ export default function SiteContentManager() {
           <span className="text-[#F5D900] font-bold">
             Firebase Firestore + Cloudinary Active:
           </span>{' '}
-          All text and uploaded photos are stored in the cloud and survive every redeployment.
+          All text, card layouts, and uploaded photos are stored in the cloud and survive every redeployment.
         </div>
 
         <button

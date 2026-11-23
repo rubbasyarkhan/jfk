@@ -3,7 +3,14 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getAllProducts, getCategories, getInstantProducts, getInstantCategories, updateProduct, deleteProduct } from '@/lib/firestore';
+import {
+  getAllProducts,
+  getCategories,
+  getInstantProducts,
+  getInstantCategories,
+  updateProduct,
+  deleteProduct,
+} from '@/lib/firestore';
 import type { Product, Category } from '@/types';
 
 interface Props {
@@ -11,17 +18,25 @@ interface Props {
   categories: Category[];
 }
 
-export default function ProductListManager({ initialProducts, categories: initialCategories }: Props) {
+export default function ProductListManager({
+  initialProducts,
+  categories: initialCategories,
+}: Props) {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [categories, setCategories] = useState<Category[]>(initialCategories);
   const [hydrated, setHydrated] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [stockFilter, setStockFilter] = useState<'all' | 'instock' | 'out'>('all');
+  const [stockFilter, setStockFilter] = useState<'all' | 'instock' | 'out'>(
+    'all'
+  );
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [togglingStockId, setTogglingStockId] = useState<string | null>(null);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
-  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [feedback, setFeedback] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
 
   useEffect(() => {
     setProducts(getInstantProducts());
@@ -53,16 +68,17 @@ export default function ProductListManager({ initialProducts, categories: initia
     );
   }
 
-  // Filter products
   const filteredProducts = products.filter((p) => {
     const matchesSearch =
       searchTerm === '' ||
       p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.slug.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.brand?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.subcategory?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.tags?.some((t) => t.toLowerCase().includes(searchTerm.toLowerCase()));
 
-    const matchesCategory = selectedCategory === 'all' || p.category === selectedCategory;
+    const matchesCategory =
+      selectedCategory === 'all' || p.category === selectedCategory;
 
     const matchesStock =
       stockFilter === 'all' ||
@@ -76,7 +92,6 @@ export default function ProductListManager({ initialProducts, categories: initia
     const newStock = !product.inStock;
     setTogglingStockId(product.id);
 
-    // Optimistic update
     setProducts((prev) =>
       prev.map((p) => (p.id === product.id ? { ...p, inStock: newStock } : p))
     );
@@ -90,9 +105,10 @@ export default function ProductListManager({ initialProducts, categories: initia
       });
       setTimeout(() => setFeedback(null), 3000);
     } catch (err: any) {
-      // Revert optimistic update
       setProducts((prev) =>
-        prev.map((p) => (p.id === product.id ? { ...p, inStock: !newStock } : p))
+        prev.map((p) =>
+          p.id === product.id ? { ...p, inStock: !newStock } : p
+        )
       );
       setFeedback({
         type: 'error',
@@ -100,6 +116,34 @@ export default function ProductListManager({ initialProducts, categories: initia
       });
     } finally {
       setTogglingStockId(null);
+    }
+  }
+
+  async function handleToggleOffer(product: Product) {
+    const nextOffer = !product.isOffer;
+    setProducts((prev) =>
+      prev.map((p) => (p.id === product.id ? { ...p, isOffer: nextOffer } : p))
+    );
+    try {
+      await updateProduct(product.id, {
+        isOffer: nextOffer,
+        offerText:
+          nextOffer && !product.offerText
+            ? 'Special Store Offer'
+            : product.offerText,
+      });
+      setFeedback({
+        type: 'success',
+        message: nextOffer
+          ? `"${product.name}" is now featured on the Offers page!`
+          : `"${product.name}" removed from Offers page.`,
+      });
+      setTimeout(() => setFeedback(null), 3000);
+    } catch (err: any) {
+      setFeedback({
+        type: 'error',
+        message: err?.message || 'Failed to toggle offer status',
+      });
     }
   }
 
@@ -114,7 +158,7 @@ export default function ProductListManager({ initialProducts, categories: initia
       setProducts((prev) => prev.filter((p) => p.id !== id));
       setFeedback({
         type: 'success',
-        message: `Product "${productToDelete.name}" was successfully deleted.`,
+        message: `Product "${productToDelete.name}" was permanently deleted from Firebase Firestore.`,
       });
       setTimeout(() => setFeedback(null), 3000);
       setProductToDelete(null);
@@ -133,15 +177,23 @@ export default function ProductListManager({ initialProducts, categories: initia
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <p className="eyebrow mb-1">Catalog Management</p>
+          <p className="eyebrow mb-1">Catalog &amp; Card Layout Management</p>
           <h1 className="font-anton text-3xl sm:text-4xl text-[#FFFFFF] uppercase tracking-wide">
             All Products &amp; Bottles ({products.length})
           </h1>
         </div>
 
-        <Link href="/admin/products/new" className="btn-gold !py-2.5">
-          + Add New Bottle
-        </Link>
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            href="/admin/content?tab=card_designer"
+            className="btn-ghost !py-2.5 border-[#F5D900]/40 text-[#F5D900]"
+          >
+            Customize Card Fields &amp; Layout
+          </Link>
+          <Link href="/admin/products/new" className="btn-gold !py-2.5">
+            + Add New Bottle
+          </Link>
+        </div>
       </div>
 
       {/* Feedback Toast */}
@@ -162,7 +214,7 @@ export default function ProductListManager({ initialProducts, categories: initia
         <div className="flex-1 relative">
           <input
             type="text"
-            placeholder="Search bottle name, brand, or tag..."
+            placeholder="Search bottle name, subcategory, brand, or tag..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full bg-[#121316] border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white placeholder-neutral-400 focus:outline-none focus:border-[#F5D900]"
@@ -178,13 +230,12 @@ export default function ProductListManager({ initialProducts, categories: initia
         </div>
 
         <div className="flex flex-wrap sm:flex-nowrap gap-3">
-          {/* Department Filter */}
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
             className="bg-[#121316] border border-white/15 rounded-xl px-3.5 py-2.5 text-xs font-sans font-bold uppercase tracking-wider text-neutral-200 focus:outline-none focus:border-[#F5D900]"
           >
-            <option value="all">All Departments</option>
+            <option value="all">All Categories</option>
             {categories.map((c) => (
               <option key={c.slug} value={c.slug}>
                 {c.name}
@@ -192,7 +243,6 @@ export default function ProductListManager({ initialProducts, categories: initia
             ))}
           </select>
 
-          {/* Stock Filter */}
           <select
             value={stockFilter}
             onChange={(e) => setStockFilter(e.target.value as any)}
@@ -212,8 +262,8 @@ export default function ProductListManager({ initialProducts, categories: initia
             <thead>
               <tr className="border-b border-white/10 text-xs font-bold uppercase text-neutral-400 tracking-wider">
                 <th className="pb-4">Bottle / Item</th>
-                <th className="pb-4">Category</th>
-                <th className="pb-4">Badge</th>
+                <th className="pb-4">Category &amp; Subcategory</th>
+                <th className="pb-4">Offers Tab</th>
                 <th className="pb-4">Stock Status</th>
                 <th className="pb-4 text-right">Actions</th>
               </tr>
@@ -221,7 +271,10 @@ export default function ProductListManager({ initialProducts, categories: initia
             <tbody className="divide-y divide-white/5">
               {filteredProducts.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-12 text-center text-neutral-400">
+                  <td
+                    colSpan={5}
+                    className="py-12 text-center text-neutral-400"
+                  >
                     No products found matching your search and filter criteria.
                   </td>
                 </tr>
@@ -233,8 +286,10 @@ export default function ProductListManager({ initialProducts, categories: initia
                     'https://res.cloudinary.com/ovmougmy/image/upload/v1793981778/jfk-liquors/bourbon-jim-beam.jpg';
 
                   return (
-                    <tr key={item.id} className="hover:bg-white/[0.02] transition-colors">
-                      {/* Product Name & Image */}
+                    <tr
+                      key={item.id}
+                      className="hover:bg-white/[0.02] transition-colors"
+                    >
                       <td className="py-4 font-bold text-[#FFFFFF] flex items-center gap-3">
                         <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-white/10 flex-shrink-0 bg-[#0A0A0A]">
                           <Image
@@ -250,27 +305,38 @@ export default function ProductListManager({ initialProducts, categories: initia
                             {item.name}
                           </p>
                           <p className="text-xs text-neutral-400 font-normal">
-                            {item.volume || 'Standard'} &bull; {item.tags?.slice(0, 2).join(', ') || item.slug}
+                            {item.volume || 'Standard'}
+                            {item.customFields?.length
+                              ? ` • ${item.customFields.length} custom fields`
+                              : ''}
                           </p>
                         </div>
                       </td>
 
-                      {/* Category */}
                       <td className="py-4 text-neutral-300 capitalize text-xs">
                         <span className="px-2 py-1 rounded bg-white/5 border border-white/10">
                           {item.category.replace(/-/g, ' ')}
                         </span>
+                        {item.subcategory && (
+                          <span className="ml-1.5 px-2 py-1 rounded bg-[#F5D900]/10 border border-[#F5D900]/30 text-[#F5D900]">
+                            {item.subcategory.replace(/-/g, ' ')}
+                          </span>
+                        )}
                       </td>
 
-                      {/* Badge */}
+                      {/* Quick Offer Toggle */}
                       <td className="py-4">
-                        {item.badge ? (
-                          <span className="px-2.5 py-0.5 rounded text-[10px] font-bold uppercase bg-[#5B1018] text-[#F5D900] border border-[#F5D900]/40">
-                            {item.badge}
-                          </span>
-                        ) : (
-                          <span className="text-neutral-500 text-xs">—</span>
-                        )}
+                        <button
+                          type="button"
+                          onClick={() => handleToggleOffer(item)}
+                          className={`px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider border cursor-pointer transition-all ${
+                            item.isOffer
+                              ? 'bg-[#F5D900] text-[#050505] border-[#F5D900]'
+                              : 'bg-white/5 text-neutral-400 border-white/10 hover:text-white'
+                          }`}
+                        >
+                          {item.isOffer ? '★ On Offers' : '+ Offer'}
+                        </button>
                       </td>
 
                       {/* Quick Stock Toggle */}
@@ -284,7 +350,6 @@ export default function ProductListManager({ initialProducts, categories: initia
                               ? 'bg-emerald-950/70 border-emerald-500/40 text-emerald-300 hover:bg-emerald-900/80'
                               : 'bg-red-950/70 border-red-500/40 text-red-300 hover:bg-red-900/80'
                           }`}
-                          title="Click to toggle stock status"
                         >
                           <span
                             className={`w-1.5 h-1.5 rounded-full ${
@@ -295,7 +360,6 @@ export default function ProductListManager({ initialProducts, categories: initia
                         </button>
                       </td>
 
-                      {/* Actions */}
                       <td className="py-4 text-right">
                         <div className="flex items-center justify-end gap-3">
                           <Link
@@ -309,7 +373,7 @@ export default function ProductListManager({ initialProducts, categories: initia
                             href={`/admin/products/${item.id}`}
                             className="text-xs font-bold text-[#F5D900] hover:underline"
                           >
-                            Edit
+                            Edit &amp; Fields
                           </Link>
                           <button
                             type="button"
@@ -337,7 +401,12 @@ export default function ProductListManager({ initialProducts, categories: initia
               Delete Product?
             </h3>
             <p className="text-sm text-neutral-300 mb-6">
-              Are you sure you want to delete <strong className="text-white">"{productToDelete.name}"</strong>? This action will permanently remove it from both Firestore and the store catalog.
+              Are you sure you want to delete{' '}
+              <strong className="text-white">
+                &ldquo;{productToDelete.name}&rdquo;
+              </strong>
+              ? This action will permanently remove it from both Firestore and
+              the store catalog.
             </p>
 
             <div className="flex justify-end gap-3">
@@ -355,7 +424,9 @@ export default function ProductListManager({ initialProducts, categories: initia
                 onClick={confirmDelete}
                 className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-xs font-bold uppercase tracking-wider text-white shadow-lg disabled:opacity-50"
               >
-                {deletingId === productToDelete.id ? 'Deleting...' : 'Yes, Delete Bottle'}
+                {deletingId === productToDelete.id
+                  ? 'Deleting...'
+                  : 'Yes, Delete Bottle'}
               </button>
             </div>
           </div>

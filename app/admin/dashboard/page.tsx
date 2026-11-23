@@ -49,27 +49,35 @@ export default function AdminDashboardPage() {
     );
   }
 
-  const spiritsCount = products.filter((p) => p.category === 'spirits').length;
-  const wineCount = products.filter((p) => p.category === 'wines').length;
-  const beerCount = products.filter((p) => p.category === 'beer').length;
-  const agaveCount = products.filter(
-    (p) => p.category === 'agave-and-more'
+  const offersCount = products.filter((p) => p.isOffer).length;
+  const navCategoriesCount = categories.filter(
+    (c) => c.showInNavbar !== false
   ).length;
+  const subcategoriesCount = categories.reduce(
+    (sum, c) => sum + (c.subcategories?.length || 0),
+    0
+  );
 
   return (
     <div className="space-y-10 text-[#FFFFFF]">
       {/* Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <p className="eyebrow mb-1">Store Intelligence</p>
+          <p className="eyebrow mb-1">Store Intelligence &amp; CMS</p>
           <h1 className="font-display text-3xl sm:text-4xl text-[#FFFFFF] uppercase">
             Store Dashboard
           </h1>
         </div>
 
         <div className="flex flex-wrap gap-3">
-          <Link href="/admin/content" className="btn-gold !py-2.5">
-            Edit Website Content
+          <Link
+            href="/admin/content?tab=card_designer"
+            className="btn-gold !py-2.5"
+          >
+            Card Fields Designer
+          </Link>
+          <Link href="/admin/offers" className="btn-ghost !py-2.5">
+            Manage Offers ({offersCount})
           </Link>
           <Link href="/admin/products/new" className="btn-ghost !py-2.5">
             + Add New Bottle
@@ -80,7 +88,7 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* KPI Cards in Charcoal #242424 */}
+      {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="p-6 rounded-2xl bg-[#242424] border border-[#3A3A3A] flex flex-col justify-between">
           <p className="text-xs font-bold text-[#A0A0A0] uppercase tracking-wider mb-2">
@@ -90,113 +98,132 @@ export default function AdminDashboardPage() {
             {products.length}
           </p>
           <p className="text-xs text-[#C7C7C7] font-light">
-            Active across {categories.length} departments
+            Active across {categories.length} categories
           </p>
         </div>
 
         <div className="p-6 rounded-2xl bg-[#242424] border border-[#3A3A3A] flex flex-col justify-between">
           <p className="text-xs font-bold text-[#A0A0A0] uppercase tracking-wider mb-2">
-            Spirits &amp; Bourbon
+            Navbar Category Tabs
           </p>
           <p className="font-display text-4xl text-[#D4AF37] mb-1">
-            {spiritsCount}
+            {navCategoriesCount}
           </p>
           <p className="text-xs text-[#C7C7C7] font-light">
-            Allocated, Scotch, Vodka, Cognac
+            {subcategoriesCount} subcategories configured
           </p>
         </div>
 
         <div className="p-6 rounded-2xl bg-[#242424] border border-[#3A3A3A] flex flex-col justify-between">
           <p className="text-xs font-bold text-[#A0A0A0] uppercase tracking-wider mb-2">
-            Wines &amp; Champagne
+            Active Store Offers
           </p>
           <p className="font-display text-4xl text-[#FFFFFF] mb-1">
-            {wineCount}
+            {offersCount}
           </p>
           <p className="text-xs text-[#C7C7C7] font-light">
-            Red, White, Rosé, Sparkling
+            Featured on the /offers page
           </p>
         </div>
 
         <div className="p-6 rounded-2xl bg-[#242424] border border-[#3A3A3A] flex flex-col justify-between">
           <p className="text-xs font-bold text-[#A0A0A0] uppercase tracking-wider mb-2">
-            Beer &amp; Agave
+            Cloud Sync Status
           </p>
-          <p className="font-display text-4xl text-[#FFFFFF] mb-1">
-            {beerCount + agaveCount}
+          <p className="font-display text-2xl text-emerald-400 mb-1 uppercase">
+            Firebase + Cloudinary
           </p>
           <p className="text-xs text-[#C7C7C7] font-light">
-            Texas craft, Tequila, Mezcal
+            Permanent cloud storage active
           </p>
         </div>
       </div>
 
       {/* Quick CMS Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Link
-          href="/admin/content"
+          href="/admin/categories"
           className="group p-6 rounded-2xl bg-[#242424] border border-[#D4AF37]/40 hover:border-[#D4AF37] transition-all flex flex-col justify-between"
         >
           <div>
             <span className="text-[10px] font-bold uppercase tracking-widest text-[#D4AF37] px-2.5 py-1 rounded bg-[#D4AF37]/10 border border-[#D4AF37]/30">
+              Navbar Tabs &amp; Subcategories
+            </span>
+            <h3 className="font-display text-xl text-white uppercase mt-3 mb-2 group-hover:text-[#D4AF37] transition-colors">
+              Categories &amp; Subcategories
+            </h3>
+            <p className="text-xs text-[#C7C7C7] font-light leading-relaxed mb-4">
+              Choose which categories show in the Navbar, add subcategories, and add products directly inside any category.
+            </p>
+          </div>
+          <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">
+            Manage Categories &rarr;
+          </span>
+        </Link>
+
+        <Link
+          href="/admin/content?tab=card_designer"
+          className="group p-6 rounded-2xl bg-[#242424] border border-[#3A3A3A] hover:border-[#D4AF37] transition-all flex flex-col justify-between"
+        >
+          <div>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[#D4AF37] px-2.5 py-1 rounded bg-[#D4AF37]/10 border border-[#D4AF37]/30">
+              Card Customizer
+            </span>
+            <h3 className="font-display text-xl text-white uppercase mt-3 mb-2 group-hover:text-[#D4AF37] transition-colors">
+              Product Card Fields &amp; Layout
+            </h3>
+            <p className="text-xs text-[#C7C7C7] font-light leading-relaxed mb-4">
+              Choose which fields show on cards, how many tags/custom fields appear, and whether they display as pills, rows, or inline text.
+            </p>
+          </div>
+          <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">
+            Open Card Designer &rarr;
+          </span>
+        </Link>
+
+        <Link
+          href="/admin/offers"
+          className="group p-6 rounded-2xl bg-[#242424] border border-[#3A3A3A] hover:border-[#D4AF37] transition-all flex flex-col justify-between"
+        >
+          <div>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[#A0A0A0] px-2.5 py-1 rounded bg-white/5 border border-white/10">
+              Promotions ({offersCount})
+            </span>
+            <h3 className="font-display text-xl text-white uppercase mt-3 mb-2 group-hover:text-[#D4AF37] transition-colors">
+              Store Offers Page (/offers)
+            </h3>
+            <p className="text-xs text-[#C7C7C7] font-light leading-relaxed mb-4">
+              Manage the Offers navbar tab, assign bottles to the /offers page, and set special offer labels and prices.
+            </p>
+          </div>
+          <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">
+            Manage Offers &rarr;
+          </span>
+        </Link>
+
+        <Link
+          href="/admin/content"
+          className="group p-6 rounded-2xl bg-[#242424] border border-[#3A3A3A] hover:border-[#D4AF37] transition-all flex flex-col justify-between"
+        >
+          <div>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[#A0A0A0] px-2.5 py-1 rounded bg-white/5 border border-white/10">
               Full Website CMS
             </span>
             <h3 className="font-display text-xl text-white uppercase mt-3 mb-2 group-hover:text-[#D4AF37] transition-colors">
               Website Content &amp; Sections
             </h3>
             <p className="text-xs text-[#C7C7C7] font-light leading-relaxed mb-4">
-              Edit Hero, Delivery, Promo Banner, Story, About Page, Contact Page, Store Hours, Phone, Logo &amp; Footer.
+              Edit Hero, Delivery, Map, Promo Banner, Story, About Page, Contact Page, Store Hours, Phone, Logo &amp; Footer.
             </p>
           </div>
           <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">
-            Open Content Manager &rarr;
-          </span>
-        </Link>
-
-        <Link
-          href="/admin/products"
-          className="group p-6 rounded-2xl bg-[#242424] border border-[#3A3A3A] hover:border-[#D4AF37] transition-all flex flex-col justify-between"
-        >
-          <div>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[#A0A0A0] px-2.5 py-1 rounded bg-white/5 border border-white/10">
-              Catalog ({products.length})
-            </span>
-            <h3 className="font-display text-xl text-white uppercase mt-3 mb-2 group-hover:text-[#D4AF37] transition-colors">
-              Products &amp; Bottle Cards
-            </h3>
-            <p className="text-xs text-[#C7C7C7] font-light leading-relaxed mb-4">
-              Add, edit, or delete bottles, upload multi-photo galleries to Cloudinary, and toggle stock or featured vault status.
-            </p>
-          </div>
-          <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">
-            Manage Bottles &rarr;
-          </span>
-        </Link>
-
-        <Link
-          href="/admin/categories"
-          className="group p-6 rounded-2xl bg-[#242424] border border-[#3A3A3A] hover:border-[#D4AF37] transition-all flex flex-col justify-between"
-        >
-          <div>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[#A0A0A0] px-2.5 py-1 rounded bg-white/5 border border-white/10">
-              Taxonomy ({categories.length})
-            </span>
-            <h3 className="font-display text-xl text-white uppercase mt-3 mb-2 group-hover:text-[#D4AF37] transition-colors">
-              Departments &amp; Categories
-            </h3>
-            <p className="text-xs text-[#C7C7C7] font-light leading-relaxed mb-4">
-              Manage homepage department cards, cover photography, banner quotes, descriptions, and sort order.
-            </p>
-          </div>
-          <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">
-            Manage Departments &rarr;
+            Edit Site Content &rarr;
           </span>
         </Link>
       </div>
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Recent Items Table in Charcoal */}
         <div className="lg:col-span-8 p-6 sm:p-8 rounded-2xl bg-[#242424] border border-[#3A3A3A]">
           <div className="flex items-center justify-between mb-6">
             <h2 className="font-display text-xl text-[#FFFFFF] uppercase">
@@ -215,7 +242,7 @@ export default function AdminDashboardPage() {
               <thead>
                 <tr className="border-b border-[#3A3A3A] text-xs font-bold uppercase text-[#A0A0A0] tracking-wider">
                   <th className="pb-3">Product</th>
-                  <th className="pb-3">Department</th>
+                  <th className="pb-3">Category / Subcategory</th>
                   <th className="pb-3">Status</th>
                   <th className="pb-3 text-right">Action</th>
                 </tr>
@@ -243,6 +270,9 @@ export default function AdminDashboardPage() {
                     </td>
                     <td className="py-4 text-[#C7C7C7] capitalize">
                       {item.category.replace(/-/g, ' ')}
+                      {item.subcategory
+                        ? ` / ${item.subcategory.replace(/-/g, ' ')}`
+                        : ''}
                     </td>
                     <td className="py-4">
                       {item.inStock ? (
@@ -323,7 +353,7 @@ export default function AdminDashboardPage() {
             </div>
             <p className="text-xs text-[#F4F4F4] leading-relaxed font-light">
               {HAS_REAL_FIREBASE
-                ? 'Connected to Firebase Firestore (jfk-liquors) & Cloudinary CDN (ovmougmy). All product, category, and content updates persist permanently across redeployments.'
+                ? 'Connected to Firebase Firestore (jfk-liquors) & Cloudinary CDN (ovmougmy). All product, category, subcategory, offer, and card layout updates persist permanently across redeployments.'
                 : 'Cloud persistence active.'}
             </p>
           </div>

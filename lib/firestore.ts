@@ -7,7 +7,7 @@ import {
   deleteDoc,
 } from 'firebase/firestore';
 import { db } from './firebase';
-import type { Product, Category, SiteContent, SiteSettings } from '@/types';
+import type { Product, Category, SiteContent } from '@/types';
 import {
   INITIAL_PRODUCTS,
   INITIAL_CATEGORIES,
@@ -64,6 +64,11 @@ function readServerJson<T>(fileName: string, fallback: T): T {
 
 function sanitizeProductDoc(docSnap: any): Product {
   const data = docSnap.data();
+  const id = docSnap.id;
+  const initialMatch = INITIAL_PRODUCTS.find(
+    (p) => p.id === id || p.slug === data.slug
+  );
+
   let createdAt = data.createdAt;
   let updatedAt = data.updatedAt;
   if (createdAt && typeof createdAt.toDate === 'function') {
@@ -76,10 +81,24 @@ function sanitizeProductDoc(docSnap: any): Product {
   } else if (!updatedAt) {
     updatedAt = String(createdAt);
   }
+
   return {
     ...data,
-    id: docSnap.id,
-    slug: data.slug || docSnap.id,
+    id,
+    slug: data.slug || id,
+    subcategory:
+      data.subcategory !== undefined
+        ? data.subcategory
+        : initialMatch?.subcategory || '',
+    isOffer:
+      data.isOffer !== undefined
+        ? Boolean(data.isOffer)
+        : Boolean(initialMatch?.isOffer),
+    offerText:
+      data.offerText !== undefined
+        ? data.offerText
+        : initialMatch?.offerText || '',
+    customFields: Array.isArray(data.customFields) ? data.customFields : [],
     images: Array.isArray(data.images)
       ? data.images
       : data.thumbnailUrl
@@ -95,6 +114,25 @@ function sanitizeProductDoc(docSnap: any): Product {
     createdAt: String(createdAt),
     updatedAt: String(updatedAt),
   } as Product;
+}
+
+function sanitizeCategoryDoc(docSnap: any): Category {
+  const data = docSnap.data() as Category;
+  const id = docSnap.id;
+  const initialMatch = INITIAL_CATEGORIES.find(
+    (c) => c.id === id || c.slug === data.slug
+  );
+
+  return {
+    ...data,
+    id,
+    slug: data.slug || id,
+    showInNavbar:
+      data.showInNavbar !== undefined ? Boolean(data.showInNavbar) : true,
+    subcategories: Array.isArray(data.subcategories)
+      ? data.subcategories
+      : initialMatch?.subcategories || [],
+  };
 }
 
 // ─── Instant Synchronous Getters (0ms on Client Reload — Zero Stale Flash) ───
@@ -131,7 +169,6 @@ export function getInstantSiteContent(): SiteContent {
 // ─── Products (Firebase Firestore is Primary Source of Truth) ──────────────
 
 export async function getAllProducts(): Promise<Product[]> {
-  // 1. Always fetch from Firebase Firestore first (works on both client and server build)
   if (HAS_REAL_FIREBASE && db && db.app) {
     try {
       const snap = await getDocs(collection(db, 'products'));
@@ -150,7 +187,6 @@ export async function getAllProducts(): Promise<Product[]> {
     }
   }
 
-  // 2. Fallback if offline
   if (typeof window === 'undefined') {
     const serverProds = readServerJson<Product[]>(
       'products.json',
@@ -172,6 +208,13 @@ export async function getProducts(categorySlug?: string): Promise<Product[]> {
     return all.filter((p) => p.category === categorySlug);
   }
   return all;
+}
+
+export async function getOfferProducts(): Promise<Product[]> {
+  const all = await getAllProducts();
+  return all.filter(
+    (p) => p.isOffer || p.badge === 'Sale' || p.badge === 'Offer'
+  );
 }
 
 export async function getFeaturedProducts(count = 8): Promise<Product[]> {
@@ -204,16 +247,15 @@ export async function createProduct(
     slug: data.slug || newId,
     images: Array.isArray(data.images) ? data.images : [],
     thumbnailUrl: data.thumbnailUrl || data.images?.[0] || '',
+    customFields: Array.isArray(data.customFields) ? data.customFields : [],
     createdAt: now,
     updatedAt: now,
   };
 
-  // 1. Save to Firebase Firestore (Primary Persistent Database)
   if (HAS_REAL_FIREBASE && db && db.app) {
     await setDoc(doc(db, 'products', newId), newProduct, { merge: true });
   }
 
-  // 2. Update local cache immediately
   const products = getLocalProducts();
   const existingIdx = products.findIndex((p) => p.id === newId);
   if (existingIdx !== -1) {
@@ -223,7 +265,6 @@ export async function createProduct(
   }
   saveLocalProducts(products);
 
-  // 3. Mirror to local JSON file when running on localhost
   if (isLocalhost()) {
     try {
       await fetch('/api/admin/products', {
@@ -273,14 +314,12 @@ export async function updateProduct(
     updatedAt: now,
   };
 
-  // 1. Save to Firebase Firestore (Primary Persistent Database)
   if (HAS_REAL_FIREBASE && db && db.app) {
     await setDoc(doc(db, 'products', targetId), updatedProduct, {
       merge: true,
     });
   }
 
-  // 2. Update local cache
   if (idx !== -1) {
     products[idx] = updatedProduct;
   } else {
@@ -288,7 +327,6 @@ export async function updateProduct(
   }
   saveLocalProducts(products);
 
-  // 3. Mirror to local JSON when on localhost
   if (isLocalhost()) {
     try {
       await fetch(`/api/admin/products/${encodeURIComponent(targetId)}`, {
@@ -309,7 +347,6 @@ export async function deleteProduct(id: string): Promise<void> {
   const target = products.find((p) => p.id === id || p.slug === id);
   const docId = target?.id || id;
 
-  // 1. Delete from Firebase Firestore (Primary Persistent Database)
   if (HAS_REAL_FIREBASE && db && db.app) {
     await deleteDoc(doc(db, 'products', docId));
     if (id !== docId) {
@@ -321,13 +358,11 @@ export async function deleteProduct(id: string): Promise<void> {
     }
   }
 
-  // 2. Remove from local cache
   const remaining = products.filter(
     (p) => p.id !== id && p.slug !== id && p.id !== docId
   );
   saveLocalProducts(remaining);
 
-  // 3. Mirror to local JSON when on localhost
   if (isLocalhost()) {
     try {
       await fetch(`/api/admin/products/${encodeURIComponent(docId)}`, {
@@ -344,17 +379,12 @@ export async function deleteProduct(id: string): Promise<void> {
 // ─── Categories (Firebase Firestore is Primary Source of Truth) ────────────
 
 export async function getCategories(): Promise<Category[]> {
-  // 1. Always fetch from Firebase Firestore first
   if (HAS_REAL_FIREBASE && db && db.app) {
     try {
       const snap = await getDocs(collection(db, 'categories'));
       if (!snap.empty) {
         const cloudCats = snap.docs
-          .map((d) => ({
-            ...(d.data() as Category),
-            id: d.id,
-            slug: (d.data() as Category).slug || d.id,
-          }))
+          .map(sanitizeCategoryDoc)
           .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
 
         if (typeof window !== 'undefined') {
@@ -367,7 +397,6 @@ export async function getCategories(): Promise<Category[]> {
     }
   }
 
-  // 2. Fallback if offline
   if (typeof window === 'undefined') {
     const serverCats = readServerJson<Category[]>(
       'categories.json',
@@ -403,15 +432,15 @@ export async function createCategory(
     ...data,
     id: newId,
     slug: data.slug || newId,
+    showInNavbar: data.showInNavbar !== false,
+    subcategories: Array.isArray(data.subcategories) ? data.subcategories : [],
     updatedAt: now,
   };
 
-  // 1. Save to Firebase Firestore
   if (HAS_REAL_FIREBASE && db && db.app) {
     await setDoc(doc(db, 'categories', newId), newCat, { merge: true });
   }
 
-  // 2. Update local cache
   const categories = getLocalCategories();
   const existingIdx = categories.findIndex(
     (c) => c.id === newId || c.slug === newCat.slug
@@ -423,7 +452,6 @@ export async function createCategory(
   }
   saveLocalCategories(categories);
 
-  // 3. Mirror to local JSON on localhost
   if (isLocalhost()) {
     try {
       await fetch('/api/admin/categories', {
@@ -462,12 +490,10 @@ export async function updateCategory(
     updatedAt: now,
   };
 
-  // 1. Save to Firebase Firestore
   if (HAS_REAL_FIREBASE && db && db.app) {
     await setDoc(doc(db, 'categories', targetId), updatedCat, { merge: true });
   }
 
-  // 2. Update local cache
   if (idx !== -1) {
     categories[idx] = updatedCat;
   } else {
@@ -475,7 +501,6 @@ export async function updateCategory(
   }
   saveLocalCategories(categories);
 
-  // 3. Mirror to local JSON on localhost
   if (isLocalhost()) {
     try {
       await fetch(`/api/admin/categories/${encodeURIComponent(targetId)}`, {
@@ -496,7 +521,6 @@ export async function deleteCategory(id: string): Promise<void> {
   const target = categories.find((c) => c.id === id || c.slug === id);
   const docId = target?.id || id;
 
-  // 1. Delete from Firebase Firestore
   if (HAS_REAL_FIREBASE && db && db.app) {
     await deleteDoc(doc(db, 'categories', docId));
     if (id !== docId) {
@@ -508,13 +532,11 @@ export async function deleteCategory(id: string): Promise<void> {
     }
   }
 
-  // 2. Update local cache
   const remaining = categories.filter(
     (c) => c.id !== id && c.slug !== id && c.id !== docId
   );
   saveLocalCategories(remaining);
 
-  // 3. Mirror to local JSON on localhost
   if (isLocalhost()) {
     try {
       await fetch(`/api/admin/categories/${encodeURIComponent(docId)}`, {
@@ -544,7 +566,6 @@ export async function getSiteContent(): Promise<SiteContent> {
         }
         return merged;
       } else {
-        // Seed initial siteContent document in Firestore if it does not exist yet
         const initial = mergeWithDefaultSiteContent(DEFAULT_SITE_CONTENT);
         try {
           await setDoc(docRef, {
@@ -610,19 +631,24 @@ export async function updateSiteContent(
       ...current.catalogPage,
       ...(data.catalogPage || {}),
     },
+    offersPage: {
+      ...current.offersPage,
+      ...(data.offersPage || {}),
+    },
+    cardConfig: {
+      ...current.cardConfig,
+      ...(data.cardConfig || {}),
+    },
     footer: { ...current.footer, ...(data.footer || {}) },
     updatedAt: new Date().toISOString(),
   });
 
-  // 1. Save to Firebase Firestore (Primary Persistent Database)
   if (HAS_REAL_FIREBASE && db && db.app) {
     await setDoc(doc(db, 'settings', 'siteContent'), merged, { merge: true });
   }
 
-  // 2. Save to local cache
   saveLocalSiteContent(merged);
 
-  // 3. Mirror to local JSON on localhost
   if (isLocalhost()) {
     try {
       await fetch('/api/admin/site-content', {
@@ -639,7 +665,6 @@ export async function updateSiteContent(
   return merged;
 }
 
-// Backwards-compatible aliases
 export const getSiteSettings = getSiteContent;
 export const updateSiteSettings = updateSiteContent;
 

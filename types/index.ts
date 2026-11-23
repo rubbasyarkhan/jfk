@@ -1,5 +1,12 @@
 // types/index.ts
 
+export interface ProductCustomField {
+  id?: string;
+  label: string;
+  value: string;
+  showOnCard?: boolean;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -16,14 +23,25 @@ export interface Product {
   abv?: number;
   images: string[];
   thumbnailUrl: string;
-  badge?: 'New' | 'Limited' | 'Featured' | 'Sale' | 'Allocated' | '';
+  badge?: 'New' | 'Limited' | 'Featured' | 'Sale' | 'Allocated' | 'Offer' | '';
   inStock: boolean;
   stockCount?: number;
   featured: boolean;
+  isOffer?: boolean;
+  offerText?: string;
+  customFields?: ProductCustomField[];
+  cardFieldsOverride?: string[];
   tags: string[];
   sortOrder?: number;
   createdAt: any;
   updatedAt: any;
+}
+
+export interface Subcategory {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
 }
 
 export interface Category {
@@ -34,8 +52,48 @@ export interface Category {
   bannerText?: string;
   imageUrl?: string;
   sortOrder: number;
+  showInNavbar?: boolean;
+  subcategories?: Subcategory[];
   productCount?: number;
   updatedAt?: string;
+}
+
+export interface ProductCardConfig {
+  imageAspect: '4/3' | '1/1' | '4/5';
+  textAlign: 'left' | 'center';
+  specsDisplayStyle: 'pills' | 'grid' | 'inline';
+  showBadge: boolean;
+  showVolumeOverlay: boolean;
+  showTags: boolean;
+  maxTagsCount: number;
+  showCategory: boolean;
+  showSubcategory: boolean;
+  showBrand: boolean;
+  showOrigin: boolean;
+  showAbv: boolean;
+  showPrice: boolean;
+  showOfferText: boolean;
+  showDescription: boolean;
+  descriptionLines: 1 | 2 | 3 | 4;
+  showCustomFields: boolean;
+  maxCustomFieldsCount: number;
+  customFieldsDisplayStyle: 'pills' | 'rows' | 'inline';
+  showFooterVolume: boolean;
+  showStockStatus: boolean;
+  showCtaButton: boolean;
+  ctaButtonText: string;
+}
+
+export interface OffersPageContent {
+  showInNavbar: boolean;
+  navbarLabel: string;
+  eyebrow: string;
+  headingWhite: string;
+  headingGold: string;
+  description: string;
+  bannerTag: string;
+  bannerTitle: string;
+  bannerText: string;
 }
 
 export interface SiteContent {
@@ -172,6 +230,8 @@ export interface SiteContent {
     serviceBoxBadge: string;
     serviceBoxCallLabel: string;
   };
+  offersPage: OffersPageContent;
+  cardConfig: ProductCardConfig;
   footer: {
     tagline: string;
     licenseBadge: string;

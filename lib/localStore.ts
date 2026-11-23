@@ -67,6 +67,14 @@ export function mergeWithDefaultSiteContent(
       ...DEFAULT_SITE_CONTENT.catalogPage,
       ...(raw.catalogPage || {}),
     },
+    offersPage: {
+      ...DEFAULT_SITE_CONTENT.offersPage,
+      ...(raw.offersPage || {}),
+    },
+    cardConfig: {
+      ...DEFAULT_SITE_CONTENT.cardConfig,
+      ...(raw.cardConfig || {}),
+    },
     footer: { ...DEFAULT_SITE_CONTENT.footer, ...(raw.footer || {}) },
     updatedAt: raw.updatedAt,
   };
@@ -75,10 +83,12 @@ export function mergeWithDefaultSiteContent(
 export function getLocalProducts(): Product[] {
   if (typeof window !== 'undefined') {
     try {
-      const raw = window.localStorage.getItem(PRODUCTS_STORAGE_KEY);
+      const raw =
+        window.localStorage.getItem(PRODUCTS_STORAGE_KEY) ||
+        window.localStorage.getItem('jfk_liquors_products_v2');
       if (raw) {
         const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) {
+        if (Array.isArray(parsed) && parsed.length > 0) {
           return parsed;
         }
       }
@@ -106,10 +116,12 @@ export function saveLocalProducts(products: Product[], silent = false): void {
 export function getLocalCategories(): Category[] {
   if (typeof window !== 'undefined') {
     try {
-      const raw = window.localStorage.getItem(CATEGORIES_STORAGE_KEY);
+      const raw =
+        window.localStorage.getItem(CATEGORIES_STORAGE_KEY) ||
+        window.localStorage.getItem('jfk_liquors_categories_v2');
       if (raw) {
         const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) {
+        if (Array.isArray(parsed) && parsed.length > 0) {
           return parsed;
         }
       }
