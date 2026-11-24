@@ -5,8 +5,74 @@
     "slug": "spirits",
     "description": "Bourbon, Scotch, Vodka, Gin, Cognac & more from around the world.",
     "bannerText": "From allocated bourbon to peated single malts, the spirits wall is the heart of the store.",
-    "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793993237/jfk-liquors/products/pyrlifp2q6klgsjrp8kc.webp",
-    "sortOrder": 1
+    "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795184374/jfk-liquors/products/p25bd35vlhweroyafaim.png",
+    "sortOrder": 1,
+    "showInNavbar": true,
+    "subcategories": [
+      {
+        "id": "bourbon",
+        "name": "Bourbon",
+        "slug": "bourbon",
+        "description": "Explore rich American bourbon with distinctive oak and caramel notes.",
+        "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795559260/jfk-liquors/categories/mv1tadwi0kktwbcay1jn.png"
+      },
+      {
+        "id": "scotch-whisky",
+        "name": "Scotch Whisky",
+        "slug": "scotch-whisky",
+        "description": "Discover the distinctive whisky traditions of Scotland.",
+        "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795559180/jfk-liquors/categories/srsvbdspwj8hghdrzgtm.png"
+      },
+      {
+        "id": "tennessee-whiskey",
+        "name": "Tennessee Whiskey",
+        "slug": "tennessee-whiskey",
+        "description": "Discover smooth, charcoal-mellowed Tennessee whiskey.",
+        "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795559186/jfk-liquors/categories/axm5iyybow2pu1945lgf.png"
+      },
+      {
+        "id": "irish-whiskey",
+        "name": "Irish Whiskey",
+        "slug": "irish-whiskey",
+        "description": "Explore the smooth and balanced character of Irish whiskey.",
+        "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795559195/jfk-liquors/categories/z08j6bu9yy4ysbfjqjnn.png"
+      },
+      {
+        "id": "vodka",
+        "name": "Vodka",
+        "slug": "vodka",
+        "description": "Explore classic and flavored vodka varieties.",
+        "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795559201/jfk-liquors/categories/cihvwvea4tpv98lxhpot.png"
+      },
+      {
+        "id": "rum",
+        "name": "Rum",
+        "slug": "rum",
+        "description": "Discover white, dark, gold and spiced rum",
+        "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795559207/jfk-liquors/categories/pcndz1ly8rvqkgh8smj5.png"
+      },
+      {
+        "id": "gin",
+        "name": "Gin",
+        "slug": "gin",
+        "description": "Explore distinctive botanical flavors and classic gin varieties.",
+        "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795559085/jfk-liquors/categories/qjenzhmqhp6fyzl91cwi.png"
+      },
+      {
+        "id": "cognac",
+        "name": "Cognac",
+        "slug": "cognac",
+        "description": "Discover the traditional craftsmanship of French cognac.",
+        "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795559155/jfk-liquors/categories/shmzcho2fs3edvm9mlul.png"
+      },
+      {
+        "id": "brandy",
+        "name": "Brandy",
+        "slug": "brandy",
+        "description": "Explore rich and distinctive brandy varieties.",
+        "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795559143/jfk-liquors/categories/knvo7rduotoptgzbiypu.png"
+      }
+    ]
   },
   {
     "id": "wines",
@@ -14,8 +80,39 @@
     "slug": "wines",
     "description": "Reds, whites, rosé, and sparkling — from everyday pours to celebration bottles.",
     "bannerText": "Weeknight value bottles, gift-worthy labels and celebration sparkling.",
-    "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981782/jfk-liquors/wine-silver-oak.jpg",
-    "sortOrder": 2
+    "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795184559/jfk-liquors/products/mrzqbjkbvhcoth6gxvad.png",
+    "sortOrder": 2,
+    "showInNavbar": true,
+    "subcategories": [
+      {
+        "id": "red-wine",
+        "name": "Red Wine",
+        "slug": "red-wine",
+        "description": "Explore rich, bold and classic red wine varieties.",
+        "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795559885/jfk-liquors/categories/b3ko7gmnocvtfm3ycvni.png"
+      },
+      {
+        "id": "white-wine",
+        "name": "White Wine",
+        "slug": "white-wine",
+        "description": "Discover crisp, aromatic and refreshing white wines.",
+        "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795559887/jfk-liquors/categories/ebugwznujo4s0vzopo1n.png"
+      },
+      {
+        "id": "sparkling-wine",
+        "name": "Sparkling Wine",
+        "slug": "sparkling-wine",
+        "description": "Discover sparkling wines from around the world.",
+        "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795559893/jfk-liquors/categories/ge0kgln7a9zvclqqolve.png"
+      },
+      {
+        "id": "champagne",
+        "name": "Champagne",
+        "slug": "champagne",
+        "description": "Explore the classic elegance of French Champagne.",
+        "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795559896/jfk-liquors/categories/g5rhipj0agh40vmmtvlb.png"
+      }
+    ]
   },
   {
     "id": "beer",
@@ -23,16 +120,60 @@
     "slug": "beer",
     "description": "Texas craft, domestic favorites, imports, hard seltzers & RTDs.",
     "bannerText": "Cold and ready to go: Texas craft, national favorites and imports.",
-    "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981786/jfk-liquors/beer-dark-bottle.jpg",
-    "sortOrder": 3
+    "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795184661/jfk-liquors/products/wjhyldlkvolxuezakuml.png",
+    "sortOrder": 3,
+    "showInNavbar": true,
+    "subcategories": [
+      {
+        "id": "domestic-beer",
+        "name": "Domestic Beer",
+        "slug": "domestic-beer",
+        "description": "Ice-cold American and Texas favorite lagers, light beers, and wheat ales ready to go."
+      },
+      {
+        "id": "imported-beer",
+        "name": "Imported Beer",
+        "slug": "imported-beer",
+        "description": "World-class Belgian Trappist ales, Mexican lagers, European pilsners, Irish stouts, and Japanese imports."
+      },
+      {
+        "id": "craft-beer",
+        "name": "Craft Beer",
+        "slug": "craft-beer",
+        "description": "Rare barrel-aged stouts, high-gravity IPAs, barleywines, and Houston craft favorites."
+      }
+    ]
   },
   {
     "id": "agave-and-more",
-    "name": "Agave & More",
+    "name": "Tequila & More",
     "slug": "agave-and-more",
     "description": "Tequila from blanco to añejo, mezcal, liqueurs, mixers, ice and glassware.",
     "bannerText": "Tequila from blanco to añejo, mezcal, liqueurs, mixers, ice and glassware.",
-    "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981788/jfk-liquors/tequila-don-julio.jpg",
-    "sortOrder": 4
+    "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795185008/jfk-liquors/products/b2mz4hohemjcu1cf8qpw.png",
+    "sortOrder": 4,
+    "showInNavbar": true,
+    "subcategories": [
+      {
+        "id": "blanco-tequila",
+        "name": "Blanco Tequila",
+        "slug": "blanco-tequila",
+        "description": "Discover the pure and vibrant character of blue agave.",
+        "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795560123/jfk-liquors/categories/xblzyd4kirlcfhrgstkw.png"
+      },
+      {
+        "id": "reposado-tequila",
+        "name": "Reposado Tequila",
+        "slug": "reposado-tequila",
+        "description": "Explore the balanced character of oak-rested tequila.",
+        "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795560139/jfk-liquors/categories/g9njzgrfrvczf8ltpqn6.png"
+      },
+      {
+        "id": "anejo-tequila",
+        "name": "Añejo Tequila",
+        "slug": "anejo-tequila",
+        "description": "Rich, complex 100% Blue Agave tequilas aged in oak barrels and crystal-clear Cristalinos."
+      }
+    ]
   }
 ]

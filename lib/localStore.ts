@@ -104,7 +104,7 @@ export function clearLegacyLocalStorageCache() {
 }
 
 export function getLocalProducts(): Product[] {
-  if (memoryProducts && memoryProducts.length > 0) {
+  if (memoryProducts !== null) {
     return [...memoryProducts];
   }
   return [...INITIAL_PRODUCTS];
@@ -117,7 +117,7 @@ export function saveLocalProducts(products: Product[], silent = false): void {
 }
 
 export function getLocalCategories(): Category[] {
-  if (memoryCategories && memoryCategories.length > 0) {
+  if (memoryCategories !== null) {
     return [...memoryCategories];
   }
   return [...INITIAL_CATEGORIES];

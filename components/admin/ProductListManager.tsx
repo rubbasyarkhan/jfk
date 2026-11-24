@@ -32,6 +32,7 @@ export default function ProductListManager({
   );
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [togglingStockId, setTogglingStockId] = useState<string | null>(null);
+  const [togglingVaultId, setTogglingVaultId] = useState<string | null>(null);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [feedback, setFeedback] = useState<{
     type: 'success' | 'error';
@@ -69,10 +70,12 @@ export default function ProductListManager({
   }
 
   const filteredProducts = products.filter((p) => {
+    const pName = p.name || '';
+    const pSlug = p.slug || '';
     const matchesSearch =
       searchTerm === '' ||
-      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.slug.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      pName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      pSlug.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.brand?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.subcategory?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.tags?.some((t) => t.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -151,20 +154,56 @@ export default function ProductListManager({
     }
   }
 
+  async function handleToggleVault(product: Product) {
+    const nextVault = !product.featured;
+    setTogglingVaultId(product.id);
+    setProducts((prev) =>
+      prev.map((p) =>
+        p.id === product.id ? { ...p, featured: nextVault } : p
+      )
+    );
+    try {
+      await updateProduct(product.id, { featured: nextVault });
+      setFeedback({
+        type: 'success',
+        message: nextVault
+          ? `"${product.name}" is now highlighted in the Homepage Allocated Vault!`
+          : `"${product.name}" removed from the Homepage Allocated Vault.`,
+      });
+      setTimeout(() => setFeedback(null), 3000);
+    } catch (err: any) {
+      setProducts((prev) =>
+        prev.map((p) =>
+          p.id === product.id ? { ...p, featured: !nextVault } : p
+        )
+      );
+      setFeedback({
+        type: 'error',
+        message: err?.message || 'Failed to update Allocated Vault status',
+      });
+    } finally {
+      setTogglingVaultId(null);
+    }
+  }
+
   async function confirmDelete() {
     if (!productToDelete) return;
     const id = productToDelete.id;
+    const slug = productToDelete.slug;
+    const deletedName = productToDelete.name;
     setDeletingId(id);
 
     try {
       await deleteProduct(id);
 
-      setProducts((prev) => prev.filter((p) => p.id !== id));
+      setProducts((prev) =>
+        prev.filter((p) => p.id !== id && p.slug !== slug && p.id !== slug)
+      );
       setFeedback({
         type: 'success',
-        message: `Product "${productToDelete.name}" was permanently deleted from Firebase Firestore.`,
+        message: `Product "${deletedName}" was permanently deleted from Firebase Firestore and the live website.`,
       });
-      setTimeout(() => setFeedback(null), 3000);
+      setTimeout(() => setFeedback(null), 4000);
       setProductToDelete(null);
     } catch (err: any) {
       setFeedback({
@@ -267,6 +306,7 @@ export default function ProductListManager({
               <tr className="border-b border-white/10 text-xs font-bold uppercase text-neutral-400 tracking-wider">
                 <th className="pb-4">Bottle / Item</th>
                 <th className="pb-4">Category &amp; Subcategory</th>
+                <th className="pb-4">Allocated Vault</th>
                 <th className="pb-4">Offers Tab</th>
                 <th className="pb-4">Stock Status</th>
                 <th className="pb-4 text-right">Actions</th>
@@ -276,7 +316,7 @@ export default function ProductListManager({
               {filteredProducts.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={6}
                     className="py-12 text-center text-neutral-400"
                   >
                     No products found matching your search and filter criteria.
@@ -295,12 +335,12 @@ export default function ProductListManager({
                       className="hover:bg-white/[0.02] transition-colors"
                     >
                       <td className="py-4 font-bold text-[#FFFFFF] flex items-center gap-3">
-                        <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-white/10 flex-shrink-0 bg-[#0A0A0A]">
+                        <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-white/10 flex-shrink-0 bg-white">
                           <Image
                             src={imageSrc}
-                            alt={item.name}
+                            alt={item.name || 'Bottle'}
                             fill
-                            className="object-cover object-center"
+                            className="object-contain object-center p-1"
                             sizes="48px"
                           />
                         </div>
@@ -310,6 +350,7 @@ export default function ProductListManager({
                           </p>
                           <p className="text-xs text-neutral-400 font-normal">
                             {item.volume || 'Standard'}
+                            {item.brand ? ` • ${item.brand}` : ''}
                             {item.customFields?.length
                               ? ` • ${item.customFields.length} custom fields`
                               : ''}
@@ -319,13 +360,29 @@ export default function ProductListManager({
 
                       <td className="py-4 text-neutral-300 capitalize text-xs">
                         <span className="px-2 py-1 rounded bg-white/5 border border-white/10">
-                          {item.category.replace(/-/g, ' ')}
+                          {(item.category || 'spirits').replace(/-/g, ' ')}
                         </span>
                         {item.subcategory && (
                           <span className="ml-1.5 px-2 py-1 rounded bg-[#F5D900]/10 border border-[#F5D900]/30 text-[#F5D900]">
                             {item.subcategory.replace(/-/g, ' ')}
                           </span>
                         )}
+                      </td>
+
+                      {/* Quick Homepage Allocated Vault Toggle */}
+                      <td className="py-4">
+                        <button
+                          type="button"
+                          disabled={togglingVaultId === item.id}
+                          onClick={() => handleToggleVault(item)}
+                          className={`px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider border cursor-pointer transition-all ${
+                            item.featured
+                              ? 'bg-[#5B1018] text-[#F5D900] border-[#F5D900]/50 shadow'
+                              : 'bg-white/5 text-neutral-400 border-white/10 hover:text-white'
+                          }`}
+                        >
+                          {item.featured ? '★ In Vault' : '+ Vault'}
+                        </button>
                       </td>
 
                       {/* Quick Offer Toggle */}

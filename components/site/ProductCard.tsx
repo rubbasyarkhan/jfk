@@ -130,14 +130,14 @@ export default function ProductCard({ product, configOverride }: Props) {
         <Link
           href={`/products/${product.category}/${product.slug}`}
           prefetch={true}
-          className={`block relative ${aspectClass} w-full overflow-hidden bg-[#0A0A0A]`}
+          className={`block relative ${aspectClass} w-full overflow-hidden bg-white`}
         >
           <Image
             src={imageSrc}
             alt={product.name}
             fill
-            className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="object-contain object-center p-3 transition-transform duration-700 ease-out group-hover:scale-105"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           />
 
           {/* Top-Left Allocation / Promotional Badge */}

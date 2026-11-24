@@ -12,6 +12,8 @@ import {
   updateCategory,
   deleteCategory,
   createProduct,
+  updateProduct,
+  deleteProduct,
 } from '@/lib/firestore';
 import { uploadImageToCloudinary } from '@/lib/cloudinaryClient';
 import type { Category, Subcategory, Product } from '@/types';
@@ -52,6 +54,31 @@ export default function CategoryManager({ initialCategories }: Props) {
   >({});
   const [uploadingSubKey, setUploadingSubKey] = useState<string | null>(null);
   const [uploadingCatHeroId, setUploadingCatHeroId] = useState<string | null>(
+    null
+  );
+
+  // Subcategory Deletion Confirmation & Product Reassignment Modal State
+  const [subDeleteModal, setSubDeleteModal] = useState<{
+    cat: Category;
+    sub: Subcategory;
+    affectedProducts: Product[];
+  } | null>(null);
+  const [reassignSubSlug, setReassignSubSlug] = useState<string>('');
+  const [deletingSub, setDeletingSub] = useState<boolean>(false);
+
+  // Subcategory Edit Modal State
+  const [subEditModal, setSubEditModal] = useState<{
+    cat: Category;
+    sub: Subcategory;
+  } | null>(null);
+  const [editSubName, setEditSubName] = useState('');
+  const [editSubDesc, setEditSubDesc] = useState('');
+  const [editSubImg, setEditSubImg] = useState('');
+  const [savingSubEdit, setSavingSubEdit] = useState(false);
+
+  // Product Deletion Confirmation Modal State inside CategoryManager
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [deletingProductId, setDeletingProductId] = useState<string | null>(
     null
   );
 
@@ -389,28 +416,156 @@ export default function CategoryManager({ initialCategories }: Props) {
     }
   }
 
-  async function handleQuickRemoveSubcategory(cat: Category, subSlug: string) {
-    const currentSubs = Array.isArray(cat.subcategories)
-      ? cat.subcategories
-      : [];
-    const updatedSubs = currentSubs.filter((s) => s.slug !== subSlug);
-    setCategories((prev) =>
-      prev.map((c) =>
-        c.id === cat.id ? { ...c, subcategories: updatedSubs } : c
-      )
+  function openRemoveSubcategoryModal(cat: Category, sub: Subcategory) {
+    const affected = products.filter(
+      (p) => p.category === cat.slug && p.subcategory === sub.slug
     );
+    setReassignSubSlug('');
+    setSubDeleteModal({
+      cat,
+      sub,
+      affectedProducts: affected,
+    });
+  }
+
+  async function confirmRemoveSubcategory() {
+    if (!subDeleteModal) return;
+    const { cat, sub, affectedProducts } = subDeleteModal;
+    setDeletingSub(true);
+
     try {
+      const currentSubs = Array.isArray(cat.subcategories)
+        ? cat.subcategories
+        : [];
+      const updatedSubs = currentSubs.filter((s) => s.slug !== sub.slug);
+
+      // Immediately update local React state so admin UI updates without refresh
+      setCategories((prev) =>
+        prev.map((c) =>
+          c.id === cat.id ? { ...c, subcategories: updatedSubs } : c
+        )
+      );
+
+      if (affectedProducts.length > 0) {
+        const affectedIds = new Set(affectedProducts.map((p) => p.id));
+        setProducts((prev) =>
+          prev.map((p) =>
+            affectedIds.has(p.id) ||
+            (p.category === cat.slug && p.subcategory === sub.slug)
+              ? { ...p, subcategory: reassignSubSlug }
+              : p
+          )
+        );
+      }
+
+      // Sync category update and product reassignments to Firebase Firestore
       await updateCategory(cat.id, { subcategories: updatedSubs });
+
+      if (affectedProducts.length > 0) {
+        await Promise.all(
+          affectedProducts.map((p) =>
+            updateProduct(p.id, { subcategory: reassignSubSlug })
+          )
+        );
+      }
+
+      const reassignTargetName = reassignSubSlug
+        ? updatedSubs.find((s) => s.slug === reassignSubSlug)?.name ||
+          reassignSubSlug
+        : `General ${cat.name} (No Subcategory)`;
+
       setFeedback({
         type: 'success',
-        message: `Removed subcategory from ${cat.name}.`,
+        message:
+          affectedProducts.length > 0
+            ? `Deleted subcategory "${sub.name}" from ${cat.name} and reassigned ${affectedProducts.length} product(s) to "${reassignTargetName}".`
+            : `Deleted subcategory "${sub.name}" from ${cat.name}.`,
       });
-      setTimeout(() => setFeedback(null), 3000);
+      setTimeout(() => setFeedback(null), 4000);
+      setSubDeleteModal(null);
     } catch (err: any) {
       setFeedback({
         type: 'error',
-        message: err?.message || 'Failed to remove subcategory',
+        message: err?.message || 'Failed to delete subcategory',
       });
+    } finally {
+      setDeletingSub(false);
+    }
+  }
+
+  function openEditSubcategoryModal(cat: Category, sub: Subcategory) {
+    setSubEditModal({ cat, sub });
+    setEditSubName(sub.name);
+    setEditSubDesc(sub.description || '');
+    setEditSubImg(sub.imageUrl || '');
+  }
+
+  async function handleSaveSubcategoryEdit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!subEditModal || !editSubName.trim()) return;
+    setSavingSubEdit(true);
+    try {
+      const { cat, sub } = subEditModal;
+      const currentSubs = Array.isArray(cat.subcategories)
+        ? cat.subcategories
+        : [];
+      const updatedSubs = currentSubs.map((s) =>
+        s.slug === sub.slug
+          ? {
+              ...s,
+              name: editSubName.trim(),
+              description: editSubDesc.trim() || undefined,
+              imageUrl: editSubImg.trim() || undefined,
+            }
+          : s
+      );
+      setCategories((prev) =>
+        prev.map((c) =>
+          c.id === cat.id ? { ...c, subcategories: updatedSubs } : c
+        )
+      );
+      await updateCategory(cat.id, { subcategories: updatedSubs });
+      setFeedback({
+        type: 'success',
+        message: `Updated subcategory "${editSubName.trim()}" in ${cat.name}!`,
+      });
+      setTimeout(() => setFeedback(null), 3500);
+      setSubEditModal(null);
+    } catch (err: any) {
+      setFeedback({
+        type: 'error',
+        message: err?.message || 'Failed to update subcategory',
+      });
+    } finally {
+      setSavingSubEdit(false);
+    }
+  }
+
+  async function confirmDeleteProductInCategory() {
+    if (!productToDelete) return;
+    const id = productToDelete.id;
+    const slug = productToDelete.slug;
+    const deletedName = productToDelete.name;
+    setDeletingProductId(id);
+
+    try {
+      await deleteProduct(id);
+      setProducts((prev) =>
+        prev.filter((p) => p.id !== id && p.slug !== slug && p.id !== slug)
+      );
+      setFeedback({
+        type: 'success',
+        message: `Product "${deletedName}" was permanently deleted from Firebase Firestore and the live website.`,
+      });
+      setTimeout(() => setFeedback(null), 4000);
+      setProductToDelete(null);
+    } catch (err: any) {
+      setFeedback({
+        type: 'error',
+        message: err?.message || 'Failed to delete product',
+      });
+    } finally {
+      setDeletingProductId(null);
     }
   }
 
@@ -660,26 +815,12 @@ export default function CategoryManager({ initialCategories }: Props) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {categories.map((cat) => {
           const catProducts = products.filter((p) => p.category === cat.slug);
-          // Merge defined subcategories with any subcategory slugs present on products in this category
-          const catSubcategories: Subcategory[] = (() => {
-            const list: Subcategory[] = Array.isArray(cat.subcategories)
-              ? [...cat.subcategories]
-              : [];
-            const seen = new Set(list.map((s) => s.slug));
-            for (const p of catProducts) {
-              if (p.subcategory && !seen.has(p.subcategory)) {
-                seen.add(p.subcategory);
-                list.push({
-                  id: p.subcategory,
-                  slug: p.subcategory,
-                  name: p.subcategory
-                    .replace(/-/g, ' ')
-                    .replace(/\b\w/g, (l) => l.toUpperCase()),
-                });
-              }
-            }
-            return list;
-          })();
+          // Use the category's explicitly defined subcategories as the single source of truth
+          const catSubcategories: Subcategory[] = Array.isArray(
+            cat.subcategories
+          )
+            ? cat.subcategories
+            : [];
           const inNav = cat.showInNavbar !== false;
           const catHeroPreview = cat.productsBgUrl || cat.imageUrl || '';
 
@@ -838,10 +979,20 @@ export default function CategoryManager({ initialCategories }: Props) {
                                 <button
                                   type="button"
                                   onClick={() =>
-                                    handleQuickRemoveSubcategory(cat, sub.slug)
+                                    openEditSubcategoryModal(cat, sub)
                                   }
-                                  className="text-neutral-500 hover:text-red-400 font-bold px-1.5 py-0.5 cursor-pointer"
-                                  title="Remove subcategory"
+                                  className="px-2 py-1 rounded bg-white/5 hover:bg-white/15 text-neutral-200 text-[10px] font-bold uppercase tracking-wider border border-white/10 cursor-pointer"
+                                  title="Edit subcategory name or description"
+                                >
+                                  Edit
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    openRemoveSubcategoryModal(cat, sub)
+                                  }
+                                  className="text-neutral-400 hover:text-red-400 font-bold px-1.5 py-0.5 cursor-pointer"
+                                  title="Delete subcategory"
                                 >
                                   ✕
                                 </button>
@@ -951,7 +1102,7 @@ export default function CategoryManager({ initialCategories }: Props) {
                                 <img
                                   src={prod.images?.[0] || prod.thumbnailUrl}
                                   alt=""
-                                  className="w-7 h-7 rounded object-cover border border-white/10 flex-shrink-0"
+                                  className="w-7 h-7 rounded object-contain bg-white p-0.5 border border-white/10 flex-shrink-0"
                                 />
                               )}
                               <div className="min-w-0">
@@ -965,12 +1116,21 @@ export default function CategoryManager({ initialCategories }: Props) {
                                 )}
                               </div>
                             </div>
-                            <Link
-                              href={`/admin/products/${prod.id}`}
-                              className="text-[11px] font-bold text-[#F5D900] hover:underline flex-shrink-0"
-                            >
-                              Edit &rarr;
-                            </Link>
+                            <div className="flex items-center gap-3 flex-shrink-0">
+                              <Link
+                                href={`/admin/products/${prod.id}`}
+                                className="text-[11px] font-bold text-[#F5D900] hover:underline"
+                              >
+                                Edit &rarr;
+                              </Link>
+                              <button
+                                type="button"
+                                onClick={() => setProductToDelete(prod)}
+                                className="text-[11px] font-semibold text-red-400 hover:text-red-300 cursor-pointer"
+                              >
+                                Delete
+                              </button>
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -1522,6 +1682,217 @@ export default function CategoryManager({ initialCategories }: Props) {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Subcategory Deletion Confirmation & Product Reassignment Modal */}
+      {subDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-[#18191C] border border-red-500/40 rounded-2xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-5 font-sans">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-red-400 mb-1">
+                Subcategory Deletion Confirmation
+              </p>
+              <h3 className="font-anton text-2xl text-white uppercase tracking-wide">
+                Delete Subcategory &ldquo;{subDeleteModal.sub.name}&rdquo;?
+              </h3>
+            </div>
+
+            <p className="text-sm text-neutral-300 leading-relaxed">
+              Are you sure you want to delete the subcategory{' '}
+              <strong className="text-white">
+                &ldquo;{subDeleteModal.sub.name}&rdquo;
+              </strong>{' '}
+              from{' '}
+              <strong className="text-[#F5D900]">
+                {subDeleteModal.cat.name}
+              </strong>
+              ? It will be permanently removed from both the admin panel and the
+              live website navigation.
+            </p>
+
+            {subDeleteModal.affectedProducts.length > 0 && (
+              <div className="p-4 rounded-xl bg-amber-950/50 border border-[#F5D900]/40 space-y-3">
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#F5D900]">
+                  <span>
+                    ⚠ {subDeleteModal.affectedProducts.length} Product(s)
+                    Currently Assigned to &ldquo;{subDeleteModal.sub.name}&rdquo;
+                  </span>
+                </div>
+                <p className="text-xs text-neutral-300">
+                  Choose where to reassign these{' '}
+                  {subDeleteModal.affectedProducts.length} bottle(s) before
+                  deleting this subcategory so no product data is lost:
+                </p>
+
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-300 mb-1.5">
+                    Reassign Existing Products To:
+                  </label>
+                  <select
+                    value={reassignSubSlug}
+                    onChange={(e) => setReassignSubSlug(e.target.value)}
+                    className="w-full bg-[#0E0F12] border border-[#F5D900]/50 rounded-lg px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#F5D900]"
+                  >
+                    <option value="">
+                      — General {subDeleteModal.cat.name} (No Subcategory) —
+                    </option>
+                    {(subDeleteModal.cat.subcategories || [])
+                      .filter((s) => s.slug !== subDeleteModal.sub.slug)
+                      .map((s) => (
+                        <option key={s.slug} value={s.slug}>
+                          Reassign to: {s.name}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+              </div>
+            )}
+
+            <div className="flex justify-end gap-3 pt-2">
+              <button
+                type="button"
+                disabled={deletingSub}
+                onClick={() => setSubDeleteModal(null)}
+                className="px-4 py-2.5 rounded-xl border border-white/20 text-xs font-bold uppercase tracking-wider text-neutral-300 hover:bg-white/10 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={deletingSub}
+                onClick={confirmRemoveSubcategory}
+                className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-xs font-bold uppercase tracking-wider text-white shadow-lg disabled:opacity-50 cursor-pointer"
+              >
+                {deletingSub
+                  ? 'Deleting & Syncing...'
+                  : subDeleteModal.affectedProducts.length > 0
+                    ? 'Reassign Products & Delete Subcategory'
+                    : 'Yes, Delete Subcategory'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Subcategory Edit Modal */}
+      {subEditModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-[#18191C] border border-[#F5D900]/40 rounded-2xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-5 font-sans">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-[#F5D900] mb-1">
+                  Edit Subcategory in {subEditModal.cat.name}
+                </p>
+                <h3 className="font-anton text-2xl text-white uppercase tracking-wide">
+                  {subEditModal.sub.name}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSubEditModal(null)}
+                className="text-neutral-400 hover:text-white text-lg p-1"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveSubcategoryEdit} className="space-y-4">
+              <div>
+                <label className="admin-label">Subcategory Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={editSubName}
+                  onChange={(e) => setEditSubName(e.target.value)}
+                  className="admin-input"
+                />
+              </div>
+
+              <div>
+                <label className="admin-label">
+                  Subcategory Banner Description
+                </label>
+                <textarea
+                  rows={2}
+                  value={editSubDesc}
+                  onChange={(e) => setEditSubDesc(e.target.value)}
+                  placeholder="Optional banner text shown on the subcategory page hero..."
+                  className="admin-input"
+                />
+              </div>
+
+              <div>
+                <label className="admin-label">
+                  Subcategory Hero Image URL
+                </label>
+                <input
+                  type="url"
+                  value={editSubImg}
+                  onChange={(e) => setEditSubImg(e.target.value)}
+                  placeholder="https://res.cloudinary.com/..."
+                  className="admin-input"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setSubEditModal(null)}
+                  className="px-4 py-2.5 rounded-xl border border-white/20 text-xs font-bold uppercase tracking-wider text-neutral-300 hover:bg-white/10 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingSubEdit}
+                  className="px-5 py-2.5 rounded-xl bg-[#F5D900] hover:bg-[#FFE524] text-xs font-bold uppercase tracking-wider text-[#050505] shadow-lg disabled:opacity-50 cursor-pointer"
+                >
+                  {savingSubEdit ? 'Saving...' : 'Save Subcategory'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Product Deletion Confirmation Modal inside CategoryManager */}
+      {productToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-[#18191C] border border-red-500/40 rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-2xl font-sans">
+            <h3 className="font-anton text-2xl text-white uppercase tracking-wide mb-2">
+              Delete Product?
+            </h3>
+            <p className="text-sm text-neutral-300 mb-6">
+              Are you sure you want to delete{' '}
+              <strong className="text-white">
+                &ldquo;{productToDelete.name}&rdquo;
+              </strong>
+              ? This action will permanently remove it from both the admin
+              panel, Firebase Firestore, and the live website.
+            </p>
+
+            <div className="flex justify-end gap-3">
+              <button
+                type="button"
+                disabled={deletingProductId === productToDelete.id}
+                onClick={() => setProductToDelete(null)}
+                className="px-4 py-2.5 rounded-xl border border-white/20 text-xs font-bold uppercase tracking-wider text-neutral-300 hover:bg-white/10 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={deletingProductId === productToDelete.id}
+                onClick={confirmDeleteProductInCategory}
+                className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-xs font-bold uppercase tracking-wider text-white shadow-lg disabled:opacity-50 cursor-pointer"
+              >
+                {deletingProductId === productToDelete.id
+                  ? 'Deleting...'
+                  : 'Yes, Delete Bottle'}
+              </button>
+            </div>
           </div>
         </div>
       )}

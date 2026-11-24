@@ -8,6 +8,7 @@ import {
   getCategories,
   createProduct,
   updateProduct,
+  deleteProduct,
   updateCategory,
 } from '@/lib/firestore';
 import type { Product, Category, ProductCustomField } from '@/types';
@@ -44,6 +45,8 @@ export default function ProductForm({
 }: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [error, setError] = useState('');
 
   const [allCategories, setAllCategories] = useState<Category[]>(
@@ -255,6 +258,21 @@ export default function ProductForm({
       setError(err?.message || 'Failed to save product to Firebase Firestore');
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleConfirmDeleteProduct() {
+    if (!productId) return;
+    setDeleting(true);
+    setError('');
+    try {
+      await deleteProduct(productId);
+      setShowDeleteConfirm(false);
+      router.push('/admin/products');
+      router.refresh();
+    } catch (err: any) {
+      setError(err?.message || 'Failed to delete product');
+      setDeleting(false);
     }
   }
 
@@ -708,32 +726,80 @@ export default function ProductForm({
         </div>
 
         {/* Submit Actions */}
-        <div className="flex items-center gap-4">
-          <button type="submit" disabled={loading} className="btn-gold !py-3.5">
-            {loading ? (
-              <span className="flex items-center gap-2">
-                <span className="w-4 h-4 rounded-full border-2 border-[#111111] border-t-transparent animate-spin" />
-                Saving to Firebase...
-              </span>
-            ) : (
-              <span>
-                {productId
-                  ? 'Update Product in Firebase'
-                  : 'Publish Product to Store'}{' '}
-                &rarr;
-              </span>
-            )}
-          </button>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <button type="submit" disabled={loading} className="btn-gold !py-3.5">
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <span className="w-4 h-4 rounded-full border-2 border-[#111111] border-t-transparent animate-spin" />
+                  Saving to Firebase...
+                </span>
+              ) : (
+                <span>
+                  {productId
+                    ? 'Update Product in Firebase'
+                    : 'Publish Product to Store'}{' '}
+                  &rarr;
+                </span>
+              )}
+            </button>
 
-          <button
-            type="button"
-            onClick={() => router.push('/admin/products')}
-            className="btn-ghost !py-3.5"
-          >
-            Cancel
-          </button>
+            <button
+              type="button"
+              onClick={() => router.push('/admin/products')}
+              className="btn-ghost !py-3.5"
+            >
+              Cancel
+            </button>
+          </div>
+
+          {productId && (
+            <button
+              type="button"
+              onClick={() => setShowDeleteConfirm(true)}
+              className="px-5 py-3.5 rounded-xl bg-red-950/80 hover:bg-red-900 border border-red-500/40 text-red-200 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
+            >
+              Delete Product
+            </button>
+          )}
         </div>
       </form>
+
+      {showDeleteConfirm && productId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-[#18191C] border border-red-500/40 rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-2xl">
+            <h3 className="font-anton text-2xl text-white uppercase tracking-wide mb-2">
+              Delete Product?
+            </h3>
+            <p className="text-sm text-neutral-300 mb-6">
+              Are you sure you want to permanently delete{' '}
+              <strong className="text-white">
+                &ldquo;{name || initialData?.name || productId}&rdquo;
+              </strong>
+              ? It will be removed immediately from the admin panel, Firebase
+              Firestore, and the live website.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                type="button"
+                disabled={deleting}
+                onClick={() => setShowDeleteConfirm(false)}
+                className="px-4 py-2.5 rounded-xl border border-white/20 text-xs font-bold uppercase tracking-wider text-neutral-300 hover:bg-white/10 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={deleting}
+                onClick={handleConfirmDeleteProduct}
+                className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-xs font-bold uppercase tracking-wider text-white shadow-lg disabled:opacity-50 cursor-pointer"
+              >
+                {deleting ? 'Deleting...' : 'Yes, Delete Bottle'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Right 4 Columns: Live Interactive Card Preview */}
       <div className="xl:col-span-4 xl:sticky xl:top-24 space-y-4">

@@ -1,0 +1,446 @@
+{
+  "backedUpAt": "2026-11-24T23:24:10.237Z",
+  "projectId": "jfk-liquors",
+  "counts": {
+    "products": 6,
+    "categories": 4,
+    "hasSiteContent": true
+  },
+  "categories": [
+    {
+      "_docId": "agave-and-more",
+      "id": "agave-and-more",
+      "name": "Tequila & More",
+      "subcategories": [
+        {
+          "slug": "blanco-tequila",
+          "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795560123/jfk-liquors/categories/xblzyd4kirlcfhrgstkw.png",
+          "description": "Discover the pure and vibrant character of blue agave.",
+          "id": "blanco-tequila",
+          "name": "Blanco Tequila"
+        },
+        {
+          "slug": "reposado-tequila",
+          "id": "reposado-tequila",
+          "description": "Explore the balanced character of oak-rested tequila.",
+          "name": "Reposado Tequila",
+          "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795560139/jfk-liquors/categories/g9njzgrfrvczf8ltpqn6.png"
+        }
+      ],
+      "slug": "agave-and-more",
+      "sortOrder": 4,
+      "updatedAt": "2026-11-24T22:42:21.462Z",
+      "description": "Tequila from blanco to añejo, mezcal, liqueurs, mixers, ice and glassware.",
+      "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795185008/jfk-liquors/products/b2mz4hohemjcu1cf8qpw.png",
+      "showInNavbar": true,
+      "bannerText": "Tequila from blanco to añejo, mezcal, liqueurs, mixers, ice and glassware."
+    },
+    {
+      "_docId": "beer",
+      "name": "Beer",
+      "subcategories": [
+        {
+          "id": "craft-beer",
+          "slug": "craft-beer",
+          "name": "Craft Beer"
+        },
+        {
+          "slug": "domestic-imported",
+          "id": "domestic-imported",
+          "name": "Domestic & Imported"
+        },
+        {
+          "slug": "seltzers-ciders",
+          "id": "seltzers-ciders",
+          "name": "Hard Seltzers & Ciders"
+        }
+      ],
+      "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795184661/jfk-liquors/products/wjhyldlkvolxuezakuml.png",
+      "slug": "beer",
+      "id": "beer",
+      "bannerText": "Cold and ready to go: Texas craft, national favorites and imports.",
+      "showInNavbar": true,
+      "description": "Texas craft, domestic favorites, imports, hard seltzers & RTDs.",
+      "sortOrder": 3
+    },
+    {
+      "_docId": "spirits",
+      "bannerText": "From allocated bourbon to peated single malts, the spirits wall is the heart of the store.",
+      "showInNavbar": true,
+      "description": "Bourbon, Scotch, Vodka, Gin, Cognac & more from around the world.",
+      "subcategories": [
+        {
+          "name": "Scotch Whisky",
+          "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795559180/jfk-liquors/categories/srsvbdspwj8hghdrzgtm.png",
+          "id": "scotch-whisky",
+          "description": "Discover the distinctive whisky traditions of Scotland.",
+          "slug": "scotch-whisky"
+        },
+        {
+          "slug": "tennessee-whiskey",
+          "id": "tennessee-whiskey",
+          "name": "Tennessee Whiskey",
+          "description": "Discover smooth, charcoal-mellowed Tennessee whiskey.",
+          "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795559186/jfk-liquors/categories/axm5iyybow2pu1945lgf.png"
+        },
+        {
+          "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795559195/jfk-liquors/categories/z08j6bu9yy4ysbfjqjnn.png",
+          "name": "Irish Whiskey",
+          "slug": "irish-whiskey",
+          "id": "irish-whiskey",
+          "description": "Explore the smooth and balanced character of Irish whiskey."
+        },
+        {
+          "slug": "vodka",
+          "description": "Explore classic and flavored vodka varieties.",
+          "name": "Vodka",
+          "id": "vodka",
+          "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795559201/jfk-liquors/categories/cihvwvea4tpv98lxhpot.png"
+        },
+        {
+          "id": "rum",
+          "name": "Rum",
+          "description": "Discover white, dark, gold and spiced rum",
+          "slug": "rum",
+          "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795559207/jfk-liquors/categories/pcndz1ly8rvqkgh8smj5.png"
+        },
+        {
+          "slug": "gin",
+          "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795559085/jfk-liquors/categories/qjenzhmqhp6fyzl91cwi.png",
+          "name": "Gin",
+          "id": "gin",
+          "description": "Explore distinctive botanical flavors and classic gin varieties."
+        },
+        {
+          "id": "cognac",
+          "name": "Cognac",
+          "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795559155/jfk-liquors/categories/shmzcho2fs3edvm9mlul.png",
+          "slug": "cognac",
+          "description": "Discover the traditional craftsmanship of French cognac."
+        },
+        {
+          "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795559143/jfk-liquors/categories/knvo7rduotoptgzbiypu.png",
+          "id": "brandy",
+          "slug": "brandy",
+          "name": "Brandy",
+          "description": "Explore rich and distinctive brandy varieties."
+        },
+        {
+          "name": "Bourbon",
+          "description": "Explore rich American bourbon with distinctive oak and caramel notes.",
+          "id": "bourbon",
+          "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795559260/jfk-liquors/categories/mv1tadwi0kktwbcay1jn.png",
+          "slug": "bourbon"
+        }
+      ],
+      "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795184374/jfk-liquors/products/p25bd35vlhweroyafaim.png",
+      "id": "spirits",
+      "slug": "spirits",
+      "name": "Spirits",
+      "updatedAt": "2026-11-24T22:27:42.678Z",
+      "sortOrder": 1
+    },
+    {
+      "_docId": "wines",
+      "subcategories": [
+        {
+          "id": "red-wine",
+          "slug": "red-wine",
+          "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795559885/jfk-liquors/categories/b3ko7gmnocvtfm3ycvni.png",
+          "description": "Explore rich, bold and classic red wine varieties.",
+          "name": "Red Wine"
+        },
+        {
+          "name": "White Wine",
+          "description": "Discover crisp, aromatic and refreshing white wines.",
+          "id": "white-wine",
+          "slug": "white-wine",
+          "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795559887/jfk-liquors/categories/ebugwznujo4s0vzopo1n.png"
+        },
+        {
+          "slug": "sparkling-wine",
+          "description": "Discover sparkling wines from around the world.",
+          "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795559893/jfk-liquors/categories/ge0kgln7a9zvclqqolve.png",
+          "name": "Sparkling Wine",
+          "id": "sparkling-wine"
+        },
+        {
+          "name": "Champagne",
+          "id": "champagne",
+          "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795559896/jfk-liquors/categories/g5rhipj0agh40vmmtvlb.png",
+          "description": "Explore the classic elegance of French Champagne.",
+          "slug": "champagne"
+        }
+      ],
+      "name": "Wines",
+      "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1795184559/jfk-liquors/products/mrzqbjkbvhcoth6gxvad.png",
+      "slug": "wines",
+      "showInNavbar": true,
+      "id": "wines",
+      "bannerText": "Weeknight value bottles, gift-worthy labels and celebration sparkling.",
+      "description": "Reds, whites, rosé, and sparkling — from everyday pours to celebration bottles.",
+      "sortOrder": 2,
+      "updatedAt": "2026-11-24T22:38:18.299Z"
+    }
+  ],
+  "products": [
+    {
+      "_docId": "bourbon-american-whiskey",
+      "isOffer": false,
+      "slug": "bourbon-american-whiskey",
+      "badge": "Allocated",
+      "offerText": "",
+      "id": "bourbon-american-whiskey",
+      "updatedAt": "2026-11-24T22:45:43.782Z"
+    },
+    {
+      "_docId": "cognac-brandy",
+      "offerText": "",
+      "updatedAt": "2026-11-24T22:45:46.242Z",
+      "slug": "cognac-brandy",
+      "badge": "Limited",
+      "isOffer": false,
+      "id": "cognac-brandy"
+    },
+    {
+      "_docId": "red-wines",
+      "updatedAt": "2026-11-24T22:45:42.886Z",
+      "slug": "red-wines",
+      "offerText": "",
+      "isOffer": false,
+      "id": "red-wines"
+    },
+    {
+      "_docId": "scotch-whisky",
+      "slug": "scotch-whisky",
+      "isOffer": false,
+      "badge": "Featured",
+      "id": "scotch-whisky",
+      "offerText": "",
+      "updatedAt": "2026-11-24T22:45:41.870Z"
+    },
+    {
+      "_docId": "sparkling-champagne",
+      "updatedAt": "2026-11-24T22:45:45.454Z",
+      "offerText": "",
+      "isOffer": false,
+      "id": "sparkling-champagne",
+      "badge": "Featured",
+      "slug": "sparkling-champagne"
+    },
+    {
+      "_docId": "tequila-blanco-reposado-anejo",
+      "volume": "750ml",
+      "subcategory": "tequila",
+      "sortOrder": 1,
+      "thumbnailUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981788/jfk-liquors/tequila-don-julio.jpg",
+      "featured": true,
+      "slug": "tequila-blanco-reposado-anejo",
+      "shortDescription": "Crafted from 100% Blue Weber Agave. Blanco is bright and peppery, reposado rests in oak, and añejo sips like fine whiskey.",
+      "offerText": "",
+      "abv": 40,
+      "badge": "Featured",
+      "inStock": true,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-11-24T22:45:41.014Z",
+      "category": "agave-and-more",
+      "id": "tequila-blanco-reposado-anejo",
+      "images": [
+        "https://res.cloudinary.com/ovmougmy/image/upload/v1793981788/jfk-liquors/tequila-don-julio.jpg",
+        "https://res.cloudinary.com/ovmougmy/image/upload/v1793981789/jfk-liquors/tequila-jose-cuervo.jpg"
+      ],
+      "tags": [
+        "100% Blue Agave",
+        "Jalisco",
+        "Additive Free"
+      ],
+      "description": "We pride ourselves on an exceptional tequila library focusing on traditional tahona-crushed, additive-free distilleries alongside celebrity and luxury bottles like Clase Azul, Don Julio 1942, Fortaleza, and Cascahuín.",
+      "isOffer": false,
+      "name": "Tequila (Blanco, Reposado & Añejo)"
+    }
+  ],
+  "siteContent": {
+    "promoBanner": {
+      "heading": "Seeking Blanton's, Weller, or Eagle Rare?",
+      "description": "We receive new shipments throughout the week. Visit our JFK Boulevard location or call our store directly to check today's bottle availability.",
+      "secondaryCtaText": "Get Directions",
+      "primaryCtaText": "Call (281) 590-3300",
+      "eyebrow": "ALLOCATED WHISKEY DROPS • IN STORE ONLY"
+    },
+    "hero": {
+      "backgroundImageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1794246857/jfk-liquors/hero-collection-bottles.jpg",
+      "titleLine3": "Near IAH Airport.",
+      "secondaryCtaText": "Get Directions",
+      "primaryCtaHref": "#vault",
+      "description": "Proudly serving local Houston residents and travelers along the IAH airport corridor with a wide selection of bourbon, whiskey, wine, chilled craft beer, and tequila. Stop in for friendly customer service and great bottles ready to take home.",
+      "titleLine1": "Your Neighborhood",
+      "eyebrow": "Neighborhood Liquor Store • Houston, Texas",
+      "primaryCtaText": "Explore Vault",
+      "titleLine2Gold": "Liquor Store"
+    },
+    "offersPage": {
+      "showInNavbar": true,
+      "eyebrow": "JFK LIQUORS • EXCLUSIVE IN-STORE OFFERS",
+      "bannerText": "Our store team updates featured bottle offers and multi-pack promotions weekly. Call ahead or stop in at Suite D to claim current in-store offers.",
+      "bannerTitle": "Visiting JFK Boulevard Today? Ask About Our Weekly Bottle Specials.",
+      "bannerTag": "LIMITED TIME IN-STORE OFFERS",
+      "headingWhite": "Special Store",
+      "navbarLabel": "Offers",
+      "description": "Explore our featured in-store offers, seasonal bottle promotions, rare allocation highlights, and bundle specials at JFK Liquors near IAH airport.",
+      "headingGold": "Offers."
+    },
+    "departmentsSection": {
+      "headingWhite": "Find your",
+      "browseAllText": "Browse All Products",
+      "headingGold": "next favorite.",
+      "cardCtaText": "Explore Department",
+      "eyebrow": "THE ARCHIVE"
+    },
+    "updatedAt": "2026-11-24T14:01:18.982Z",
+    "ageGate": {
+      "confirmText": "Yes, I am 21+",
+      "enabled": true,
+      "footerText": "15655 John F Kennedy Blvd • Houston, TX",
+      "eyebrow": "LEGAL AGE VERIFICATION",
+      "denyUrl": "https://www.google.com",
+      "denyText": "No, leave",
+      "description": "You must be of legal drinking age in the United States to explore and purchase from JFK Liquors.",
+      "heading": "Are you 21 or older?"
+    },
+    "brand": {
+      "storeName": "JFK Liquors",
+      "addressLine1": "15655 John F Kennedy Blvd, Suite D",
+      "phoneFull": "+1 281-590-3300",
+      "complianceNotice": "Stock changes daily. Call +1 281-590-3300 to check availability. Must be 21+ with valid ID.",
+      "addressLine2": "Houston, TX 77032",
+      "mapEmbedUrl": "https://maps.google.com/maps?q=15655+John+F+Kennedy+Blvd+Suite+D+Houston+TX+77032&t=&z=15&ie=UTF8&iwloc=&output=embed",
+      "hoursSundayLabel": "Sunday",
+      "phoneDisplay": "(281) 590-3300",
+      "headerCtaText": "Visit Us",
+      "airportNote": "3 min from IAH Airport",
+      "hoursSundayTime": "Closed (Texas Law)",
+      "logoUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981764/jfk-liquors/logo.png",
+      "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=15655+John+F+Kennedy+Blvd+Suite+D+Houston+TX+77032",
+      "hoursWeekdayTime": "11:00 AM — 9:00 PM",
+      "phoneTel": "+12815903300",
+      "hoursWeekdayLabel": "Monday — Saturday"
+    },
+    "storySection": {
+      "stat1Label": "Labels in Stock",
+      "stat3Label": "3 Min Away",
+      "ctaHref": "/about",
+      "eyebrow": "LOCAL STORE • PERSONAL TOUCH",
+      "stat3Value": "IAH",
+      "ctaText": "Get to know our store",
+      "stat1Value": "99+",
+      "imageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981770/jfk-liquors/collection-story.jpg",
+      "headingLine2Gold": "something good.",
+      "stat2Label": "11 AM — 9 PM",
+      "paragraph1": "Stocking up for a get-together? Picking a gift? Or simply finding your favorite bottle? Stop by JFK Liquors and explore at your own pace.",
+      "stat2Value": "6 Days",
+      "headingLine1": "Your stop for",
+      "paragraph2": "You'll find us on John F Kennedy Boulevard, near George Bush Intercontinental Airport in Houston. Ask our team for help choosing what to take home.",
+      "imageBadgeText": "A BOTTLE FOR EVERY OCCASION"
+    },
+    "vaultSection": {
+      "eyebrow": "FEATURED STORE SELECTION",
+      "browseAllText": "Browse Entire Collection",
+      "maxItems": 6,
+      "headingGold": "Allocated Vault.",
+      "headingWhite": "Featured &"
+    },
+    "contactPage": {
+      "headingWhite": "Visit",
+      "headingGold": "JFK Liquors.",
+      "subtitle": "Conveniently located on John F Kennedy Blvd, Suite D, minutes from IAH terminals. Free parking on-site.",
+      "eyebrow": "HOUSTON STOREFRONT • NEAR IAH"
+    },
+    "locationSection": {
+      "headingLine2Gold": "Just 3 minutes from IAH Airport.",
+      "directionsBtnText": "Get directions",
+      "eyebrow": "VISIT US AT:",
+      "headingLine1": "Right on JFK BLVD.",
+      "proximityNote": "Conveniently located near George Bush Intercontinental Airport (IAH)."
+    },
+    "cardConfig": {
+      "descriptionLines": 2,
+      "customFieldsDisplayStyle": "pills",
+      "ctaButtonText": "View Details & Availability",
+      "showDescription": true,
+      "showBrand": true,
+      "showCustomFields": true,
+      "showOrigin": true,
+      "textAlign": "left",
+      "showBadge": true,
+      "showSubcategory": true,
+      "showFooterVolume": true,
+      "showTags": true,
+      "imageAspect": "4/3",
+      "showVolumeOverlay": true,
+      "maxCustomFieldsCount": 3,
+      "showStockStatus": true,
+      "showAbv": true,
+      "maxTagsCount": 3,
+      "showCategory": false,
+      "showCtaButton": true,
+      "showOfferText": true,
+      "sectionBackgroundImageUrl": "",
+      "cardsPerRow": 4,
+      "specsDisplayStyle": "pills"
+    },
+    "catalogPage": {
+      "headingGold": "Vault.",
+      "serviceBoxBadge": "In-Store Today",
+      "serviceBoxTitle": "Store Customer Service",
+      "description": "Browse our wide retail selection of bourbon, Scotch, whiskey, red and white wine, champagne, chilled craft beer, and 100% Blue Agave tequila at our JFK Boulevard store near IAH airport.",
+      "serviceBoxCallLabel": "Call Store for Availability",
+      "eyebrow": "JFK LIQUORS • COMPLETE STORE CATALOG",
+      "headingWhite": "The Curated"
+    },
+    "footer": {
+      "findUsHeading": "Find Us Near IAH",
+      "storefrontTitle": "JFK Liquors Storefront",
+      "legalDisclaimer": "Must be 21+ with valid government ID. Drink responsibly.",
+      "deliveryNote": "Delivery via Uber Eats & DoorDash.",
+      "tagline": "Houston’s elevated bottle shop on JFK Boulevard adjacent to George Bush Intercontinental Airport (IAH).",
+      "departmentsHeading": "Shop Departments",
+      "licenseBadge": "Licensed Houston Retailer",
+      "hoursHeading": "Store Hours",
+      "copyrightText": "JFK Liquors, Houston, Texas. All rights reserved."
+    },
+    "aboutPage": {
+      "card3Title": "Convenient Location",
+      "paragraph2": "Whether you are picking up a bottle on your way home, stocking up for a weekend gathering, or shopping for a gift, we provide a clean, welcoming store with a straightforward retail shopping experience.",
+      "secondaryCtaText": "View All Spirits",
+      "secondaryCtaHref": "/products/spirits",
+      "headingWhite": "Your Neighborhood",
+      "eyebrow": "ABOUT JFK LIQUORS",
+      "card3Text": "Quick in-and-out access on JFK Boulevard near IAH airport terminals with free storefront parking right outside Suite D.",
+      "paragraph3": "Our shelves are stocked with a broad selection of sealed spirits, wines, beers, and mixers — including bourbon and American whiskey, Scotch, tequila and mezcal, vodka, gin, rum, cognac, red and white wines, champagne, and cold craft and imported beer.",
+      "headingGold": "Bottle Shop.",
+      "leadParagraph": "Conveniently located at 15655 John F Kennedy Boulevard, Suite D — just minutes from George Bush Intercontinental Airport (IAH) — JFK Liquors is a neighborhood retail liquor store serving local Houston residents, visitors, and travelers.",
+      "card2Title": "Friendly Service",
+      "card2Text": "Our store team is always glad to help you find a specific bottle on our shelves or choose a great option for your occasion.",
+      "heroImageUrl": "https://res.cloudinary.com/ovmougmy/image/upload/v1793981770/jfk-liquors/collection-story.jpg",
+      "card1Title": "Quality Selection",
+      "primaryCtaText": "Visit Our Store ↗",
+      "primaryCtaHref": "/contact",
+      "card1Text": "We carry a wide variety of popular national brands, Texas favorites, and special-occasion bottles across spirits, wine, and cold beer."
+    },
+    "delivery": {
+      "doorDashUrl": "https://www.doordash.com/convenience/store/52760606?event_type=autocomplete&pickup=false",
+      "uberEatsUrl": "https://www.ubereats.com",
+      "disclaimer": "Availability, selection, fees and delivery area are shown in the app. 21+ with valid ID.",
+      "description": "We're also available on Uber Eats and DoorDash. Open your preferred app and search for JFK Liquors, Houston.",
+      "doorDashDesc": "Find JFK Liquors in the DoorDash app.",
+      "uberEatsCta": "Open Uber Eats",
+      "uberEatsTitle": "Uber Eats",
+      "headingLine1": "STAYING IN?",
+      "doorDashTitle": "DoorDash",
+      "doorDashCta": "Open DoorDash",
+      "eyebrow": "YOUR FAVORITES, DELIVERED",
+      "uberEatsDesc": "Find JFK Liquors in the Uber Eats app.",
+      "headingLine2Gold": "WE'VE GOT OPTIONS."
+    }
+  }
+}

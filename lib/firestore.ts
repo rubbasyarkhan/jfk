@@ -48,8 +48,16 @@ function isLocalhost(): boolean {
   return h === 'localhost' || h === '127.0.0.1';
 }
 
+function isValidProductDoc(docSnap: any): boolean {
+  const data = docSnap?.data?.();
+  if (!data || typeof data !== 'object') return false;
+  // Reject orphaned partial merge stubs that lack both name and category
+  if (!data.name && !data.category) return false;
+  return true;
+}
+
 function sanitizeProductDoc(docSnap: any): Product {
-  const data = docSnap.data();
+  const data = docSnap.data() || {};
   const id = docSnap.id;
   const initialMatch = INITIAL_PRODUCTS.find(
     (p) => p.id === id || p.slug === data.slug
@@ -68,13 +76,27 @@ function sanitizeProductDoc(docSnap: any): Product {
     updatedAt = String(createdAt);
   }
 
+  const resolvedSlug = String(data.slug || initialMatch?.slug || id);
+  const resolvedName = String(
+    data.name ||
+      initialMatch?.name ||
+      resolvedSlug
+        .replace(/-/g, ' ')
+        .replace(/\b\w/g, (l: string) => l.toUpperCase())
+  );
+  const resolvedCategory = String(
+    data.category || initialMatch?.category || 'spirits'
+  );
+
   return {
     ...data,
     id,
-    slug: data.slug || id,
+    name: resolvedName,
+    slug: resolvedSlug,
+    category: resolvedCategory,
     subcategory:
       data.subcategory !== undefined
-        ? data.subcategory
+        ? String(data.subcategory)
         : initialMatch?.subcategory || '',
     isOffer: Boolean(data.isOffer),
     offerText: data.isOffer ? data.offerText || '' : '',
@@ -139,12 +161,11 @@ export function ensureRealtimeSync() {
     onSnapshot(
       collection(db, 'products'),
       (snap) => {
-        if (!snap.empty) {
-          const prods = snap.docs
-            .map(sanitizeProductDoc)
-            .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-          saveLocalProducts(prods, false);
-        }
+        const prods = snap.docs
+          .filter(isValidProductDoc)
+          .map(sanitizeProductDoc)
+          .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+        saveLocalProducts(prods, false);
       },
       (err) => console.warn('Realtime products listener notice:', err)
     );
@@ -221,8 +242,9 @@ export async function getAllProducts(): Promise<Product[]> {
         snap = await getDocs(collection(db, 'products'));
       }
 
-      if (!snap.empty) {
+      if (snap) {
         const cloudProds = snap.docs
+          .filter(isValidProductDoc)
           .map(sanitizeProductDoc)
           .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
 
@@ -244,7 +266,13 @@ export async function getAllProducts(): Promise<Product[]> {
 export async function getProducts(categorySlug?: string): Promise<Product[]> {
   const all = await getAllProducts();
   if (categorySlug) {
-    return all.filter((p) => p.category === categorySlug);
+    const isAgaveAlias =
+      categorySlug === 'agave-and-more' || categorySlug === 'tequila-and-more';
+    return all.filter((p) =>
+      isAgaveAlias
+        ? p.category === 'agave-and-more' || p.category === 'tequila-and-more'
+        : p.category === categorySlug
+    );
   }
   return all;
 }
@@ -337,7 +365,7 @@ export async function updateProduct(
       const snap = await getDocFromServer(doc(db, 'products', id)).catch(() =>
         getDoc(doc(db, 'products', id))
       );
-      if (snap && snap.exists()) {
+      if (snap && snap.exists() && isValidProductDoc(snap)) {
         baseProduct = sanitizeProductDoc(snap);
       }
     } catch {
@@ -345,11 +373,21 @@ export async function updateProduct(
     }
   }
 
+  // Prevent re-creating a deleted product with a partial stub
+  if (!baseProduct && !data.name && !data.category) {
+    return;
+  }
+
   const targetId = baseProduct?.id || id;
   const updatedProduct: Product = cleanForFirestore({
     ...(baseProduct || ({} as Product)),
     ...data,
     id: targetId,
+    name:
+      data.name ||
+      baseProduct?.name ||
+      targetId.replace(/-/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
+    category: data.category || baseProduct?.category || 'spirits',
     slug: (data.slug as string) || baseProduct?.slug || targetId,
     updatedAt: now,
   });
@@ -386,22 +424,52 @@ export async function deleteProduct(id: string): Promise<void> {
   const products = getLocalProducts();
   const target = products.find((p) => p.id === id || p.slug === id);
   const docId = target?.id || id;
+  const targetSlug = target?.slug || id;
+
+  // Immediately update local in-memory state first so UI reflects deletion right away
+  const remaining = products.filter(
+    (p) =>
+      p.id !== id &&
+      p.slug !== id &&
+      p.id !== docId &&
+      p.slug !== targetSlug
+  );
+  saveLocalProducts(remaining);
 
   if (HAS_REAL_FIREBASE && db && db.app) {
-    await deleteDoc(doc(db, 'products', docId));
-    if (id !== docId) {
+    const idsToDelete = new Set<string>([docId, id, targetSlug].filter(Boolean));
+
+    // Also check if any document in Firestore has matching data.id or data.slug
+    try {
+      const snap = await getDocsFromServer(collection(db, 'products')).catch(
+        () => getDocs(collection(db, 'products'))
+      );
+      for (const d of snap.docs) {
+        const dData = d.data();
+        if (
+          d.id === id ||
+          d.id === docId ||
+          d.id === targetSlug ||
+          dData?.id === id ||
+          dData?.id === docId ||
+          dData?.slug === id ||
+          dData?.slug === targetSlug
+        ) {
+          idsToDelete.add(d.id);
+        }
+      }
+    } catch {
+      // Ignore scan error and delete known IDs
+    }
+
+    for (const delId of Array.from(idsToDelete)) {
       try {
-        await deleteDoc(doc(db, 'products', id));
-      } catch {
-        // Ignore
+        await deleteDoc(doc(db, 'products', delId));
+      } catch (err) {
+        console.warn(`Failed to delete Firestore doc ${delId}:`, err);
       }
     }
   }
-
-  const remaining = products.filter(
-    (p) => p.id !== id && p.slug !== id && p.id !== docId
-  );
-  saveLocalProducts(remaining);
 
   if (isLocalhost()) {
     try {
@@ -458,7 +526,16 @@ export async function getCategoryBySlug(
   slug: string
 ): Promise<Category | null> {
   const all = await getCategories();
-  return all.find((c) => c.slug === slug || c.id === slug) || null;
+  const isAgaveAlias = slug === 'agave-and-more' || slug === 'tequila-and-more';
+  return (
+    all.find((c) =>
+      isAgaveAlias
+        ? c.slug === 'agave-and-more' ||
+          c.id === 'agave-and-more' ||
+          c.slug === 'tequila-and-more'
+        : c.slug === slug || c.id === slug
+    ) || null
+  );
 }
 
 export async function createCategory(

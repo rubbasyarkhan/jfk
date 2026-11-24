@@ -18,13 +18,13 @@ export default function ProductImageGallery({ images, name, badge }: Props) {
 
   return (
     <div className="space-y-4">
-      {/* Main Luxury Bottle Display — Clean, Edge-to-Edge, Big & Bold, No Black Box */}
-      <div className="relative aspect-[4/5] sm:aspect-[3/4] rounded-sm overflow-hidden border border-white/[0.08] bg-[#0A0A0A] shadow-2xl">
+      {/* Main Luxury Bottle Display — Consistent Studio Bottle Frame with Visible Brand Label */}
+      <div className="relative aspect-[4/5] sm:aspect-[3/4] rounded-sm overflow-hidden border border-white/[0.08] bg-white shadow-2xl">
         <Image
           src={displayImages[activeIndex]}
           alt={`${name} featured bottle view`}
           fill
-          className="object-cover object-center transition-transform duration-700 ease-out"
+          className="object-contain object-center p-6 transition-transform duration-700 ease-out"
           priority
           sizes="(max-width: 1024px) 100vw, 50vw"
         />
