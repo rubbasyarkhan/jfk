@@ -56,7 +56,7 @@ export default function ProductDetailClient({
                 p.slug !== instProd.slug &&
                 p.id !== instProd.id
             )
-            .slice(0, 3)
+            .slice(0, 4)
         );
       }
     }
@@ -73,7 +73,7 @@ export default function ProductDetailClient({
             .filter(
               (p) => p.slug !== latestProd.slug && p.id !== latestProd.id
             )
-            .slice(0, 3)
+            .slice(0, 4)
         );
       }
     }
@@ -311,7 +311,7 @@ export default function ProductDetailClient({
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {relatedProducts.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}

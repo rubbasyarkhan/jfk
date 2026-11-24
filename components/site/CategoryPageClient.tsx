@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import ProductCard from './ProductCard';
-import CategorySwitcher from './CategorySwitcher';
 import {
   getProducts,
   getCategoryBySlug,
@@ -25,100 +25,134 @@ export default function CategoryPageClient({
   categorySlug: propCategorySlug,
   initialProducts,
   initialCategory,
-  initialCategories,
 }: Props) {
   const [resolvedSlug, setResolvedSlug] = useState(propCategorySlug);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>('all');
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [category, setCategory] = useState<Category | null>(initialCategory);
-  const [allCategories, setAllCategories] =
-    useState<Category[]>(initialCategories);
   const [hydrated, setHydrated] = useState(false);
-  const { brand, catalogPage } = useSiteContent();
+  const { brand, catalogPage, cardConfig } = useSiteContent();
 
   useEffect(() => {
-    let activeSlug = propCategorySlug;
-    if (typeof window !== 'undefined') {
-      const parts = window.location.pathname
-        .replace(/\/+$/, '')
-        .split('/')
-        .filter(Boolean);
-      if (parts[0] === 'products' && parts[1]) {
-        activeSlug = decodeURIComponent(parts[1]);
+    function readUrlState() {
+      let activeSlug = propCategorySlug;
+      if (typeof window !== 'undefined') {
+        const parts = window.location.pathname
+          .replace(/\/+$/, '')
+          .split('/')
+          .filter(Boolean);
+        if (parts[0] === 'products' && parts[1]) {
+          activeSlug = decodeURIComponent(parts[1]);
+        }
+        const subParam = new URLSearchParams(window.location.search).get('sub');
+        setSelectedSubcategory(subParam ? decodeURIComponent(subParam) : 'all');
       }
-      const subParam = new URLSearchParams(window.location.search).get('sub');
-      if (subParam) {
-        setSelectedSubcategory(subParam);
-      } else {
-        setSelectedSubcategory('all');
-      }
+      setResolvedSlug(activeSlug);
+      return activeSlug;
     }
-    setResolvedSlug(activeSlug);
+
+    const activeSlug = readUrlState();
 
     function handleMemoryUpdate() {
+      const currentSlug = readUrlState();
       const instCats = getInstantCategories();
       const instCat =
-        instCats.find((c) => c.slug === activeSlug || c.id === activeSlug) ||
+        instCats.find((c) => c.slug === currentSlug || c.id === currentSlug) ||
         null;
-      setAllCategories(instCats);
       if (instCat) setCategory(instCat);
       setProducts(
-        getInstantProducts().filter((p) => p.category === activeSlug)
+        getInstantProducts().filter((p) => p.category === currentSlug)
       );
     }
     handleMemoryUpdate();
     setHydrated(true);
 
     async function syncCatPage() {
-      const [latestProds, latestCat, latestCats] = await Promise.all([
-        getProducts(activeSlug),
-        getCategoryBySlug(activeSlug),
+      const currentSlug = readUrlState();
+      const [latestProds, latestCat] = await Promise.all([
+        getProducts(currentSlug),
+        getCategoryBySlug(currentSlug),
         getCategories(),
       ]);
       setProducts(latestProds);
       if (latestCat) setCategory(latestCat);
-      setAllCategories(latestCats);
     }
     syncCatPage();
+
+    function handleSubEvent(e: Event) {
+      const custom = e as CustomEvent<{ category?: string; sub?: string }>;
+      if (custom.detail?.sub) {
+        setSelectedSubcategory(custom.detail.sub);
+      } else {
+        readUrlState();
+      }
+    }
+
     window.addEventListener('jfk-catalog-updated', handleMemoryUpdate);
+    window.addEventListener('jfk-sub-change', handleSubEvent);
+    window.addEventListener('popstate', readUrlState);
     window.addEventListener('focus', syncCatPage);
     return () => {
       window.removeEventListener('jfk-catalog-updated', handleMemoryUpdate);
+      window.removeEventListener('jfk-sub-change', handleSubEvent);
+      window.removeEventListener('popstate', readUrlState);
       window.removeEventListener('focus', syncCatPage);
     };
   }, [propCategorySlug]);
 
+  // Also check window.location.search on client renders so Next.js soft navigation updates immediately
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const subParam = new URLSearchParams(window.location.search).get('sub');
+      const targetSub = subParam ? decodeURIComponent(subParam) : 'all';
+      if (targetSub !== selectedSubcategory) {
+        setSelectedSubcategory(targetSub);
+      }
+    }
+  });
+
   const catName = !hydrated
     ? ''
     : category?.name || resolvedSlug.replace(/-/g, ' ');
+
+  // Resolve active subcategory object and display name
+  const activeSubObj =
+    selectedSubcategory !== 'all' && Array.isArray(category?.subcategories)
+      ? category!.subcategories!.find(
+          (s) =>
+            s.slug === selectedSubcategory ||
+            s.id === selectedSubcategory ||
+            s.slug?.toLowerCase() === selectedSubcategory.toLowerCase()
+        )
+      : undefined;
+
+  const activeSubName =
+    selectedSubcategory !== 'all'
+      ? activeSubObj?.name ||
+        selectedSubcategory
+          .replace(/-/g, ' ')
+          .replace(/\b\w/g, (l) => l.toUpperCase())
+      : '';
+
+  // Main heading is Subcategory Name when a subcategory is selected, otherwise Category Name
+  const mainHeading =
+    selectedSubcategory !== 'all' && activeSubName ? activeSubName : catName;
+
   const bannerText = !hydrated
     ? ''
-    : category?.bannerText ||
+    : (selectedSubcategory !== 'all' && activeSubObj?.description) ||
+      category?.bannerText ||
       category?.description ||
       'Curated collection handpicked for quality, character, and exceptional value.';
 
-  // Gather subcategories defined on the category + any subcategory values present on products
-  const subcategoriesList = (() => {
-    const map = new Map<string, string>();
-    if (Array.isArray(category?.subcategories)) {
-      for (const sub of category!.subcategories!) {
-        if (sub.slug && sub.name) {
-          map.set(sub.slug, sub.name);
-        }
-      }
-    }
-    for (const p of products) {
-      if (p.subcategory && !map.has(p.subcategory)) {
-        map.set(
-          p.subcategory,
-          p.subcategory
-            .replace(/-/g, ' ')
-            .replace(/\b\w/g, (l) => l.toUpperCase())
-        );
-      }
-    }
-    return Array.from(map.entries()).map(([slug, name]) => ({ slug, name }));
-  })();
+  // Background image for the product cards section (and hero):
+  // Priority: Subcategory imageUrl -> Category productsBgUrl -> Category imageUrl -> Global cardConfig.sectionBackgroundImageUrl
+  const sectionBgImage =
+    (selectedSubcategory !== 'all' && activeSubObj?.imageUrl) ||
+    category?.productsBgUrl ||
+    category?.imageUrl ||
+    cardConfig?.sectionBackgroundImageUrl ||
+    '';
 
   const displayedProducts =
     selectedSubcategory === 'all'
@@ -129,9 +163,28 @@ export default function CategoryPageClient({
             p.subcategory?.toLowerCase() === selectedSubcategory.toLowerCase()
         );
 
+  const gridColsClass =
+    cardConfig?.cardsPerRow === 3
+      ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8'
+      : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6';
+
   return (
     <div className="bg-[#050505] text-[#FFFFFF] min-h-screen">
-      <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-28 border-b border-white/[0.08] overflow-hidden bg-[#07080A]">
+      {/* Hero Header */}
+      <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-24 border-b border-white/[0.08] overflow-hidden bg-[#07080A]">
+        {sectionBgImage && (
+          <div className="absolute inset-0 z-0 pointer-events-none">
+            <Image
+              src={sectionBgImage}
+              alt={mainHeading}
+              fill
+              className="object-cover object-center opacity-25"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#07080A]/80 to-[#050505]/90" />
+          </div>
+        )}
+
         <div
           className="absolute inset-0 pointer-events-none opacity-40"
           style={{
@@ -147,6 +200,9 @@ export default function CategoryPageClient({
                 <span className="w-2 h-2 rounded-full bg-[#F5D900] animate-pulse" />
                 <p className="text-[11px] font-sans font-bold uppercase tracking-[0.22em] text-[#F5D900]">
                   {brand.storeName.toUpperCase()} &bull; {catName.toUpperCase()}
+                  {selectedSubcategory !== 'all' && activeSubName
+                    ? ` • ${activeSubName.toUpperCase()}`
+                    : ''}
                 </p>
               </div>
 
@@ -154,7 +210,7 @@ export default function CategoryPageClient({
                 className="font-anton tracking-wide uppercase text-white mb-6 leading-[0.95]"
                 style={{ fontSize: 'clamp(2.8rem, 6.2vw, 5.5rem)' }}
               >
-                {catName}
+                {mainHeading}
               </h1>
 
               {bannerText && (
@@ -163,7 +219,7 @@ export default function CategoryPageClient({
                 </p>
               )}
 
-              <div className="flex flex-wrap items-center gap-4 text-xs font-sans text-neutral-400 uppercase tracking-widest">
+              <div className="flex flex-wrap items-center gap-3 text-xs font-sans text-neutral-400 uppercase tracking-widest">
                 <Link
                   href="/"
                   className="hover:text-[#F5D900] transition-colors"
@@ -178,10 +234,27 @@ export default function CategoryPageClient({
                   The Vault
                 </Link>
                 <span>/</span>
-                <span className="text-[#F5D900] font-bold">{catName}</span>
+                {selectedSubcategory !== 'all' && activeSubName ? (
+                  <>
+                    <Link
+                      href={`/products/${resolvedSlug}`}
+                      onClick={() => setSelectedSubcategory('all')}
+                      className="hover:text-[#F5D900] transition-colors"
+                    >
+                      {catName}
+                    </Link>
+                    <span>/</span>
+                    <span className="text-[#F5D900] font-bold">
+                      {activeSubName}
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-[#F5D900] font-bold">{catName}</span>
+                )}
                 <span className="text-neutral-600">•</span>
                 <span className="text-white">
-                  {displayedProducts.length} Bottles
+                  {displayedProducts.length}{' '}
+                  {displayedProducts.length === 1 ? 'Bottle' : 'Bottles'}
                 </span>
               </div>
             </div>
@@ -243,107 +316,78 @@ export default function CategoryPageClient({
         </div>
       </section>
 
-      <CategorySwitcher active={resolvedSlug} categories={allCategories} />
+      {/* Product Cards Section with Admin-Set Background Image & 4 Cards Per Row */}
+      <section className="relative py-14 sm:py-20 overflow-hidden">
+        {sectionBgImage && (
+          <div className="absolute inset-0 z-0 pointer-events-none">
+            <Image
+              src={sectionBgImage}
+              alt=""
+              fill
+              className="object-cover object-center opacity-20"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/95 via-[#050505]/80 to-[#050505]/95" />
+          </div>
+        )}
 
-      <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 py-14 sm:py-20">
-        {/* Subcategory Filter Bar (if category has subcategories) */}
-        {subcategoriesList.length > 0 && (
-          <div className="mb-10 pb-6 border-b border-white/[0.08]">
-            <p className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-neutral-400 mb-3">
-              Filter {catName} by Subcategory
+        <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 relative z-10">
+          <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/[0.08]">
+            <p className="text-xs font-sans uppercase tracking-wider text-neutral-400">
+              Showing{' '}
+              <span className="text-[#F5D900] font-bold">
+                {displayedProducts.length}
+              </span>{' '}
+              {mainHeading} {displayedProducts.length === 1 ? 'Bottle' : 'Bottles'}
             </p>
-            <div className="flex flex-wrap items-center gap-2.5">
-              <button
-                type="button"
-                onClick={() => setSelectedSubcategory('all')}
-                className={`px-4 py-2 rounded-sm text-xs font-sans font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                  selectedSubcategory === 'all'
-                    ? 'bg-[#F5D900] text-[#050505] shadow-md'
-                    : 'bg-[#121316] text-neutral-300 border border-white/10 hover:border-[#F5D900] hover:text-[#F5D900]'
-                }`}
-              >
-                All {catName} ({products.length})
-              </button>
-              {subcategoriesList.map((sub) => {
-                const count = products.filter(
-                  (p) => p.subcategory === sub.slug
-                ).length;
-                const active = selectedSubcategory === sub.slug;
-                return (
-                  <button
-                    key={sub.slug}
-                    type="button"
-                    onClick={() => setSelectedSubcategory(sub.slug)}
-                    className={`px-4 py-2 rounded-sm text-xs font-sans font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                      active
-                        ? 'bg-[#F5D900] text-[#050505] shadow-md'
-                        : 'bg-[#121316] text-neutral-300 border border-white/10 hover:border-[#F5D900] hover:text-[#F5D900]'
-                    }`}
-                  >
-                    {sub.name} ({count})
-                  </button>
-                );
-              })}
+            <a
+              href={`tel:${brand.phoneTel}`}
+              className="text-xs font-sans text-[#F5D900] font-semibold hover:underline"
+            >
+              Call Store: {brand.phoneDisplay}
+            </a>
+          </div>
+
+          {!hydrated ? (
+            <div className={`grid ${gridColsClass}`}>
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="aspect-[4/5] rounded bg-[#121316] border border-white/[0.06] animate-pulse"
+                />
+              ))}
             </div>
-          </div>
-        )}
-
-        <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/[0.08]">
-          <p className="text-xs font-sans uppercase tracking-wider text-neutral-400">
-            Showing{' '}
-            <span className="text-[#F5D900] font-bold">
-              {displayedProducts.length}
-            </span>{' '}
-            Curated Bottles
-          </p>
-          <a
-            href={`tel:${brand.phoneTel}`}
-            className="text-xs font-sans text-[#F5D900] font-semibold hover:underline"
-          >
-            Call Store: {brand.phoneDisplay}
-          </a>
+          ) : displayedProducts.length === 0 ? (
+            <div className="text-center py-24 rounded bg-[#161616]/90 border border-white/10 backdrop-blur-sm">
+              <h3 className="font-anton text-3xl text-[#FFFFFF] mb-2 uppercase tracking-wide">
+                No Bottles Found in {mainHeading}
+              </h3>
+              <p className="text-neutral-300 font-sans text-sm max-w-md mx-auto mb-6">
+                Our inventory changes daily with fresh distributor allocations.
+                View all bottles in {catName} or call the store directly.
+              </p>
+              {selectedSubcategory !== 'all' ? (
+                <Link
+                  href={`/products/${resolvedSlug}`}
+                  onClick={() => setSelectedSubcategory('all')}
+                  className="btn-primary cursor-pointer"
+                >
+                  View All {catName}
+                </Link>
+              ) : (
+                <a href={`tel:${brand.phoneTel}`} className="btn-primary">
+                  Call Store: {brand.phoneFull} ↗
+                </a>
+              )}
+            </div>
+          ) : (
+            <div className={`grid ${gridColsClass}`}>
+              {displayedProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
         </div>
-
-        {!hydrated ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div
-                key={i}
-                className="aspect-[4/5] rounded bg-[#121316] border border-white/[0.06] animate-pulse"
-              />
-            ))}
-          </div>
-        ) : displayedProducts.length === 0 ? (
-          <div className="text-center py-24 rounded bg-[#161616] border border-white/10">
-            <h3 className="font-anton text-3xl text-[#FFFFFF] mb-2 uppercase tracking-wide">
-              No Bottles In This Filter
-            </h3>
-            <p className="text-neutral-300 font-sans text-sm max-w-md mx-auto mb-6">
-              Our inventory changes daily with fresh distributor allocations.
-              View all bottles in this department or call the store directly.
-            </p>
-            {selectedSubcategory !== 'all' ? (
-              <button
-                type="button"
-                onClick={() => setSelectedSubcategory('all')}
-                className="btn-primary cursor-pointer"
-              >
-                Show All {catName}
-              </button>
-            ) : (
-              <a href={`tel:${brand.phoneTel}`} className="btn-primary">
-                Call Store: {brand.phoneFull} ↗
-              </a>
-            )}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {displayedProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        )}
-      </div>
+      </section>
     </div>
   );
 }

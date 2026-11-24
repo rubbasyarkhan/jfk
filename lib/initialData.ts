@@ -78,7 +78,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
     headingWhite: 'Featured &',
     headingGold: 'Allocated Vault.',
     browseAllText: 'Browse Entire Collection',
-    maxItems: 6,
+    maxItems: 8,
   },
   promoBanner: {
     eyebrow: 'ALLOCATED WHISKEY DROPS • IN STORE ONLY',
@@ -172,6 +172,8 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
       'Our store team updates featured bottle offers and multi-pack promotions weekly. Call ahead or stop in at Suite D to claim current in-store offers.',
   },
   cardConfig: {
+    cardsPerRow: 4,
+    sectionBackgroundImageUrl: '',
     imageAspect: '4/3',
     textAlign: 'left',
     specsDisplayStyle: 'pills',

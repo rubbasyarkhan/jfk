@@ -567,23 +567,131 @@ export default function SiteContentManager() {
                 </div>
               </div>
 
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div>
+                  <label className="admin-label">
+                    Cards Per Row (Desktop Grid)
+                  </label>
+                  <select
+                    value={content.cardConfig.cardsPerRow || 4}
+                    onChange={(e) =>
+                      updateSection(
+                        'cardConfig',
+                        'cardsPerRow',
+                        Number(e.target.value) as 3 | 4
+                      )
+                    }
+                    className="admin-input"
+                  >
+                    <option value={4}>4 Cards in a Row (Default)</option>
+                    <option value={3}>3 Cards in a Row</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="admin-label">
+                    Card Action Button Label
+                  </label>
+                  <input
+                    type="text"
+                    value={content.cardConfig.ctaButtonText}
+                    onChange={(e) =>
+                      updateSection(
+                        'cardConfig',
+                        'ctaButtonText',
+                        e.target.value
+                      )
+                    }
+                    placeholder="View Details & Availability"
+                    className="admin-input"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Section 3: Products Section Background Image */}
+            <div className="p-6 sm:p-8 rounded-2xl bg-[#242424] border border-[#3A3A3A] space-y-5">
               <div>
+                <h2 className="font-anton text-2xl text-white uppercase tracking-wide">
+                  3. Products Section Background Image (Cloudinary CDN)
+                </h2>
+                <p className="text-xs text-[#A0A0A0] mt-1">
+                  This background image is displayed behind the product cards grid section across the storefront (Homepage Vault, Catalog, and Offers). Individual categories and subcategories can also override it with their own background image.
+                </p>
+              </div>
+
+              <div className="space-y-3">
                 <label className="admin-label">
-                  Card Action Button Label
+                  Products Section Background Image URL
                 </label>
-                <input
-                  type="text"
-                  value={content.cardConfig.ctaButtonText}
-                  onChange={(e) =>
-                    updateSection(
-                      'cardConfig',
-                      'ctaButtonText',
-                      e.target.value
-                    )
-                  }
-                  placeholder="View Details & Availability"
-                  className="admin-input"
-                />
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <input
+                    type="url"
+                    value={content.cardConfig.sectionBackgroundImageUrl || ''}
+                    onChange={(e) =>
+                      updateSection(
+                        'cardConfig',
+                        'sectionBackgroundImageUrl',
+                        e.target.value
+                      )
+                    }
+                    placeholder="https://res.cloudinary.com/..."
+                    className="admin-input flex-1"
+                  />
+                  {content.cardConfig.sectionBackgroundImageUrl && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        updateSection(
+                          'cardConfig',
+                          'sectionBackgroundImageUrl',
+                          ''
+                        )
+                      }
+                      className="px-4 py-2 rounded-lg bg-red-950/80 hover:bg-red-900 text-red-200 text-xs font-bold uppercase tracking-wider border border-red-800/50 transition-colors cursor-pointer shrink-0"
+                    >
+                      Clear Background
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex flex-wrap items-center gap-4">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) =>
+                      handleImageUpload(
+                        'cardConfig',
+                        'sectionBackgroundImageUrl',
+                        e.target.files?.[0],
+                        'jfk-liquors/site'
+                      )
+                    }
+                    className="text-xs text-neutral-300 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#F5D900] file:text-[#050505] hover:file:bg-[#FFE524] cursor-pointer"
+                  />
+                  {uploadingField === 'cardConfig.sectionBackgroundImageUrl' && (
+                    <span className="text-xs text-[#F5D900] font-bold animate-pulse">
+                      Uploading to Cloudinary...
+                    </span>
+                  )}
+                </div>
+
+                {content.cardConfig.sectionBackgroundImageUrl && (
+                  <div className="relative h-36 w-full rounded-xl overflow-hidden bg-[#0A0A0A] border border-white/10">
+                    <Image
+                      src={content.cardConfig.sectionBackgroundImageUrl}
+                      alt="Products Section Background Preview"
+                      fill
+                      className="object-cover object-center opacity-75"
+                      sizes="(max-width: 768px) 100vw, 600px"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex items-end p-3">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-[#F5D900]">
+                        Live Products Section Background Preview
+                      </span>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

@@ -101,6 +101,13 @@ export default function Header() {
                   <Link
                     href={catHref}
                     prefetch={true}
+                    onClick={() => {
+                      window.dispatchEvent(
+                        new CustomEvent('jfk-sub-change', {
+                          detail: { category: cat.slug, sub: 'all' },
+                        })
+                      );
+                    }}
                     className={`flex items-center gap-1 text-[11px] font-medium uppercase tracking-[0.18em] transition-colors py-2 whitespace-nowrap ${
                       isActive
                         ? 'text-[#F5D900] font-bold'
@@ -136,7 +143,14 @@ export default function Header() {
                         <Link
                           href={catHref}
                           prefetch={true}
-                          onClick={() => setHoveredCat(null)}
+                          onClick={() => {
+                            setHoveredCat(null);
+                            window.dispatchEvent(
+                              new CustomEvent('jfk-sub-change', {
+                                detail: { category: cat.slug, sub: 'all' },
+                              })
+                            );
+                          }}
                           className="block px-3.5 py-2 bg-[#141519] border-b border-white/[0.06] mb-1 hover:bg-[#1a1b20] transition-colors"
                         >
                           <p className="text-[11px] font-bold text-[#F5D900] uppercase tracking-wider">
@@ -148,7 +162,14 @@ export default function Header() {
                             key={sub.id || sub.slug}
                             href={`${catHref}?sub=${encodeURIComponent(sub.slug)}`}
                             prefetch={true}
-                            onClick={() => setHoveredCat(null)}
+                            onClick={() => {
+                              setHoveredCat(null);
+                              window.dispatchEvent(
+                                new CustomEvent('jfk-sub-change', {
+                                  detail: { category: cat.slug, sub: sub.slug },
+                                })
+                              );
+                            }}
                             className="group block px-3.5 py-2 hover:bg-[#141519] transition-colors"
                           >
                             <p className="text-xs font-medium text-neutral-200 group-hover:text-[#F5D900] transition-colors">

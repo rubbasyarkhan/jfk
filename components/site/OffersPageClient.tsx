@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import ProductCard from './ProductCard';
 import {
   getAllProducts,
@@ -10,30 +11,27 @@ import {
   getInstantCategories,
 } from '@/lib/firestore';
 import { useSiteContent } from '@/lib/useSiteContent';
-import type { Product, Category } from '@/types';
+import type { Product } from '@/types';
 
 export default function OffersPageClient() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [activeCategory, setActiveCategory] = useState<string>('all');
   const [hydrated, setHydrated] = useState(false);
-  const { brand, offersPage, catalogPage } = useSiteContent();
+  const { brand, offersPage, catalogPage, cardConfig } = useSiteContent();
 
   useEffect(() => {
     function handleMemoryUpdate() {
       setProducts(getInstantProducts());
-      setCategories(getInstantCategories());
+      getInstantCategories();
     }
     handleMemoryUpdate();
     setHydrated(true);
 
     async function syncOffers() {
-      const [latestProds, latestCats] = await Promise.all([
+      const [latestProds] = await Promise.all([
         getAllProducts(),
         getCategories(),
       ]);
       setProducts(latestProds);
-      setCategories(latestCats);
     }
     syncOffers();
     window.addEventListener('jfk-catalog-updated', handleMemoryUpdate);
@@ -56,10 +54,12 @@ export default function OffersPageClient() {
     return tagged.length > 0 ? tagged : products.filter((p) => p.featured);
   })();
 
-  const displayedOffers =
-    activeCategory === 'all'
-      ? allOffers
-      : allOffers.filter((p) => p.category === activeCategory);
+  const displayedOffers = allOffers;
+  const sectionBgImage = cardConfig?.sectionBackgroundImageUrl || '';
+  const gridColsClass =
+    cardConfig?.cardsPerRow === 3
+      ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8'
+      : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6';
 
   return (
     <div className="bg-[#050505] text-[#FFFFFF] min-h-screen">
@@ -151,96 +151,68 @@ export default function OffersPageClient() {
         </div>
       </section>
 
-      {/* Filter Offers by Category */}
-      <div className="sticky top-[74px] sm:top-[80px] z-30 py-3.5 border-b border-white/[0.08] bg-[#050505]/95 backdrop-blur-md">
-        <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20">
-          <div className="flex items-center gap-3 overflow-x-auto no-scrollbar py-1">
-            <button
-              type="button"
-              onClick={() => setActiveCategory('all')}
-              className={`px-5 py-2 rounded-sm text-xs font-sans font-bold uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer ${
-                activeCategory === 'all'
-                  ? 'bg-[#F5D900] text-[#050505] shadow-lg shadow-[#F5D900]/20'
-                  : 'bg-[#121316] text-[#FFFFFF] border border-white/10 hover:border-[#F5D900] hover:text-[#F5D900]'
-              }`}
-            >
-              All Offers ({allOffers.length})
-            </button>
-            {categories.map((cat) => {
-              const count = allOffers.filter(
-                (p) => p.category === cat.slug
-              ).length;
-              return (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => setActiveCategory(cat.slug)}
-                  className={`px-5 py-2 rounded-sm text-xs font-sans font-bold uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer ${
-                    activeCategory === cat.slug
-                      ? 'bg-[#F5D900] text-[#050505] shadow-lg shadow-[#F5D900]/20'
-                      : 'bg-[#121316] text-[#FFFFFF] border border-white/10 hover:border-[#F5D900] hover:text-[#F5D900]'
-                  }`}
-                >
-                  {cat.name} ({count})
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
       {/* Offers Grid */}
-      <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 py-16 sm:py-20">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 pb-4 border-b border-white/[0.08] gap-3">
-          <p className="text-xs font-sans uppercase tracking-wider text-neutral-400">
-            Showing{' '}
-            <span className="text-[#F5D900] font-bold">
-              {displayedOffers.length}
-            </span>{' '}
-            Featured Store Offers
-          </p>
-          <Link
-            href="/products"
-            className="text-xs font-sans text-[#F5D900] font-semibold hover:underline"
-          >
-            Browse Complete Store Catalog ↗
-          </Link>
-        </div>
-
-        {!hydrated ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="aspect-[4/5] rounded bg-[#121316] border border-white/[0.06] animate-pulse"
-              />
-            ))}
-          </div>
-        ) : displayedOffers.length === 0 ? (
-          <div className="text-center py-24 rounded bg-[#121316] border border-white/10">
-            <h3 className="font-anton text-3xl text-white mb-2 uppercase tracking-wide">
-              No Offers In This Filter
-            </h3>
-            <p className="text-neutral-300 font-sans text-sm max-w-md mx-auto mb-6">
-              Check all active offers across departments or call our JFK
-              Boulevard store directly for today&apos;s in-store specials.
-            </p>
-            <button
-              type="button"
-              onClick={() => setActiveCategory('all')}
-              className="btn-primary cursor-pointer"
-            >
-              Show All Offers
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {displayedOffers.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+      <section className="relative py-16 sm:py-20 overflow-hidden">
+        {sectionBgImage && (
+          <div className="absolute inset-0 z-0 pointer-events-none">
+            <Image
+              src={sectionBgImage}
+              alt=""
+              fill
+              className="object-cover object-center opacity-20"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/95 via-[#050505]/80 to-[#050505]/95" />
           </div>
         )}
-      </div>
+
+        <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 relative z-10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 pb-4 border-b border-white/[0.08] gap-3">
+            <p className="text-xs font-sans uppercase tracking-wider text-neutral-400">
+              Showing{' '}
+              <span className="text-[#F5D900] font-bold">
+                {displayedOffers.length}
+              </span>{' '}
+              Featured Store Offers
+            </p>
+            <Link
+              href="/products"
+              className="text-xs font-sans text-[#F5D900] font-semibold hover:underline"
+            >
+              Browse Complete Store Catalog ↗
+            </Link>
+          </div>
+
+          {!hydrated ? (
+            <div className={`grid ${gridColsClass}`}>
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="aspect-[4/5] rounded bg-[#121316] border border-white/[0.06] animate-pulse"
+                />
+              ))}
+            </div>
+          ) : displayedOffers.length === 0 ? (
+            <div className="text-center py-24 rounded bg-[#121316] border border-white/10">
+              <h3 className="font-anton text-3xl text-white mb-2 uppercase tracking-wide">
+                No Active Offers Right Now
+              </h3>
+              <p className="text-neutral-300 font-sans text-sm max-w-md mx-auto mb-6">
+                Check our full collection or call our JFK Boulevard store
+                directly for today&apos;s in-store specials.
+              </p>
+              <Link href="/products" className="btn-primary cursor-pointer">
+                Browse Full Collection
+              </Link>
+            </div>
+          ) : (
+            <div className={`grid ${gridColsClass}`}>
+              {displayedOffers.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Promotional Offer Highlight Banner */}
       <section className="py-16 bg-[#4A0A10] border-t border-[#F5D900]/25">

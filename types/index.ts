@@ -40,6 +40,7 @@ export interface Subcategory {
   name: string;
   slug: string;
   description?: string;
+  imageUrl?: string;
 }
 
 export interface Category {
@@ -49,6 +50,7 @@ export interface Category {
   description?: string;
   bannerText?: string;
   imageUrl?: string;
+  productsBgUrl?: string;
   sortOrder: number;
   showInNavbar?: boolean;
   subcategories?: Subcategory[];
@@ -57,6 +59,8 @@ export interface Category {
 }
 
 export interface ProductCardConfig {
+  cardsPerRow?: 3 | 4;
+  sectionBackgroundImageUrl?: string;
   imageAspect: '4/3' | '1/1' | '4/5';
   textAlign: 'left' | 'center';
   specsDisplayStyle: 'pills' | 'grid' | 'inline';

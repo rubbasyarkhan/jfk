@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import ProductCard from './ProductCard';
-import CategorySwitcher from './CategorySwitcher';
 import {
   getProducts,
   getCategories,
@@ -20,28 +20,25 @@ interface Props {
 
 export default function AllProductsClient({
   initialProducts,
-  initialCategories,
 }: Props) {
   const [products, setProducts] = useState<Product[]>(initialProducts);
-  const [categories, setCategories] = useState<Category[]>(initialCategories);
   const [hydrated, setHydrated] = useState(false);
-  const { brand, catalogPage } = useSiteContent();
+  const { brand, catalogPage, cardConfig } = useSiteContent();
 
   useEffect(() => {
     function handleMemoryUpdate() {
       setProducts(getInstantProducts());
-      setCategories(getInstantCategories());
+      getInstantCategories();
     }
     handleMemoryUpdate();
     setHydrated(true);
 
     async function syncAll() {
-      const [latestProds, latestCats] = await Promise.all([
+      const [latestProds] = await Promise.all([
         getProducts(),
         getCategories(),
       ]);
       setProducts(latestProds);
-      setCategories(latestCats);
     }
     syncAll();
     window.addEventListener('jfk-catalog-updated', handleMemoryUpdate);
@@ -52,10 +49,28 @@ export default function AllProductsClient({
     };
   }, []);
 
+  const sectionBgImage = cardConfig?.sectionBackgroundImageUrl || '';
+  const gridColsClass =
+    cardConfig?.cardsPerRow === 3
+      ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8'
+      : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6';
+
   return (
     <div className="bg-[#050505] text-[#FFFFFF] min-h-screen">
       {/* Editorial Luxury Hero Section */}
       <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-28 border-b border-white/[0.08] overflow-hidden bg-[#07080A]">
+        {sectionBgImage && (
+          <div className="absolute inset-0 z-0 pointer-events-none">
+            <Image
+              src={sectionBgImage}
+              alt=""
+              fill
+              className="object-cover object-center opacity-20"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/95 via-[#050505]/80 to-[#050505]/95" />
+          </div>
+        )}
         <div
           className="absolute inset-0 pointer-events-none opacity-40"
           style={{
@@ -163,53 +178,65 @@ export default function AllProductsClient({
         </div>
       </section>
 
-      <CategorySwitcher active="" categories={categories} />
-
-      <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 py-16 sm:py-20">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 pb-4 border-b border-white/[0.08] gap-3">
-          <p className="text-xs font-sans uppercase tracking-wider text-neutral-400">
-            Showing{' '}
-            <span className="text-[#F5D900] font-bold">{products.length}</span>{' '}
-            Curated Bottles
-          </p>
-          <a
-            href={`tel:${brand.phoneTel}`}
-            className="text-xs font-sans text-[#F5D900] font-semibold hover:underline"
-          >
-            Call Store: {brand.phoneDisplay}
-          </a>
-        </div>
-
-        {!hydrated ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="aspect-[4/5] rounded bg-[#121316] border border-white/[0.06] animate-pulse"
-              />
-            ))}
-          </div>
-        ) : products.length === 0 ? (
-          <div className="text-center py-24 rounded bg-[#121316] border border-white/10">
-            <h3 className="font-anton text-3xl text-white mb-2 uppercase tracking-wide">
-              Catalog Updating
-            </h3>
-            <p className="text-neutral-300 font-sans text-sm max-w-md mx-auto mb-6">
-              Our inventory changes daily with fresh distributor allocations.
-              Please call the store directly or visit us in person.
-            </p>
-            <a href={`tel:${brand.phoneTel}`} className="btn-primary">
-              Call Store: {brand.phoneFull} ↗
-            </a>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+      <section className="relative py-16 sm:py-20 overflow-hidden">
+        {sectionBgImage && (
+          <div className="absolute inset-0 z-0 pointer-events-none">
+            <Image
+              src={sectionBgImage}
+              alt=""
+              fill
+              className="object-cover object-center opacity-20"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/95 via-[#050505]/80 to-[#050505]/95" />
           </div>
         )}
-      </div>
+
+        <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 relative z-10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 pb-4 border-b border-white/[0.08] gap-3">
+            <p className="text-xs font-sans uppercase tracking-wider text-neutral-400">
+              Showing{' '}
+              <span className="text-[#F5D900] font-bold">{products.length}</span>{' '}
+              Curated Bottles
+            </p>
+            <a
+              href={`tel:${brand.phoneTel}`}
+              className="text-xs font-sans text-[#F5D900] font-semibold hover:underline"
+            >
+              Call Store: {brand.phoneDisplay}
+            </a>
+          </div>
+
+          {!hydrated ? (
+            <div className={`grid ${gridColsClass}`}>
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="aspect-[4/5] rounded bg-[#121316] border border-white/[0.06] animate-pulse"
+                />
+              ))}
+            </div>
+          ) : products.length === 0 ? (
+            <div className="text-center py-24 rounded bg-[#121316] border border-white/10">
+              <h3 className="font-anton text-3xl text-white mb-2 uppercase tracking-wide">
+                Catalog Updating
+              </h3>
+              <p className="text-neutral-300 font-sans text-sm max-w-md mx-auto mb-6">
+                Our inventory changes daily with fresh distributor allocations.
+                Please call the store directly or visit us in person.
+              </p>
+              <a href={`tel:${brand.phoneTel}`} className="btn-primary">
+                Call Store: {brand.phoneFull} ↗
+              </a>
+            </div>
+          ) : (
+            <div className={`grid ${gridColsClass}`}>
+              {products.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   );
 }

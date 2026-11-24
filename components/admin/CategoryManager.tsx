@@ -44,6 +44,10 @@ export default function CategoryManager({ initialCategories }: Props) {
 
   // Inline Quick Subcategory input per category ID
   const [newSubInputs, setNewSubInputs] = useState<Record<string, string>>({});
+  const [newSubDescInputs, setNewSubDescInputs] = useState<
+    Record<string, string>
+  >({});
+  const [uploadingSubKey, setUploadingSubKey] = useState<string | null>(null);
 
   const [feedback, setFeedback] = useState<{
     type: 'success' | 'error';
@@ -78,11 +82,14 @@ export default function CategoryManager({ initialCategories }: Props) {
   const [description, setDescription] = useState('');
   const [bannerText, setBannerText] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [productsBgUrl, setProductsBgUrl] = useState('');
   const [sortOrder, setSortOrder] = useState('1');
   const [showInNavbar, setShowInNavbar] = useState(true);
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [modalNewSubName, setModalNewSubName] = useState('');
+  const [modalNewSubDesc, setModalNewSubDesc] = useState('');
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingProductsBg, setUploadingProductsBg] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -93,10 +100,12 @@ export default function CategoryManager({ initialCategories }: Props) {
     setDescription('');
     setBannerText('');
     setImageUrl('');
+    setProductsBgUrl('');
     setSortOrder((categories.length + 1).toString());
     setShowInNavbar(true);
     setSubcategories([]);
     setModalNewSubName('');
+    setModalNewSubDesc('');
     setError('');
     setIsModalOpen(true);
   }
@@ -108,12 +117,14 @@ export default function CategoryManager({ initialCategories }: Props) {
     setDescription(cat.description || '');
     setBannerText(cat.bannerText || '');
     setImageUrl(cat.imageUrl || '');
+    setProductsBgUrl(cat.productsBgUrl || '');
     setSortOrder((cat.sortOrder || 1).toString());
     setShowInNavbar(cat.showInNavbar !== false);
     setSubcategories(
       Array.isArray(cat.subcategories) ? [...cat.subcategories] : []
     );
     setModalNewSubName('');
+    setModalNewSubDesc('');
     setError('');
     setIsModalOpen(true);
   }
@@ -139,17 +150,48 @@ export default function CategoryManager({ initialCategories }: Props) {
       .replace(/^-|-$/g, '');
     if (subcategories.some((s) => s.slug === subSlug)) {
       setModalNewSubName('');
+      setModalNewSubDesc('');
       return;
     }
     setSubcategories((prev) => [
       ...prev,
-      { id: subSlug, name: trimmed, slug: subSlug },
+      {
+        id: subSlug,
+        name: trimmed,
+        slug: subSlug,
+        description: modalNewSubDesc.trim() || undefined,
+      },
     ]);
     setModalNewSubName('');
+    setModalNewSubDesc('');
   }
 
   function handleRemoveModalSubcategory(subSlug: string) {
     setSubcategories((prev) => prev.filter((s) => s.slug !== subSlug));
+  }
+
+  async function handleModalSubImageUpload(
+    subSlug: string,
+    file: File | undefined
+  ) {
+    if (!file) return;
+    const key = `modal:${subSlug}`;
+    setUploadingSubKey(key);
+    try {
+      const uploadedUrl = await uploadImageToCloudinary(
+        file,
+        'jfk-liquors/categories'
+      );
+      setSubcategories((prev) =>
+        prev.map((s) =>
+          s.slug === subSlug ? { ...s, imageUrl: uploadedUrl } : s
+        )
+      );
+    } catch (err: any) {
+      setError(err?.message || 'Error uploading subcategory image');
+    } finally {
+      setUploadingSubKey(null);
+    }
   }
 
   async function handleToggleNavbar(cat: Category) {
@@ -176,6 +218,7 @@ export default function CategoryManager({ initialCategories }: Props) {
 
   async function handleQuickAddSubcategory(cat: Category) {
     const rawName = (newSubInputs[cat.id] || '').trim();
+    const rawDesc = (newSubDescInputs[cat.id] || '').trim();
     if (!rawName) return;
     const subSlug = rawName
       .toLowerCase()
@@ -186,11 +229,17 @@ export default function CategoryManager({ initialCategories }: Props) {
       : [];
     if (currentSubs.some((s) => s.slug === subSlug)) {
       setNewSubInputs((prev) => ({ ...prev, [cat.id]: '' }));
+      setNewSubDescInputs((prev) => ({ ...prev, [cat.id]: '' }));
       return;
     }
     const updatedSubs: Subcategory[] = [
       ...currentSubs,
-      { id: subSlug, name: rawName, slug: subSlug },
+      {
+        id: subSlug,
+        name: rawName,
+        slug: subSlug,
+        ...(rawDesc ? { description: rawDesc } : {}),
+      },
     ];
     setCategories((prev) =>
       prev.map((c) =>
@@ -198,6 +247,7 @@ export default function CategoryManager({ initialCategories }: Props) {
       )
     );
     setNewSubInputs((prev) => ({ ...prev, [cat.id]: '' }));
+    setNewSubDescInputs((prev) => ({ ...prev, [cat.id]: '' }));
 
     try {
       await updateCategory(cat.id, { subcategories: updatedSubs });
@@ -211,6 +261,46 @@ export default function CategoryManager({ initialCategories }: Props) {
         type: 'error',
         message: err?.message || 'Failed to save subcategory',
       });
+    }
+  }
+
+  async function handleQuickSubImageUpload(
+    cat: Category,
+    subSlug: string,
+    file: File | undefined
+  ) {
+    if (!file) return;
+    const key = `${cat.id}:${subSlug}`;
+    setUploadingSubKey(key);
+    try {
+      const uploadedUrl = await uploadImageToCloudinary(
+        file,
+        'jfk-liquors/categories'
+      );
+      const currentSubs = Array.isArray(cat.subcategories)
+        ? cat.subcategories
+        : [];
+      const updatedSubs = currentSubs.map((s) =>
+        s.slug === subSlug ? { ...s, imageUrl: uploadedUrl } : s
+      );
+      setCategories((prev) =>
+        prev.map((c) =>
+          c.id === cat.id ? { ...c, subcategories: updatedSubs } : c
+        )
+      );
+      await updateCategory(cat.id, { subcategories: updatedSubs });
+      setFeedback({
+        type: 'success',
+        message: `Uploaded subcategory background image for "${subSlug}" to Cloudinary & saved to Firebase!`,
+      });
+      setTimeout(() => setFeedback(null), 3500);
+    } catch (err: any) {
+      setFeedback({
+        type: 'error',
+        message: err?.message || 'Failed to upload subcategory image',
+      });
+    } finally {
+      setUploadingSubKey(null);
     }
   }
 
@@ -337,6 +427,28 @@ export default function CategoryManager({ initialCategories }: Props) {
     }
   }
 
+  async function handleProductsBgUpload(
+    e: React.ChangeEvent<HTMLInputElement>
+  ) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingProductsBg(true);
+    setError('');
+
+    try {
+      const uploadedUrl = await uploadImageToCloudinary(
+        file,
+        'jfk-liquors/categories'
+      );
+      setProductsBgUrl(uploadedUrl);
+    } catch (err: any) {
+      setError(err?.message || 'Error uploading products background image');
+    } finally {
+      setUploadingProductsBg(false);
+    }
+  }
+
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim()) {
@@ -359,6 +471,7 @@ export default function CategoryManager({ initialCategories }: Props) {
         description: description.trim(),
         bannerText: bannerText.trim(),
         imageUrl: imageUrl.trim(),
+        productsBgUrl: productsBgUrl.trim(),
         sortOrder: Number(sortOrder) || 1,
         showInNavbar,
         subcategories,
@@ -537,25 +650,76 @@ export default function CategoryManager({ initialCategories }: Props) {
                     </div>
 
                     {catSubcategories.length > 0 ? (
-                      <div className="flex flex-wrap gap-2">
-                        {catSubcategories.map((sub) => (
-                          <span
-                            key={sub.slug}
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#1C1D22] border border-white/10 text-xs text-neutral-200"
-                          >
-                            <span>{sub.name}</span>
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handleQuickRemoveSubcategory(cat, sub.slug)
-                              }
-                              className="text-neutral-500 hover:text-red-400 font-bold ml-1 cursor-pointer"
-                              title="Remove subcategory"
+                      <div className="space-y-2">
+                        {catSubcategories.map((sub) => {
+                          const isUploadingThisSub =
+                            uploadingSubKey === `${cat.id}:${sub.slug}`;
+                          return (
+                            <div
+                              key={sub.slug}
+                              className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 rounded-lg bg-[#1C1D22] border border-white/10 text-xs text-neutral-200"
                             >
-                              ✕
-                            </button>
-                          </span>
-                        ))}
+                              <div className="flex items-center gap-2.5 min-w-0">
+                                {sub.imageUrl ? (
+                                  <img
+                                    src={sub.imageUrl}
+                                    alt={sub.name}
+                                    className="w-7 h-7 rounded object-cover border border-[#F5D900]/40 flex-shrink-0"
+                                  />
+                                ) : (
+                                  <div className="w-7 h-7 rounded bg-[#0E0F12] border border-white/10 flex items-center justify-center text-[9px] text-neutral-500 flex-shrink-0">
+                                    BG
+                                  </div>
+                                )}
+                                <div className="min-w-0">
+                                  <p className="font-semibold text-white truncate">
+                                    {sub.name}
+                                  </p>
+                                  {sub.description && (
+                                    <p className="text-[10px] text-neutral-400 truncate max-w-[220px]">
+                                      {sub.description}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+
+                              <div className="flex items-center gap-2">
+                                <label
+                                  className="px-2 py-1 rounded bg-[#242424] hover:bg-[#F5D900] hover:text-[#050505] text-[10px] font-bold uppercase tracking-wider border border-white/10 transition-colors cursor-pointer"
+                                  title="Upload subcategory hero & products section background image (Cloudinary)"
+                                >
+                                  {isUploadingThisSub
+                                    ? 'Uploading...'
+                                    : sub.imageUrl
+                                      ? 'Change Bg'
+                                      : '+ Bg Image'}
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) =>
+                                      handleQuickSubImageUpload(
+                                        cat,
+                                        sub.slug,
+                                        e.target.files?.[0]
+                                      )
+                                    }
+                                  />
+                                </label>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleQuickRemoveSubcategory(cat, sub.slug)
+                                  }
+                                  className="text-neutral-500 hover:text-red-400 font-bold px-1.5 py-0.5 cursor-pointer"
+                                  title="Remove subcategory"
+                                >
+                                  ✕
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     ) : (
                       <p className="text-xs text-neutral-500 italic">
@@ -564,32 +728,52 @@ export default function CategoryManager({ initialCategories }: Props) {
                     )}
 
                     {/* Quick Add Subcategory Input */}
-                    <div className="flex gap-2 pt-1">
-                      <input
-                        type="text"
-                        placeholder={`Add subcategory to ${cat.name} (e.g. Single Malt)...`}
-                        value={newSubInputs[cat.id] || ''}
-                        onChange={(e) =>
-                          setNewSubInputs((prev) => ({
-                            ...prev,
-                            [cat.id]: e.target.value,
-                          }))
-                        }
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault();
-                            handleQuickAddSubcategory(cat);
+                    <div className="space-y-2 pt-1">
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <input
+                          type="text"
+                          placeholder={`Add subcategory to ${cat.name} (e.g. Single Malt)...`}
+                          value={newSubInputs[cat.id] || ''}
+                          onChange={(e) =>
+                            setNewSubInputs((prev) => ({
+                              ...prev,
+                              [cat.id]: e.target.value,
+                            }))
                           }
-                        }}
-                        className="flex-1 bg-[#16171C] border border-white/15 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#F5D900]"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleQuickAddSubcategory(cat)}
-                        className="px-3.5 py-1.5 rounded-lg bg-[#242424] hover:bg-[#F5D900] hover:text-[#050505] text-white text-xs font-bold uppercase tracking-wider border border-white/10 transition-colors cursor-pointer"
-                      >
-                        + Add Subcategory
-                      </button>
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              handleQuickAddSubcategory(cat);
+                            }
+                          }}
+                          className="flex-1 bg-[#16171C] border border-white/15 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#F5D900]"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Optional subcategory banner text..."
+                          value={newSubDescInputs[cat.id] || ''}
+                          onChange={(e) =>
+                            setNewSubDescInputs((prev) => ({
+                              ...prev,
+                              [cat.id]: e.target.value,
+                            }))
+                          }
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              handleQuickAddSubcategory(cat);
+                            }
+                          }}
+                          className="flex-1 bg-[#16171C] border border-white/15 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#F5D900]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleQuickAddSubcategory(cat)}
+                          className="px-3.5 py-1.5 rounded-lg bg-[#242424] hover:bg-[#F5D900] hover:text-[#050505] text-white text-xs font-bold uppercase tracking-wider border border-white/10 transition-colors cursor-pointer shrink-0"
+                        >
+                          + Add Subcategory
+                        </button>
+                      </div>
                     </div>
                   </div>
 
@@ -764,25 +948,96 @@ export default function CategoryManager({ initialCategories }: Props) {
                   Subcategories ({subcategories.length})
                 </label>
                 {subcategories.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {subcategories.map((sub) => (
-                      <span
-                        key={sub.slug}
-                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#1C1D22] border border-white/10 text-xs text-white"
-                      >
-                        <span>{sub.name}</span>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveModalSubcategory(sub.slug)}
-                          className="text-neutral-400 hover:text-red-400 font-bold"
+                  <div className="space-y-2 max-h-52 overflow-y-auto pr-1">
+                    {subcategories.map((sub) => {
+                      const isUploadingModalSub =
+                        uploadingSubKey === `modal:${sub.slug}`;
+                      return (
+                        <div
+                          key={sub.slug}
+                          className="p-2.5 rounded bg-[#1C1D22] border border-white/10 space-y-2 text-xs text-white"
                         >
-                          ✕
-                        </button>
-                      </span>
-                    ))}
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2 min-w-0">
+                              {sub.imageUrl && (
+                                <img
+                                  src={sub.imageUrl}
+                                  alt={sub.name}
+                                  className="w-6 h-6 rounded object-cover border border-[#F5D900]/40 flex-shrink-0"
+                                />
+                              )}
+                              <span className="font-semibold truncate">
+                                {sub.name}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <label className="px-2 py-1 rounded bg-[#242424] hover:bg-[#F5D900] hover:text-[#050505] text-[10px] font-bold uppercase tracking-wider border border-white/10 cursor-pointer">
+                                {isUploadingModalSub
+                                  ? 'Uploading...'
+                                  : sub.imageUrl
+                                    ? 'Change Bg'
+                                    : '+ Bg Image'}
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  className="hidden"
+                                  onChange={(e) =>
+                                    handleModalSubImageUpload(
+                                      sub.slug,
+                                      e.target.files?.[0]
+                                    )
+                                  }
+                                />
+                              </label>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  handleRemoveModalSubcategory(sub.slug)
+                                }
+                                className="text-neutral-400 hover:text-red-400 font-bold px-1"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <input
+                              type="text"
+                              placeholder="Subcategory description / banner text..."
+                              value={sub.description || ''}
+                              onChange={(e) =>
+                                setSubcategories((prev) =>
+                                  prev.map((s) =>
+                                    s.slug === sub.slug
+                                      ? { ...s, description: e.target.value }
+                                      : s
+                                  )
+                                )
+                              }
+                              className="bg-[#16171C] border border-white/10 rounded px-2.5 py-1 text-[11px] text-neutral-200 focus:outline-none focus:border-[#F5D900]"
+                            />
+                            <input
+                              type="url"
+                              placeholder="Subcategory background image URL..."
+                              value={sub.imageUrl || ''}
+                              onChange={(e) =>
+                                setSubcategories((prev) =>
+                                  prev.map((s) =>
+                                    s.slug === sub.slug
+                                      ? { ...s, imageUrl: e.target.value }
+                                      : s
+                                  )
+                                )
+                              }
+                              className="bg-[#16171C] border border-white/10 rounded px-2.5 py-1 text-[11px] text-neutral-200 focus:outline-none focus:border-[#F5D900]"
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <input
                     type="text"
                     placeholder="New subcategory name (e.g. Bourbon & Whiskey)..."
@@ -796,10 +1051,23 @@ export default function CategoryManager({ initialCategories }: Props) {
                     }}
                     className="flex-1 bg-[#16171C] border border-white/15 rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-[#F5D900]"
                   />
+                  <input
+                    type="text"
+                    placeholder="Optional description..."
+                    value={modalNewSubDesc}
+                    onChange={(e) => setModalNewSubDesc(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddModalSubcategory();
+                      }
+                    }}
+                    className="flex-1 bg-[#16171C] border border-white/15 rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-[#F5D900]"
+                  />
                   <button
                     type="button"
                     onClick={handleAddModalSubcategory}
-                    className="px-4 py-2 rounded bg-[#F5D900] text-[#050505] text-xs font-bold uppercase tracking-wider cursor-pointer"
+                    className="px-4 py-2 rounded bg-[#F5D900] text-[#050505] text-xs font-bold uppercase tracking-wider cursor-pointer shrink-0"
                   >
                     + Add
                   </button>
@@ -834,9 +1102,12 @@ export default function CategoryManager({ initialCategories }: Props) {
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-start">
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-neutral-300 mb-1.5">
-                    Category Image (Cloudinary CDN)
+                  <label className="block text-xs font-bold uppercase tracking-wider text-neutral-300 mb-1">
+                    Category Hero &amp; Default Background Image (Cloudinary CDN)
                   </label>
+                  <p className="text-[11px] text-neutral-400 mb-2">
+                    Used as the category hero banner and as the default background behind this category&apos;s product cards grid.
+                  </p>
                   <input
                     type="url"
                     placeholder="Paste Cloudinary URL or upload below..."
@@ -867,6 +1138,35 @@ export default function CategoryManager({ initialCategories }: Props) {
                     onChange={(e) => setSortOrder(e.target.value)}
                     className="w-full bg-[#0E0F12] border border-white/10 rounded-sm px-3 py-2 text-sm text-white focus:outline-none focus:border-[#F5D900]"
                   />
+                </div>
+              </div>
+
+              <div className="p-4 rounded-lg bg-[#0E0F12] border border-white/10 space-y-2">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#F5D900]">
+                  Optional Products Section Background Image Override (Cloudinary CDN)
+                </label>
+                <p className="text-[11px] text-neutral-400">
+                  Leave blank to use the Category Image above behind the product cards grid, or upload a separate background image specifically for this category&apos;s product cards area.
+                </p>
+                <input
+                  type="url"
+                  placeholder="Optional custom products grid background URL..."
+                  value={productsBgUrl}
+                  onChange={(e) => setProductsBgUrl(e.target.value)}
+                  className="w-full bg-[#16171C] border border-white/10 rounded-sm px-3 py-2 text-xs text-white focus:outline-none focus:border-[#F5D900]"
+                />
+                <div className="flex items-center gap-3 pt-1">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleProductsBgUpload}
+                    className="text-xs text-neutral-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-sm file:border-0 file:text-xs file:font-bold file:bg-[#F5D900] file:text-[#050505] hover:file:bg-[#FFE524] cursor-pointer"
+                  />
+                  {uploadingProductsBg && (
+                    <span className="text-xs text-[#F5D900] font-semibold">
+                      Uploading to Cloudinary...
+                    </span>
+                  )}
                 </div>
               </div>
 
