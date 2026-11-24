@@ -121,16 +121,20 @@ export default function ProductListManager({
 
   async function handleToggleOffer(product: Product) {
     const nextOffer = !product.isOffer;
+    const nextOfferText = nextOffer
+      ? product.offerText || 'Special Store Offer'
+      : '';
     setProducts((prev) =>
-      prev.map((p) => (p.id === product.id ? { ...p, isOffer: nextOffer } : p))
+      prev.map((p) =>
+        p.id === product.id
+          ? { ...p, isOffer: nextOffer, offerText: nextOfferText }
+          : p
+      )
     );
     try {
       await updateProduct(product.id, {
         isOffer: nextOffer,
-        offerText:
-          nextOffer && !product.offerText
-            ? 'Special Store Offer'
-            : product.offerText,
+        offerText: nextOfferText,
       });
       setFeedback({
         type: 'success',

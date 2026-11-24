@@ -70,15 +70,23 @@ export default function OffersManager() {
 
   async function handleToggleOffer(product: Product) {
     const nextIsOffer = !product.isOffer;
-    const nextOfferText =
-      nextIsOffer && !product.offerText
-        ? 'Special Store Offer'
-        : product.offerText || '';
+    const nextOfferText = nextIsOffer
+      ? product.offerText || 'Special Store Offer'
+      : '';
+    const nextBadge =
+      !nextIsOffer && (product.badge === 'Offer' || product.badge === 'Sale')
+        ? ''
+        : product.badge;
     setSavingId(product.id);
     setProducts((prev) =>
       prev.map((p) =>
         p.id === product.id
-          ? { ...p, isOffer: nextIsOffer, offerText: nextOfferText }
+          ? {
+              ...p,
+              isOffer: nextIsOffer,
+              offerText: nextOfferText,
+              badge: nextBadge,
+            }
           : p
       )
     );
@@ -86,6 +94,7 @@ export default function OffersManager() {
       await updateProduct(product.id, {
         isOffer: nextIsOffer,
         offerText: nextOfferText,
+        badge: nextBadge,
       });
       setFeedback({
         type: 'success',
@@ -101,6 +110,47 @@ export default function OffersManager() {
       });
     } finally {
       setSavingId(null);
+    }
+  }
+
+  async function handleClearAllOffers() {
+    const activeOffers = products.filter(
+      (p) => p.isOffer || Boolean(p.offerText) || p.badge === 'Offer' || p.badge === 'Sale'
+    );
+    if (activeOffers.length === 0) return;
+    if (!confirm('Remove all products from the Offers page?')) return;
+
+    setSavingHeader(true);
+    setProducts((prev) =>
+      prev.map((p) => ({
+        ...p,
+        isOffer: false,
+        offerText: '',
+        badge: p.badge === 'Offer' || p.badge === 'Sale' ? '' : p.badge,
+      }))
+    );
+    try {
+      await Promise.all(
+        activeOffers.map((p) =>
+          updateProduct(p.id, {
+            isOffer: false,
+            offerText: '',
+            badge: p.badge === 'Offer' || p.badge === 'Sale' ? '' : p.badge,
+          })
+        )
+      );
+      setFeedback({
+        type: 'success',
+        message: 'Removed all products from the Offers page in Firebase Firestore!',
+      });
+      setTimeout(() => setFeedback(null), 4000);
+    } catch (err: any) {
+      setFeedback({
+        type: 'error',
+        message: err?.message || 'Failed to clear offers',
+      });
+    } finally {
+      setSavingHeader(false);
     }
   }
 
@@ -174,7 +224,16 @@ export default function OffersManager() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          {activeOffersCount > 0 && (
+            <button
+              type="button"
+              onClick={handleClearAllOffers}
+              className="px-4 py-2.5 rounded-sm bg-red-950/80 hover:bg-red-900 border border-red-500/40 text-red-200 text-xs font-bold uppercase tracking-wider cursor-pointer"
+            >
+              Remove All Offers ({activeOffersCount})
+            </button>
+          )}
           <Link
             href="/offers"
             target="_blank"

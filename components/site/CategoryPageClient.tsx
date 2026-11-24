@@ -51,7 +51,7 @@ export default function CategoryPageClient({
       return activeSlug;
     }
 
-    const activeSlug = readUrlState();
+    readUrlState();
 
     function handleMemoryUpdate() {
       const currentSlug = readUrlState();
@@ -100,7 +100,6 @@ export default function CategoryPageClient({
     };
   }, [propCategorySlug]);
 
-  // Also check window.location.search on client renders so Next.js soft navigation updates immediately
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const subParam = new URLSearchParams(window.location.search).get('sub');
@@ -115,7 +114,6 @@ export default function CategoryPageClient({
     ? ''
     : category?.name || resolvedSlug.replace(/-/g, ' ');
 
-  // Resolve active subcategory object and display name
   const activeSubObj =
     selectedSubcategory !== 'all' && Array.isArray(category?.subcategories)
       ? category!.subcategories!.find(
@@ -134,7 +132,6 @@ export default function CategoryPageClient({
           .replace(/\b\w/g, (l) => l.toUpperCase())
       : '';
 
-  // Main heading is Subcategory Name when a subcategory is selected, otherwise Category Name
   const mainHeading =
     selectedSubcategory !== 'all' && activeSubName ? activeSubName : catName;
 
@@ -145,9 +142,8 @@ export default function CategoryPageClient({
       category?.description ||
       'Curated collection handpicked for quality, character, and exceptional value.';
 
-  // Background image for the product cards section (and hero):
-  // Priority: Subcategory imageUrl -> Category productsBgUrl -> Category imageUrl -> Global cardConfig.sectionBackgroundImageUrl
-  const sectionBgImage =
+  // Hero section background image set by admin (Subcategory Image -> Category Image -> Global Hero Image)
+  const heroBgImage =
     (selectedSubcategory !== 'all' && activeSubObj?.imageUrl) ||
     category?.productsBgUrl ||
     category?.imageUrl ||
@@ -170,35 +166,29 @@ export default function CategoryPageClient({
 
   return (
     <div className="bg-[#050505] text-[#FFFFFF] min-h-screen">
-      {/* Hero Header */}
+      {/* Hero Header (Background Image ONLY on this section, bright and clearly visible) */}
       <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-24 border-b border-white/[0.08] overflow-hidden bg-[#07080A]">
-        {sectionBgImage && (
+        {heroBgImage && (
           <div className="absolute inset-0 z-0 pointer-events-none">
             <Image
-              src={sectionBgImage}
+              src={heroBgImage}
               alt={mainHeading}
               fill
-              className="object-cover object-center opacity-25"
+              className="object-cover object-center opacity-85"
               priority
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#07080A]/80 to-[#050505]/90" />
+            {/* Clean directional vignette so text is readable while the background photo stays vivid and clear */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#050505]/80 via-[#050505]/35 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-black/30" />
           </div>
         )}
-
-        <div
-          className="absolute inset-0 pointer-events-none opacity-40"
-          style={{
-            background:
-              'radial-gradient(ellipse at 85% 15%, rgba(245, 217, 0, 0.12) 0%, transparent 60%), radial-gradient(ellipse at 15% 90%, rgba(91, 16, 24, 0.25) 0%, transparent 70%)',
-          }}
-        />
 
         <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-end">
             <div className="lg:col-span-7">
               <div className="flex items-center gap-3 mb-4">
                 <span className="w-2 h-2 rounded-full bg-[#F5D900] animate-pulse" />
-                <p className="text-[11px] font-sans font-bold uppercase tracking-[0.22em] text-[#F5D900]">
+                <p className="text-[11px] font-sans font-bold uppercase tracking-[0.22em] text-[#F5D900] drop-shadow">
                   {brand.storeName.toUpperCase()} &bull; {catName.toUpperCase()}
                   {selectedSubcategory !== 'all' && activeSubName
                     ? ` • ${activeSubName.toUpperCase()}`
@@ -207,19 +197,19 @@ export default function CategoryPageClient({
               </div>
 
               <h1
-                className="font-anton tracking-wide uppercase text-white mb-6 leading-[0.95]"
+                className="font-anton tracking-wide uppercase text-white mb-6 leading-[0.95] drop-shadow-lg"
                 style={{ fontSize: 'clamp(2.8rem, 6.2vw, 5.5rem)' }}
               >
                 {mainHeading}
               </h1>
 
               {bannerText && (
-                <p className="font-sans font-normal text-neutral-300 text-base sm:text-lg leading-relaxed max-w-2xl mb-8">
+                <p className="font-sans font-normal text-neutral-200 text-base sm:text-lg leading-relaxed max-w-2xl mb-8 drop-shadow">
                   {bannerText}
                 </p>
               )}
 
-              <div className="flex flex-wrap items-center gap-3 text-xs font-sans text-neutral-400 uppercase tracking-widest">
+              <div className="flex flex-wrap items-center gap-3 text-xs font-sans text-neutral-300 uppercase tracking-widest">
                 <Link
                   href="/"
                   className="hover:text-[#F5D900] transition-colors"
@@ -251,7 +241,7 @@ export default function CategoryPageClient({
                 ) : (
                   <span className="text-[#F5D900] font-bold">{catName}</span>
                 )}
-                <span className="text-neutral-600">•</span>
+                <span className="text-neutral-500">•</span>
                 <span className="text-white">
                   {displayedProducts.length}{' '}
                   {displayedProducts.length === 1 ? 'Bottle' : 'Bottles'}
@@ -260,7 +250,7 @@ export default function CategoryPageClient({
             </div>
 
             <div className="lg:col-span-5">
-              <div className="rounded-sm bg-[#121316]/95 border border-white/[0.12] p-6 sm:p-8 backdrop-blur-md shadow-2xl relative overflow-hidden">
+              <div className="rounded-sm bg-[#121316]/90 border border-white/[0.15] p-6 sm:p-8 backdrop-blur-md shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#F5D900] via-[#F5D900]/70 to-transparent" />
 
                 <div className="flex items-center justify-between mb-4">
@@ -316,20 +306,8 @@ export default function CategoryPageClient({
         </div>
       </section>
 
-      {/* Product Cards Section with Admin-Set Background Image & 4 Cards Per Row */}
-      <section className="relative py-14 sm:py-20 overflow-hidden">
-        {sectionBgImage && (
-          <div className="absolute inset-0 z-0 pointer-events-none">
-            <Image
-              src={sectionBgImage}
-              alt=""
-              fill
-              className="object-cover object-center opacity-20"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/95 via-[#050505]/80 to-[#050505]/95" />
-          </div>
-        )}
-
+      {/* Product Cards Section (Clean Solid Dark Background — 4 Cards Per Row) */}
+      <section className="relative py-14 sm:py-20 bg-[#050505]">
         <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 relative z-10">
           <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/[0.08]">
             <p className="text-xs font-sans uppercase tracking-wider text-neutral-400">
@@ -337,7 +315,8 @@ export default function CategoryPageClient({
               <span className="text-[#F5D900] font-bold">
                 {displayedProducts.length}
               </span>{' '}
-              {mainHeading} {displayedProducts.length === 1 ? 'Bottle' : 'Bottles'}
+              {mainHeading}{' '}
+              {displayedProducts.length === 1 ? 'Bottle' : 'Bottles'}
             </p>
             <a
               href={`tel:${brand.phoneTel}`}
@@ -357,7 +336,7 @@ export default function CategoryPageClient({
               ))}
             </div>
           ) : displayedProducts.length === 0 ? (
-            <div className="text-center py-24 rounded bg-[#161616]/90 border border-white/10 backdrop-blur-sm">
+            <div className="text-center py-24 rounded bg-[#161616] border border-white/10">
               <h3 className="font-anton text-3xl text-[#FFFFFF] mb-2 uppercase tracking-wide">
                 No Bottles Found in {mainHeading}
               </h3>

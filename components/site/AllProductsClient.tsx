@@ -49,7 +49,7 @@ export default function AllProductsClient({
     };
   }, []);
 
-  const sectionBgImage = cardConfig?.sectionBackgroundImageUrl || '';
+  const heroBgImage = cardConfig?.sectionBackgroundImageUrl || '';
   const gridColsClass =
     cardConfig?.cardsPerRow === 3
       ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8'
@@ -57,27 +57,21 @@ export default function AllProductsClient({
 
   return (
     <div className="bg-[#050505] text-[#FFFFFF] min-h-screen">
-      {/* Editorial Luxury Hero Section */}
+      {/* Editorial Luxury Hero Section (Background Image ONLY on this section, clearly visible) */}
       <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-28 border-b border-white/[0.08] overflow-hidden bg-[#07080A]">
-        {sectionBgImage && (
+        {heroBgImage && (
           <div className="absolute inset-0 z-0 pointer-events-none">
             <Image
-              src={sectionBgImage}
-              alt=""
+              src={heroBgImage}
+              alt={catalogPage.headingWhite}
               fill
-              className="object-cover object-center opacity-20"
+              className="object-cover object-center opacity-85"
               priority
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/95 via-[#050505]/80 to-[#050505]/95" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#050505]/80 via-[#050505]/35 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-black/30" />
           </div>
         )}
-        <div
-          className="absolute inset-0 pointer-events-none opacity-40"
-          style={{
-            background:
-              'radial-gradient(ellipse at 85% 15%, rgba(245, 217, 0, 0.12) 0%, transparent 60%), radial-gradient(ellipse at 15% 90%, rgba(91, 16, 24, 0.25) 0%, transparent 70%)',
-          }}
-        />
 
         <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-end">
@@ -90,7 +84,7 @@ export default function AllProductsClient({
               </div>
 
               <h1
-                className="font-anton tracking-wide uppercase text-white mb-6 leading-[0.95]"
+                className="font-anton tracking-wide uppercase text-white mb-6 leading-[0.95] drop-shadow-lg"
                 style={{ fontSize: 'clamp(2.8rem, 6.2vw, 5.5rem)' }}
               >
                 {catalogPage.headingWhite}{' '}
@@ -99,11 +93,11 @@ export default function AllProductsClient({
                 </span>
               </h1>
 
-              <p className="font-sans font-normal text-neutral-300 text-base sm:text-lg leading-relaxed max-w-2xl mb-8">
+              <p className="font-sans font-normal text-neutral-200 text-base sm:text-lg leading-relaxed max-w-2xl mb-8 drop-shadow">
                 {catalogPage.description}
               </p>
 
-              <div className="flex flex-wrap items-center gap-4 text-xs font-sans text-neutral-400 uppercase tracking-widest">
+              <div className="flex flex-wrap items-center gap-4 text-xs font-sans text-neutral-300 uppercase tracking-widest">
                 <Link
                   href="/"
                   className="hover:text-[#F5D900] transition-colors"
@@ -114,7 +108,7 @@ export default function AllProductsClient({
                 <span className="text-white font-medium">
                   All Curated Bottles
                 </span>
-                <span className="text-neutral-600">•</span>
+                <span className="text-neutral-500">•</span>
                 <span className="text-[#F5D900] font-bold">
                   {products.length} Bottles Registered
                 </span>
@@ -122,7 +116,7 @@ export default function AllProductsClient({
             </div>
 
             <div className="lg:col-span-5">
-              <div className="rounded-sm bg-[#121316]/95 border border-white/[0.12] p-6 sm:p-8 backdrop-blur-md shadow-2xl relative overflow-hidden">
+              <div className="rounded-sm bg-[#121316]/90 border border-white/[0.15] p-6 sm:p-8 backdrop-blur-md shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#F5D900] via-[#F5D900]/70 to-transparent" />
 
                 <div className="flex items-center justify-between mb-4">
@@ -178,19 +172,8 @@ export default function AllProductsClient({
         </div>
       </section>
 
-      <section className="relative py-16 sm:py-20 overflow-hidden">
-        {sectionBgImage && (
-          <div className="absolute inset-0 z-0 pointer-events-none">
-            <Image
-              src={sectionBgImage}
-              alt=""
-              fill
-              className="object-cover object-center opacity-20"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/95 via-[#050505]/80 to-[#050505]/95" />
-          </div>
-        )}
-
+      {/* Product Cards Grid Section (Clean Solid Dark Background — 4 Cards Per Row) */}
+      <section className="relative py-16 sm:py-20 bg-[#050505]">
         <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 relative z-10">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 pb-4 border-b border-white/[0.08] gap-3">
             <p className="text-xs font-sans uppercase tracking-wider text-neutral-400">

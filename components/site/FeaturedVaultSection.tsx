@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import ProductCard from './ProductCard';
 import { getFeaturedProducts, getInstantProducts } from '@/lib/firestore';
 import { useSiteContent } from '@/lib/useSiteContent';
@@ -18,11 +17,6 @@ export default function FeaturedVaultSection({ initialProducts }: Props) {
   const [hydrated, setHydrated] = useState(false);
   const { vaultSection, cardConfig } = useSiteContent();
   const maxItems = Number(vaultSection.maxItems) || 8;
-  const sectionBgImage = cardConfig?.sectionBackgroundImageUrl || '';
-  const gridColsClass =
-    cardConfig?.cardsPerRow === 3
-      ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8'
-      : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6';
 
   useEffect(() => {
     function handleMemoryUpdate() {
@@ -50,23 +44,16 @@ export default function FeaturedVaultSection({ initialProducts }: Props) {
 
   if (hydrated && featuredProducts.length === 0) return null;
 
+  const gridColsClass =
+    cardConfig?.cardsPerRow === 3
+      ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8'
+      : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6';
+
   return (
     <section
       id="vault"
-      className="py-24 sm:py-32 relative bg-[#0B0C0E] border-b border-white/[0.08] overflow-hidden"
+      className="py-24 sm:py-32 relative bg-[#0B0C0E] border-b border-white/[0.08]"
     >
-      {sectionBgImage && (
-        <div className="absolute inset-0 z-0 pointer-events-none">
-          <Image
-            src={sectionBgImage}
-            alt=""
-            fill
-            className="object-cover object-center opacity-20"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/95 via-[#050505]/80 to-[#050505]/95" />
-        </div>
-      )}
-
       <div className="max-w-[1680px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 2xl:px-20 relative z-10">
         {/* Vault Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-16 gap-6">

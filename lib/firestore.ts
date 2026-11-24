@@ -76,14 +76,8 @@ function sanitizeProductDoc(docSnap: any): Product {
       data.subcategory !== undefined
         ? data.subcategory
         : initialMatch?.subcategory || '',
-    isOffer:
-      data.isOffer !== undefined
-        ? Boolean(data.isOffer)
-        : Boolean(initialMatch?.isOffer),
-    offerText:
-      data.offerText !== undefined
-        ? data.offerText
-        : initialMatch?.offerText || '',
+    isOffer: Boolean(data.isOffer),
+    offerText: data.isOffer ? data.offerText || '' : '',
     customFields: Array.isArray(data.customFields) ? data.customFields : [],
     cardFieldsOverride: Array.isArray(data.cardFieldsOverride)
       ? data.cardFieldsOverride
