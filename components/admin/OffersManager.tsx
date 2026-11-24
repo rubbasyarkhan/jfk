@@ -11,6 +11,7 @@ import {
   getInstantSiteContent,
   updateSiteContent,
 } from '@/lib/firestore';
+import { uploadImageToCloudinary } from '@/lib/cloudinaryClient';
 import type { Product, SiteContent } from '@/types';
 
 export default function OffersManager() {
@@ -23,6 +24,7 @@ export default function OffersManager() {
   const [filterMode, setFilterMode] = useState<'all' | 'offers'>('all');
   const [savingId, setSavingId] = useState<string | null>(null);
   const [savingHeader, setSavingHeader] = useState(false);
+  const [uploadingHero, setUploadingHero] = useState(false);
   const [feedback, setFeedback] = useState<{
     type: 'success' | 'error';
     message: string;
@@ -382,6 +384,59 @@ export default function OffersManager() {
             }
             className="admin-input"
           />
+        </div>
+
+        <div className="p-4 rounded-xl bg-[#1A1A1A] border border-white/10 space-y-3">
+          <label className="admin-label">
+            Offers Page Hero Banner Picture (Cloudinary Upload)
+          </label>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <input
+              type="url"
+              placeholder="Paste Cloudinary URL or upload image..."
+              value={siteContent.offersPage.heroImageUrl || ''}
+              onChange={(e) =>
+                setSiteContent((prev) => ({
+                  ...prev,
+                  offersPage: {
+                    ...prev.offersPage,
+                    heroImageUrl: e.target.value,
+                  },
+                }))
+              }
+              className="admin-input flex-1"
+            />
+            <label className="px-4 py-2.5 rounded-lg bg-[#F5D900] hover:bg-[#FFE524] text-[#050505] text-xs font-extrabold uppercase tracking-wider cursor-pointer inline-flex items-center justify-center shrink-0">
+              {uploadingHero ? 'Uploading...' : 'Upload Hero Picture'}
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  setUploadingHero(true);
+                  try {
+                    const url = await uploadImageToCloudinary(
+                      file,
+                      'jfk-liquors/site'
+                    );
+                    setSiteContent((prev) => ({
+                      ...prev,
+                      offersPage: { ...prev.offersPage, heroImageUrl: url },
+                    }));
+                  } catch (err: any) {
+                    setFeedback({
+                      type: 'error',
+                      message: err?.message || 'Failed to upload image',
+                    });
+                  } finally {
+                    setUploadingHero(false);
+                  }
+                }}
+              />
+            </label>
+          </div>
         </div>
 
         <div className="flex justify-end">

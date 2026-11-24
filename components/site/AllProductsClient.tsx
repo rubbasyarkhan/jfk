@@ -49,7 +49,8 @@ export default function AllProductsClient({
     };
   }, []);
 
-  const heroBgImage = cardConfig?.sectionBackgroundImageUrl || '';
+  const heroBgImage =
+    catalogPage.heroImageUrl || cardConfig?.sectionBackgroundImageUrl || '';
   const gridColsClass =
     cardConfig?.cardsPerRow === 3
       ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8'

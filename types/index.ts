@@ -92,6 +92,7 @@ export interface OffersPageContent {
   headingWhite: string;
   headingGold: string;
   description: string;
+  heroImageUrl?: string;
   bannerTag: string;
   bannerTitle: string;
   bannerText: string;
@@ -227,6 +228,7 @@ export interface SiteContent {
     headingWhite: string;
     headingGold: string;
     description: string;
+    heroImageUrl?: string;
     serviceBoxTitle: string;
     serviceBoxBadge: string;
     serviceBoxCallLabel: string;

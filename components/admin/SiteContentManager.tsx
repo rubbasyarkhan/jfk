@@ -2357,6 +2357,41 @@ export default function SiteContentManager() {
               />
             </div>
 
+            <div className="p-4 rounded-xl bg-[#1A1A1A] border border-white/10 space-y-3">
+              <label className="admin-label">
+                All Products Catalog Page Hero Banner Picture (Cloudinary CDN)
+              </label>
+              <input
+                type="url"
+                value={content.catalogPage.heroImageUrl || ''}
+                onChange={(e) =>
+                  updateSection('catalogPage', 'heroImageUrl', e.target.value)
+                }
+                placeholder="https://res.cloudinary.com/..."
+                className="admin-input"
+              />
+              <div className="flex items-center gap-4">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    handleImageUpload(
+                      'catalogPage',
+                      'heroImageUrl',
+                      e.target.files?.[0],
+                      'jfk-liquors/site'
+                    )
+                  }
+                  className="text-xs text-neutral-300 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#F5D900] file:text-[#050505] hover:file:bg-[#FFE524] cursor-pointer"
+                />
+                {uploadingField === 'catalogPage.heroImageUrl' && (
+                  <span className="text-xs text-[#F5D900] font-bold animate-pulse">
+                    Uploading to Cloudinary...
+                  </span>
+                )}
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <label className="admin-label">Service Card Header</label>

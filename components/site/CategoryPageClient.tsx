@@ -114,13 +114,22 @@ export default function CategoryPageClient({
     ? ''
     : category?.name || resolvedSlug.replace(/-/g, ' ');
 
+  const normSub = selectedSubcategory
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+
   const activeSubObj =
     selectedSubcategory !== 'all' && Array.isArray(category?.subcategories)
       ? category!.subcategories!.find(
           (s) =>
             s.slug === selectedSubcategory ||
             s.id === selectedSubcategory ||
-            s.slug?.toLowerCase() === selectedSubcategory.toLowerCase()
+            s.slug?.toLowerCase() === selectedSubcategory.toLowerCase() ||
+            s.name
+              ?.toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/^-|-$/g, '') === normSub
         )
       : undefined;
 

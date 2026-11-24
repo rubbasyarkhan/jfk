@@ -154,6 +154,8 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
     headingGold: 'Vault.',
     description:
       'Browse our wide retail selection of bourbon, Scotch, whiskey, red and white wine, champagne, chilled craft beer, and 100% Blue Agave tequila at our JFK Boulevard store near IAH airport.',
+    heroImageUrl:
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1794246857/jfk-liquors/hero-collection-bottles.jpg',
     serviceBoxTitle: 'Store Customer Service',
     serviceBoxBadge: 'In-Store Today',
     serviceBoxCallLabel: 'Call Store for Availability',
@@ -166,6 +168,8 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
     headingGold: 'Offers.',
     description:
       'Explore our featured in-store offers, seasonal bottle promotions, rare allocation highlights, and bundle specials at JFK Liquors near IAH airport.',
+    heroImageUrl:
+      'https://res.cloudinary.com/ovmougmy/image/upload/v1794246857/jfk-liquors/hero-collection-bottles.jpg',
     bannerTag: 'LIMITED TIME IN-STORE OFFERS',
     bannerTitle: 'Visiting JFK Boulevard Today? Ask About Our Weekly Bottle Specials.',
     bannerText:
