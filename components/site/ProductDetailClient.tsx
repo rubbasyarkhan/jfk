@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import ProductCard from './ProductCard';
 import ProductImageGallery from './ProductImageGallery';
 import {
@@ -23,6 +24,7 @@ export default function ProductDetailClient({
   initialProduct,
   initialRelated,
 }: Props) {
+  const pathname = usePathname();
   const [product, setProduct] = useState<Product>(initialProduct);
   const [relatedProducts, setRelatedProducts] =
     useState<Product[]>(initialRelated);
@@ -31,8 +33,11 @@ export default function ProductDetailClient({
 
   useEffect(() => {
     let activeSlug = propSlug;
-    if (typeof window !== 'undefined') {
-      const parts = window.location.pathname
+    const currentPath =
+      pathname ||
+      (typeof window !== 'undefined' ? window.location.pathname : '');
+    if (currentPath) {
+      const parts = currentPath
         .replace(/\/+$/, '')
         .split('/')
         .filter(Boolean);
@@ -84,7 +89,7 @@ export default function ProductDetailClient({
       window.removeEventListener('jfk-catalog-updated', handleMemoryUpdate);
       window.removeEventListener('focus', syncDetail);
     };
-  }, [propSlug]);
+  }, [propSlug, pathname]);
 
   if (!hydrated) {
     return (

@@ -13,17 +13,12 @@ const getCachedProduct = cache(async (slug: string) => {
 });
 
 export async function generateStaticParams() {
-  const firestoreProducts = await getAllProducts();
-  const map = new Map<string, { category: string; slug: string }>();
-
-  for (const p of INITIAL_PRODUCTS) {
-    map.set(`${p.category}/${p.slug}`, { category: p.category, slug: p.slug });
-  }
-  for (const p of firestoreProducts) {
-    map.set(`${p.category}/${p.slug}`, { category: p.category, slug: p.slug });
-  }
-
-  return Array.from(map.values());
+  // Generate lightweight static shell; ProductDetailClient resolves all 150+ products live from URL & Firestore
+  const first = INITIAL_PRODUCTS[0] || {
+    category: 'spirits',
+    slug: 'pappy-van-winkle-s-family-reserve-23-year',
+  };
+  return [{ category: first.category, slug: first.slug }];
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

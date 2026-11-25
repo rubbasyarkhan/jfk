@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import ProductCard from './ProductCard';
 import {
   getProducts,
@@ -26,6 +27,7 @@ export default function CategoryPageClient({
   initialProducts,
   initialCategory,
 }: Props) {
+  const pathname = usePathname();
   const [resolvedSlug, setResolvedSlug] = useState(propCategorySlug);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>('all');
   const [products, setProducts] = useState<Product[]>(initialProducts);
@@ -98,7 +100,7 @@ export default function CategoryPageClient({
       window.removeEventListener('popstate', readUrlState);
       window.removeEventListener('focus', syncCatPage);
     };
-  }, [propCategorySlug]);
+  }, [propCategorySlug, pathname]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {

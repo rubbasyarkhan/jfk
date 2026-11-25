@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { getProductById, getCategories, getInstantProducts, getInstantCategories } from '@/lib/firestore';
 import ProductForm from './ProductForm';
 import type { Product, Category } from '@/types';
@@ -16,6 +17,7 @@ export default function EditProductClient({
   productId: initialId,
   availableCategories,
 }: Props) {
+  const pathname = usePathname();
   const [product, setProduct] = useState<Product | null>(initialProduct || null);
   const [resolvedId, setResolvedId] = useState<string>(initialId);
   const [categories, setCategories] = useState<Category[]>(availableCategories);
@@ -25,12 +27,13 @@ export default function EditProductClient({
     let idFromUrl = initialId;
     if (typeof window !== 'undefined') {
       const searchId = new URLSearchParams(window.location.search).get('id');
-      const pathParts = window.location.pathname.replace(/\/+$/, '').split('/');
+      const currentPath = pathname || window.location.pathname;
+      const pathParts = currentPath.replace(/\/+$/, '').split('/');
       const lastSegment = pathParts[pathParts.length - 1];
       if (searchId) {
         idFromUrl = searchId;
       } else if (lastSegment && lastSegment !== 'products' && lastSegment !== 'new') {
-        idFromUrl = lastSegment;
+        idFromUrl = decodeURIComponent(lastSegment);
       }
     }
     setResolvedId(idFromUrl);
@@ -53,7 +56,7 @@ export default function EditProductClient({
       if (latestCats.length > 0) setCategories(latestCats);
     }
     loadLatest();
-  }, [initialId]);
+  }, [initialId, pathname]);
 
   if (!hydrated) {
     return (

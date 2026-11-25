@@ -7,11 +7,10 @@ interface Props {
 }
 
 export async function generateStaticParams() {
-  const products = await getAllProducts();
-  const ids = new Set<string>();
-  for (const p of INITIAL_PRODUCTS) ids.add(p.id);
-  for (const p of products) ids.add(p.id);
-  return Array.from(ids).map((id) => ({ id }));
+  // Generate lightweight static shell; EditProductClient resolves all 150+ products live from URL & Firestore
+  const firstId =
+    INITIAL_PRODUCTS[0]?.id || 'pappy-van-winkle-s-family-reserve-23-year';
+  return [{ id: firstId }];
 }
 
 export default async function EditProductPage({ params }: Props) {

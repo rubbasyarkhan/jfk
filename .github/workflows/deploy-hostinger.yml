@@ -74,18 +74,35 @@ jobs:
           # Never rewrite static assets inside _next
           RewriteRule ^_next/ - [L]
 
+          # Serve .rsc payload when Next.js client router sends RSC: 1 header
+          RewriteCond %{HTTP:RSC} ^1$
+          RewriteCond %{REQUEST_FILENAME}.rsc -f
+          RewriteRule ^(.+?)/?$ $1.rsc [L]
+
+          RewriteCond %{HTTP:RSC} ^1$
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteRule ^admin/products/([^/]+)/?$ /admin/products/pappy-van-winkle-s-family-reserve-23-year.rsc [L]
+
+          RewriteCond %{HTTP:RSC} ^1$
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteRule ^products/([^/]+)/([^/]+)/?$ /products/spirits/pappy-van-winkle-s-family-reserve-23-year.rsc [L]
+
+          RewriteCond %{HTTP:RSC} ^1$
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteRule ^products/([^/]+)/?$ /products/spirits.rsc [L]
+
           RewriteCond %{REQUEST_FILENAME}.html -f
           RewriteRule ^(.+?)/?$ $1.html [L]
 
           # Dynamic fallback for newly created product IDs in Admin
           RewriteCond %{REQUEST_FILENAME} !-f
           RewriteCond %{REQUEST_FILENAME} !-d
-          RewriteRule ^admin/products/([^/]+)/?$ /admin/products/bourbon-american-whiskey.html [L]
+          RewriteRule ^admin/products/([^/]+)/?$ /admin/products/pappy-van-winkle-s-family-reserve-23-year.html [L]
 
           # Dynamic fallback for newly created products on storefront
           RewriteCond %{REQUEST_FILENAME} !-f
           RewriteCond %{REQUEST_FILENAME} !-d
-          RewriteRule ^products/([^/]+)/([^/]+)/?$ /products/spirits/bourbon-american-whiskey.html [L]
+          RewriteRule ^products/([^/]+)/([^/]+)/?$ /products/spirits/pappy-van-winkle-s-family-reserve-23-year.html [L]
 
           # Dynamic fallback for newly created categories/departments on storefront
           RewriteCond %{REQUEST_FILENAME} !-f
